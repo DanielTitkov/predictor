@@ -1,0 +1,22 @@
+env: dev
+db:
+  uri: "host=localhost port=6432 user=test dbname=predictor password=pass sslmode=disable"
+  driver: postgres
+server:
+  port: 8000
+  host: "0.0.0.0"
+app:
+  defaultTaskPageLimit: 10
+  systemSummaryInterval: 10 # minutes
+  systemSummaryTimeout: 100 # milliseconds
+auth:
+  exp: 7200 # hours
+  secret: secret-key
+data:
+  presets:
+    challengePresetsPaths: 
+      - ./data/presets/challenges.json
+external:
+  telegram:
+    telegramTo: 99999
+    telegramToken: "9999:AAAAAAAAA"

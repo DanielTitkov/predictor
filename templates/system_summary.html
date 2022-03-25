@@ -1,0 +1,60 @@
+{{ define "title" }} Dashboars | System summary {{ end }}
+{{ define "view" }}
+
+<main>
+  <h1 class="title is-1">System summary</h1>
+  <h3 class="subtitle is-3">What's going on?</h3>
+
+  <div class="box">
+    <table class="table is-fullwidth">
+      <tbody>
+        <tr>
+          <th>Total tasks</th>
+          <td>{{ .Summary.Tasks }}</td>
+        </tr>
+        <tr>
+          <th>Active tasks</th>
+          <td>{{ .Summary.ActiveTasks }}</td>
+        </tr>
+        <tr>
+          <th>Running tasks</th>
+          <td>{{ .Summary.RunningTasks }}</td>
+        </tr>
+        <tr>
+          <th>Completed tasks</th>
+          <td>{{ .Summary.CompletedTasks }}</td>
+        </tr>
+        <tr>
+          <th>Failed tasks</th>
+          <td>{{ .Summary.FailedTasks }}</td>
+        </tr>
+        <tr>
+          <th>Metrics</th>
+          <td>{{ .Summary.Metrics }}</td>
+        </tr>
+        <tr>
+          <th>Collected items</th>
+          <td>{{ .Summary.CollectedItems }}</td>
+        </tr>
+        <tr>
+          <th>Average items per task</th>
+          <td>{{ .Summary.AvgItemsPerTask }}</td>
+        </tr>
+        <tr>
+          <th>Average items per task instance</th>
+          <td>{{ .Summary.AvgItemsPerTaskInstance }}</td>
+        </tr>
+        <tr>
+          <th>Average items per metric</th>
+          <td>{{ .Summary.AvgItemsPerMetric }}</td>
+        </tr>
+        <tr>
+          <th>Updated at</th>
+          <td>{{ .Summary.CreateTime }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+{{ end }}

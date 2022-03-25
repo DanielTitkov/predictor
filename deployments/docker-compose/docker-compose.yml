@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: deployments/docker/Dockerfile
+    ports:
+      - "8000:8000"
+    command: "./app /opt/configs/docker.yml"
+    environment:
+      - ENV=docker
+      - CONFIG_PATH=configs/docker.yml
+    depends_on:
+      - postgres
+    volumes: 
+      - ../../configs:/opt/configs
+    networks:
+      - predictor
+
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: test
+      POSTGRES_DB: predictor
+    volumes:
+      - predictor-database-data:/var/lib/postgresql/data/
+    networks:
+      - predictor
+
+volumes:
+  predictor-database-data:
+
+networks:
+  predictor: 

@@ -1,0 +1,53 @@
+{{ define "title" }} Dashboars | Tasks {{ end }}
+{{ define "view" }}
+
+<main>
+    <h1 class="title is-1">Tasks</h1>
+    <h3 class="subtitle is-3">System tasks</h3>
+
+    <div class="box">
+        {{ range $i, $task := .Tasks }}
+        <p>
+
+        <div class="notification {{if $task.Active }}is-success{{ end }}">
+            <div class="level">
+                <div class="level-left">
+                    <div class="level-item">
+                        <p><b>ID:</b>&nbsp;{{ $task.ID }}</p>
+                    </div>
+                    <div class="level-item">
+                        <p>{{ $task.Title }}</p>
+                    </div>
+                    <div class="level-item">
+                        <p><b>Type:</b>&nbsp;{{ $task.Type }}</p>
+                    </div>
+                    <div class="level-item">
+                        <p><b>Code:</b>&nbsp;{{ $task.Code }}</p>
+                    </div>
+                    <div class="level-item">
+                        <p><b>Schedule:</b>&nbsp;{{ $task.Schedule }}</p>
+                    </div>
+                </div>
+                <div class="level-right">
+                    <div class="level-item">
+                        <p>{{ $task.Description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </p>
+        {{ end }}
+        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+            {{ if gt .Page 1 }}
+            <a class="pagination-previous" live-click="tasks-update-page" live-value-page="{{.PrevPage}}">Previous page</a>
+            {{ end }}
+            {{ if ne .MaxPage 1 }}
+            {{ if lt .Page .MaxPage }}
+            <a class="pagination-next" live-click="tasks-update-page" live-value-page="{{.NextPage}}">Next page</a>
+            {{ end }}
+            {{ end }}
+        </nav>
+    </div>
+</main>
+
+{{ end }}

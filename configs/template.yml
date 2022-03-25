@@ -1,0 +1,28 @@
+# template to substitute with actual values
+env: deploy
+db:
+  uri: "host={{db_host}} port={{db_port}} user={{db_user}} dbname={{db_name}} password={{db_password}} sslmode=require"
+  driver: postgres
+server:
+  port: 8000
+  host: "0.0.0.0"
+task:
+  defaultSchedule: "24h"
+  defaultRetryNumber: 3
+  defaultRetryDelay: "300s"
+  maxConcurrency: 50
+app:
+  defaultTaskPageLimit: 10
+  systemSummaryInterval: 5 # minutes
+  systemSummaryTimeout: 500 # milliseconds
+auth:
+  exp: 72 # hours
+  secret: {{secret_key}}
+data:
+  presets:
+    challengePresetsPaths: 
+      - ./data/presets/challenges.json
+external:
+  telegram:
+    telegramTo: {{telegram_to}}
+    telegramToken: {{telegram_token}}

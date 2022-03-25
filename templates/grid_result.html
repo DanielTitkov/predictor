@@ -1,0 +1,123 @@
+{{define "grid-result"}}
+<div class="box">
+  <h3 class="title">Grid report</h3>
+  <h5 class="subtitle">Here you can see grid analysis results</h5>
+
+  <div class="block">
+    <h4 class="title is-4">Репертуарная решётка</h4>
+    <h6 class="subtitle is-6">Данные репертуарной решётки для дальнейшего анализа</h6>
+    <table class="table">
+      <tr>
+        <th></th>
+        {{ range $j, $term := $.Grid.Terms }}
+        <td>{{ $term.Title }}</td>
+        {{ end }}
+        <th></th>
+      </tr>
+      {{ range $i, $construct := .Grid.Constructs }}
+      <tr>
+        <th>{{ $construct.LeftPole }}-{{ $construct.RightPole }}</th>
+        {{ range $j, $term := $.Grid.Terms }}
+        <td>{{ $.Grid.Matrix.At $i $j }}</td>
+        {{ end }}
+        <th>{{ $construct.LeftPole }}-{{ $construct.RightPole }}</th>
+      </tr>
+      {{ end }}
+      <tr>
+        <th></th>
+        {{ range $j, $term := $.Grid.Terms }}
+        <td>{{ $term.Title }}</td>
+        {{ end }}
+        <th></th>
+      </tr>
+    </table>
+  </div>
+
+  <div class="block">
+    <h4 class="title is-4">Корреляции</h4>
+    <div class="tile is-ancestor">
+      <div class="tile is-parent">
+        <div class="tile is-child notification">
+          <h5 class="subtitle is-5">Элементы</h5>
+          {{ range $corr := .TermsCorrs }}
+          <p>
+            <span><b>{{ $corr.Left }} / {{ $corr.Right }}</b> {{ $corr.Value }}</span>
+          </p>
+          {{ end }}
+        </div>
+      </div>
+      <div class="tile is-parent">
+        <div class="tile is-child notification">
+          <h5 class="subtitle is-5">Конструкты</h5>
+          {{ range $corr := .ConstructsCorrs }}
+          <p>
+            <span><b>{{ $corr.Left }} / {{ $corr.Right }}</b> {{ $corr.Value }}</span>
+          </p>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="level">
+    <div class="level-item has-text-centered">
+      <div class="block">
+        <button class="button is-success" live-click="gridResult">Построить графики</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="columns">
+      <div class="column">
+        <div id="terms-corr-heatmap" class="block"></div>
+      </div>
+      <div class="column">
+        <div id="constructs-corr-heatmap" class="block"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div>
+
+<script live-hook="makeChartsHook" type="application/json" id="chartsData">
+  {
+    "updateValue": {{ .UpdateValue }},
+    "termsCorrHeatmap": {
+      "data": {{ .Charts.TermsCorr }},
+      "layout": {
+        "title": {
+          "text": "Корреляции элементов",
+          "font": {
+            "family": "Ubuntu, monospace",
+            "size": 28
+          },
+          "xref": "paper",
+          "x": 0.05
+        }
+      }
+    },
+    "constructsCorrHeatmap": {
+      "data": {{ .Charts.ConstructsCorr }},
+      "layout": {
+        "title": {
+          "text": "Корреляции конструктов",
+          "font": {
+            "family": "Ubuntu, monospace",
+            "size": 28
+          },
+          "xref": "paper",
+          "x": 0.05
+        }
+      }
+    },
+    "config": {
+      "displayModeBar": false,
+      "responsive": true
+    }
+  }
+</script>
+
+{{ end }}

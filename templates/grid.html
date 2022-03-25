@@ -1,0 +1,33 @@
+{{ define "title" }} Grid {{ end }}
+{{ define "view" }}
+
+<main>
+  <h1 class="title is-1">Grid page</h1>
+  <div class="box">
+    <h3 class="subtitle">Debug info</h3>
+    <p><b>session:</b><span>{{ .Session }}</span></p>
+    <p><b>Min terms</b> {{ .Grid.Config.MinTerms }}</p>
+    <p><b>Max terms</b> {{ .Grid.Config.MaxTerms }}</p>
+    <p>{{ .Grid.Terms }}</p>
+    <p>{{ .Grid.Triads }}</p>
+    <p><b>Current triad:</b> {{ .CurrentTriadID }}</p>
+  </div>
+
+  {{ if eq .Grid.Step "terms" }}
+  {{ template "grid-terms" . }}
+  {{end}}
+
+  {{ if eq .Grid.Step "elicit" }}
+  {{ template "grid-triads" . }}
+  {{end}}
+
+  {{ if eq .Grid.Step "linking" }}
+  {{ template "grid-linking" . }}
+  {{end}}
+
+  {{ if eq .Grid.Step "result" }}
+  {{ template "grid-result" . }}
+  {{end}}
+
+</main>
+{{ end }}
