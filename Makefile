@@ -42,6 +42,10 @@ lint:
 entgen:
 	cd ./internal/repository/entgo && go generate ./ent
 
+.PHONY: jup
+jup: 
+	cd scripts && pipenv run jupyter notebook
+
 .PHONY: db
 db:
 	cd deployments/dev && docker-compose up -d --force-recreate --build --remove-orphans --always-recreate-deps --renew-anon-volumes

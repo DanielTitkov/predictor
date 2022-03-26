@@ -22,3 +22,6 @@ bin/*
 configs/*
 !configs/default.*
 !configs/template.*
+
+# python
+.ipynb_checkpoints
