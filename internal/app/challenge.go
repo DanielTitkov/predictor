@@ -14,6 +14,14 @@ func (a *App) GetChallengeByContent(ctx context.Context, content string) (*domai
 	return a.repo.GetChallengeByContent(ctx, content)
 }
 
+func (a *App) GetRandomFinishedChallenges(ctx context.Context) ([]*domain.Challenge, error) {
+	return a.repo.GetRandomFinishedChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit)
+}
+
+func (a *App) GetRandomOngoingChallenges(ctx context.Context) ([]*domain.Challenge, error) {
+	return a.repo.GetRandomOngoingChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit)
+}
+
 func (a *App) CreateChallengeFromArgs(ctx context.Context, args domain.CreateChallengeArgs) (*domain.Challenge, error) {
 	startTime, err := time.Parse(args.TimeLayout, args.StartTime)
 	if err != nil {

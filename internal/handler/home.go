@@ -6,12 +6,17 @@ import (
 	"html/template"
 	"log"
 
+	"github.com/DanielTitkov/predictor/internal/domain"
+
 	"github.com/jfyne/live"
 )
 
 type (
 	HomeInstance struct {
-		Session string
+		Session                  string
+		RandomFinishedChallenges []*domain.Challenge
+		RandomOngoingChallenges  []*domain.Challenge
+		Error                    error
 	}
 )
 
@@ -27,7 +32,7 @@ func NewHomeInstance(s live.Socket) *HomeInstance {
 }
 
 func (h *Handler) Home() live.Handler {
-	t, err := template.ParseFiles(h.t+"layout.html", h.t+"home.html")
+	t, err := template.ParseFiles(h.t+"layout.html", h.t+"home.html", h.t+"challenge_card.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,7 +41,20 @@ func (h *Handler) Home() live.Handler {
 
 	// Set the mount function for this handler.
 	lvh.HandleMount(func(ctx context.Context, s live.Socket) (interface{}, error) {
-		return NewHomeInstance(s), nil
+		instance := NewHomeInstance(s)
+		randomFinishedChallenges, err := h.app.GetRandomFinishedChallenges(ctx)
+		if err != nil {
+			instance.Error = err
+		}
+		instance.RandomFinishedChallenges = randomFinishedChallenges
+
+		randomOngoingChallenges, err := h.app.GetRandomOngoingChallenges(ctx)
+		if err != nil {
+			instance.Error = err
+		}
+		instance.RandomOngoingChallenges = randomOngoingChallenges
+
+		return instance, nil
 	})
 
 	return lvh

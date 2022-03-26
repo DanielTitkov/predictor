@@ -2,15 +2,32 @@
 {{ define "view" }}
 
 <main>
-    <h1 class="title is-1">Predictor</h1>
-    <h3 class="subtitle is-3">Crowd predictions on various themes</h3>
-    <p class="box">
-        Some text
-    </p>
-    <div class="level">
-        <a class="button is-large is-primary" href="/tasks">Tasks</a>
-        <a class="button is-large is-primary" href="/summary">System summary</a>
+  <h1 class="title is-1">Predictor</h1>
+  <h3 class="subtitle is-3">Crowd predictions on various topics</h3>
+  <div class="block">
+    <div class="columns">
+      <div class="column">
+        <div class="box">
+          <h4 class="title is-4">Random Ongoing Challenges</h4>
+          {{ range $i, $challenge := .RandomOngoingChallenges }}
+          {{ template "challenge-card" $challenge }}
+          {{ end }}
+        </div>
+      </div>
+      <div class="column">
+        <div class="box">
+          <h4 class="title is-4">Random Finished Challenges</h4>
+          {{ range $i, $challenge := .RandomFinishedChallenges }}
+          {{ template "challenge-card" $challenge }}
+          {{ end }}
+        </div>
+      </div>
     </div>
+  </div>
+  <div class="level">
+    <!-- <a class="button is-large is-primary" href="/tasks">Tasks</a> -->
+    <a class="button is-large is-primary" href="/summary">System summary</a>
+  </div>
 </main>
 
 {{ end }}

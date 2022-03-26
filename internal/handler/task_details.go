@@ -61,7 +61,7 @@ func (h *Handler) NewTaskDetailsInstance(ctx context.Context, s live.Socket, tas
 			Session: fmt.Sprint(s.Session()),
 			Page:    1,
 			Error:   nil,
-			MaxPage: int(math.Ceil(float64(nTasks) / float64(h.app.Cfg.App.DefaultTaskPageLimit))),
+			MaxPage: int(math.Ceil(float64(nTasks) / float64(h.app.Cfg.App.DefaultChallengePageLimit))),
 		}
 	}
 

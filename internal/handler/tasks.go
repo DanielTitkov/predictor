@@ -58,7 +58,7 @@ func (h *Handler) NewTasksInstance(ctx context.Context, s live.Socket) *TasksIns
 		return &TasksInstance{
 			Session: fmt.Sprint(s.Session()),
 			Page:    1,
-			MaxPage: int(math.Ceil(float64(nTasks) / float64(h.app.Cfg.App.DefaultTaskPageLimit))),
+			MaxPage: int(math.Ceil(float64(nTasks) / float64(h.app.Cfg.App.DefaultChallengePageLimit))),
 		}
 	}
 

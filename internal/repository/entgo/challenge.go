@@ -2,6 +2,8 @@ package entgo
 
 import (
 	"context"
+	"math/rand"
+	"time"
 
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 
@@ -19,6 +21,86 @@ func (r *EntgoRepository) GetChallengeByContent(ctx context.Context, content str
 	}
 
 	return entToDomainChallenge(c), nil
+}
+
+func (r *EntgoRepository) GetRandomFinishedChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error) {
+	chs, err := r.client.Challenge.
+		Query().
+		Where(
+			challenge.And(
+				challenge.CreateTimeLT(time.Now()),
+				challenge.EndTimeLT(time.Now()),
+			),
+		).
+		WithPredictions().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var sampledChs []*ent.Challenge
+	if len(chs) > limit {
+		for i := 0; i < limit; i++ {
+			rnd := rand.New(rand.NewSource(time.Now().Unix()))
+			index := rnd.Intn(len(chs))
+			sampledChs = append(sampledChs, chs[index])
+			chs = append(chs[:index], chs[index+1:]...)
+		}
+	} else {
+		sampledChs = chs
+	}
+
+	var res []*domain.Challenge
+	for _, ch := range sampledChs {
+		res = append(res, entToDomainChallenge(ch))
+	}
+
+	return res, nil
+}
+
+func (r *EntgoRepository) GetRandomOngoingChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error) {
+	chs, err := r.client.Challenge.
+		Query().
+		Where(
+			challenge.And(
+				challenge.CreateTimeLT(time.Now()),
+				challenge.EndTimeGT(time.Now()),
+			),
+		).
+		WithPredictions().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var sampledChs []*ent.Challenge
+	if len(chs) > limit {
+		for i := 0; i < limit; i++ {
+			rnd := rand.New(rand.NewSource(time.Now().Unix()))
+			index := rnd.Intn(len(chs))
+			sampledChs = append(sampledChs, chs[index])
+			chs = append(chs[:index], chs[index+1:]...)
+		}
+	} else {
+		sampledChs = chs
+	}
+
+	var res []*domain.Challenge
+	for _, ch := range sampledChs {
+		res = append(res, entToDomainChallenge(ch))
+	}
+
+	return res, nil
+}
+
+// GetPopularOngoingChallenges returns ongoing challenges that have more predictions
+func (r *EntgoRepository) GetPopularOngoingChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error) {
+	return nil, nil
+}
+
+// GetPopularFinishedChallenges returns finished challenges that have more predictions
+func (r *EntgoRepository) GetPopularFinishedChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error) {
+	return nil, nil
 }
 
 func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, ch *domain.Challenge) (*domain.Challenge, error) {
@@ -61,11 +143,19 @@ func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, 
 }
 
 func entToDomainChallenge(ch *ent.Challenge) *domain.Challenge {
+	var predictions []*domain.Prediction
+	if ch.Edges.Predictions != nil {
+		for _, p := range ch.Edges.Predictions {
+			predictions = append(predictions, entToDomainPrediction(p))
+		}
+	}
+
 	return &domain.Challenge{
 		ID:          ch.ID,
 		Content:     ch.Content,
 		Description: ch.Description,
 		StartTime:   ch.StartTime,
 		EndTime:     ch.EndTime,
+		Predictions: predictions,
 	}
 }
