@@ -18,13 +18,14 @@ type Challenge struct {
 func (Challenge) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
+		field.String("content").NotEmpty().MaxLen(140).Unique(),
+		field.String("description").Optional().MaxLen(280),
+		field.Bool("outcome").Optional().Nillable(),
+		field.Time("start_time"),
+		field.Time("end_time"),
 		field.Enum("type").Values(
 			domain.ChallengeTypeBool,
 		).Immutable().Default(domain.ChallengeTypeBool),
-		field.String("content").NotEmpty().MaxLen(140).Unique(),
-		field.String("description").Optional().MaxLen(280),
-		field.Time("start_time"),
-		field.Time("end_time"),
 	}
 }
 

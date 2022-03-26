@@ -18,16 +18,18 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
-	// FieldType holds the string denoting the type field in the database.
-	FieldType = "type"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldOutcome holds the string denoting the outcome field in the database.
+	FieldOutcome = "outcome"
 	// FieldStartTime holds the string denoting the start_time field in the database.
 	FieldStartTime = "start_time"
 	// FieldEndTime holds the string denoting the end_time field in the database.
 	FieldEndTime = "end_time"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
 	// EdgePredictions holds the string denoting the predictions edge name in mutations.
 	EdgePredictions = "predictions"
 	// Table holds the table name of the challenge in the database.
@@ -46,11 +48,12 @@ var Columns = []string{
 	FieldID,
 	FieldCreateTime,
 	FieldUpdateTime,
-	FieldType,
 	FieldContent,
 	FieldDescription,
+	FieldOutcome,
 	FieldStartTime,
 	FieldEndTime,
+	FieldType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

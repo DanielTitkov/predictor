@@ -28,6 +28,8 @@ type User struct {
 	Email string `json:"email,omitempty"`
 	// Admin holds the value of the "admin" field.
 	Admin bool `json:"admin,omitempty"`
+	// PasswordHash holds the value of the "password_hash" field.
+	PasswordHash string `json:"password_hash,omitempty"`
 	// Meta holds the value of the "meta" field.
 	Meta map[string]interface{} `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -62,7 +64,7 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case user.FieldAdmin:
 			values[i] = new(sql.NullBool)
-		case user.FieldName, user.FieldEmail:
+		case user.FieldName, user.FieldEmail, user.FieldPasswordHash:
 			values[i] = new(sql.NullString)
 		case user.FieldCreateTime, user.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -119,6 +121,12 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				u.Admin = value.Bool
 			}
+		case user.FieldPasswordHash:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field password_hash", values[i])
+			} else if value.Valid {
+				u.PasswordHash = value.String
+			}
 		case user.FieldMeta:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field meta", values[i])
@@ -170,6 +178,8 @@ func (u *User) String() string {
 	builder.WriteString(u.Email)
 	builder.WriteString(", admin=")
 	builder.WriteString(fmt.Sprintf("%v", u.Admin))
+	builder.WriteString(", password_hash=")
+	builder.WriteString(u.PasswordHash)
 	builder.WriteString(", meta=")
 	builder.WriteString(fmt.Sprintf("%v", u.Meta))
 	builder.WriteByte(')')

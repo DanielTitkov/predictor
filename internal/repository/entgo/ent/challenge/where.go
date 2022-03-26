@@ -122,6 +122,13 @@ func Description(v string) predicate.Challenge {
 	})
 }
 
+// Outcome applies equality check predicate on the "outcome" field. It's identical to OutcomeEQ.
+func Outcome(v bool) predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldOutcome), v))
+	})
+}
+
 // StartTime applies equality check predicate on the "start_time" field. It's identical to StartTimeEQ.
 func StartTime(v time.Time) predicate.Challenge {
 	return predicate.Challenge(func(s *sql.Selector) {
@@ -285,54 +292,6 @@ func UpdateTimeLT(v time.Time) predicate.Challenge {
 func UpdateTimeLTE(v time.Time) predicate.Challenge {
 	return predicate.Challenge(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdateTime), v))
-	})
-}
-
-// TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v Type) predicate.Challenge {
-	return predicate.Challenge(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldType), v))
-	})
-}
-
-// TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v Type) predicate.Challenge {
-	return predicate.Challenge(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldType), v))
-	})
-}
-
-// TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...Type) predicate.Challenge {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Challenge(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldType), v...))
-	})
-}
-
-// TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...Type) predicate.Challenge {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Challenge(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldType), v...))
 	})
 }
 
@@ -572,6 +531,34 @@ func DescriptionContainsFold(v string) predicate.Challenge {
 	})
 }
 
+// OutcomeEQ applies the EQ predicate on the "outcome" field.
+func OutcomeEQ(v bool) predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldOutcome), v))
+	})
+}
+
+// OutcomeNEQ applies the NEQ predicate on the "outcome" field.
+func OutcomeNEQ(v bool) predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldOutcome), v))
+	})
+}
+
+// OutcomeIsNil applies the IsNil predicate on the "outcome" field.
+func OutcomeIsNil() predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldOutcome)))
+	})
+}
+
+// OutcomeNotNil applies the NotNil predicate on the "outcome" field.
+func OutcomeNotNil() predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldOutcome)))
+	})
+}
+
 // StartTimeEQ applies the EQ predicate on the "start_time" field.
 func StartTimeEQ(v time.Time) predicate.Challenge {
 	return predicate.Challenge(func(s *sql.Selector) {
@@ -721,6 +708,54 @@ func EndTimeLT(v time.Time) predicate.Challenge {
 func EndTimeLTE(v time.Time) predicate.Challenge {
 	return predicate.Challenge(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldEndTime), v))
+	})
+}
+
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v Type) predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldType), v))
+	})
+}
+
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v Type) predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldType), v))
+	})
+}
+
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...Type) predicate.Challenge {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Challenge(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldType), v...))
+	})
+}
+
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...Type) predicate.Challenge {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Challenge(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldType), v...))
 	})
 }
 

@@ -62,6 +62,26 @@ func (cu *ChallengeUpdate) ClearDescription() *ChallengeUpdate {
 	return cu
 }
 
+// SetOutcome sets the "outcome" field.
+func (cu *ChallengeUpdate) SetOutcome(b bool) *ChallengeUpdate {
+	cu.mutation.SetOutcome(b)
+	return cu
+}
+
+// SetNillableOutcome sets the "outcome" field if the given value is not nil.
+func (cu *ChallengeUpdate) SetNillableOutcome(b *bool) *ChallengeUpdate {
+	if b != nil {
+		cu.SetOutcome(*b)
+	}
+	return cu
+}
+
+// ClearOutcome clears the value of the "outcome" field.
+func (cu *ChallengeUpdate) ClearOutcome() *ChallengeUpdate {
+	cu.mutation.ClearOutcome()
+	return cu
+}
+
 // SetStartTime sets the "start_time" field.
 func (cu *ChallengeUpdate) SetStartTime(t time.Time) *ChallengeUpdate {
 	cu.mutation.SetStartTime(t)
@@ -244,6 +264,19 @@ func (cu *ChallengeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: challenge.FieldDescription,
 		})
 	}
+	if value, ok := cu.mutation.Outcome(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: challenge.FieldOutcome,
+		})
+	}
+	if cu.mutation.OutcomeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Column: challenge.FieldOutcome,
+		})
+	}
 	if value, ok := cu.mutation.StartTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -360,6 +393,26 @@ func (cuo *ChallengeUpdateOne) SetNillableDescription(s *string) *ChallengeUpdat
 // ClearDescription clears the value of the "description" field.
 func (cuo *ChallengeUpdateOne) ClearDescription() *ChallengeUpdateOne {
 	cuo.mutation.ClearDescription()
+	return cuo
+}
+
+// SetOutcome sets the "outcome" field.
+func (cuo *ChallengeUpdateOne) SetOutcome(b bool) *ChallengeUpdateOne {
+	cuo.mutation.SetOutcome(b)
+	return cuo
+}
+
+// SetNillableOutcome sets the "outcome" field if the given value is not nil.
+func (cuo *ChallengeUpdateOne) SetNillableOutcome(b *bool) *ChallengeUpdateOne {
+	if b != nil {
+		cuo.SetOutcome(*b)
+	}
+	return cuo
+}
+
+// ClearOutcome clears the value of the "outcome" field.
+func (cuo *ChallengeUpdateOne) ClearOutcome() *ChallengeUpdateOne {
+	cuo.mutation.ClearOutcome()
 	return cuo
 }
 
@@ -567,6 +620,19 @@ func (cuo *ChallengeUpdateOne) sqlSave(ctx context.Context) (_node *Challenge, e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: challenge.FieldDescription,
+		})
+	}
+	if value, ok := cuo.mutation.Outcome(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: challenge.FieldOutcome,
+		})
+	}
+	if cuo.mutation.OutcomeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Column: challenge.FieldOutcome,
 		})
 	}
 	if value, ok := cuo.mutation.StartTime(); ok {

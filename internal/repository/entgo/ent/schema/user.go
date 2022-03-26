@@ -20,6 +20,7 @@ func (User) Fields() []ent.Field {
 		field.String("name").NotEmpty(),
 		field.String("email").NotEmpty(),
 		field.Bool("admin").Default(false),
+		field.String("password_hash"),
 		field.JSON("meta", make(map[string]interface{})).Optional(),
 	}
 }

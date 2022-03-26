@@ -76,6 +76,12 @@ func (uc *UserCreate) SetNillableAdmin(b *bool) *UserCreate {
 	return uc
 }
 
+// SetPasswordHash sets the "password_hash" field.
+func (uc *UserCreate) SetPasswordHash(s string) *UserCreate {
+	uc.mutation.SetPasswordHash(s)
+	return uc
+}
+
 // SetMeta sets the "meta" field.
 func (uc *UserCreate) SetMeta(m map[string]interface{}) *UserCreate {
 	uc.mutation.SetMeta(m)
@@ -227,6 +233,9 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Admin(); !ok {
 		return &ValidationError{Name: "admin", err: errors.New(`ent: missing required field "User.admin"`)}
 	}
+	if _, ok := uc.mutation.PasswordHash(); !ok {
+		return &ValidationError{Name: "password_hash", err: errors.New(`ent: missing required field "User.password_hash"`)}
+	}
 	return nil
 }
 
@@ -302,6 +311,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldAdmin,
 		})
 		_node.Admin = value
+	}
+	if value, ok := uc.mutation.PasswordHash(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldPasswordHash,
+		})
+		_node.PasswordHash = value
 	}
 	if value, ok := uc.mutation.Meta(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

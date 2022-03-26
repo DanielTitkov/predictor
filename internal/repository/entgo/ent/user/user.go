@@ -23,6 +23,8 @@ const (
 	FieldEmail = "email"
 	// FieldAdmin holds the string denoting the admin field in the database.
 	FieldAdmin = "admin"
+	// FieldPasswordHash holds the string denoting the password_hash field in the database.
+	FieldPasswordHash = "password_hash"
 	// FieldMeta holds the string denoting the meta field in the database.
 	FieldMeta = "meta"
 	// EdgePredictions holds the string denoting the predictions edge name in mutations.
@@ -46,6 +48,7 @@ var Columns = []string{
 	FieldName,
 	FieldEmail,
 	FieldAdmin,
+	FieldPasswordHash,
 	FieldMeta,
 }
 

@@ -40,11 +40,12 @@ type ChallengeMutation struct {
 	id                 *uuid.UUID
 	create_time        *time.Time
 	update_time        *time.Time
-	_type              *challenge.Type
 	content            *string
 	description        *string
+	outcome            *bool
 	start_time         *time.Time
 	end_time           *time.Time
+	_type              *challenge.Type
 	clearedFields      map[string]struct{}
 	predictions        map[uuid.UUID]struct{}
 	removedpredictions map[uuid.UUID]struct{}
@@ -230,42 +231,6 @@ func (m *ChallengeMutation) ResetUpdateTime() {
 	m.update_time = nil
 }
 
-// SetType sets the "type" field.
-func (m *ChallengeMutation) SetType(c challenge.Type) {
-	m._type = &c
-}
-
-// GetType returns the value of the "type" field in the mutation.
-func (m *ChallengeMutation) GetType() (r challenge.Type, exists bool) {
-	v := m._type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldType returns the old "type" field's value of the Challenge entity.
-// If the Challenge object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ChallengeMutation) OldType(ctx context.Context) (v challenge.Type, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldType is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldType requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldType: %w", err)
-	}
-	return oldValue.Type, nil
-}
-
-// ResetType resets all changes to the "type" field.
-func (m *ChallengeMutation) ResetType() {
-	m._type = nil
-}
-
 // SetContent sets the "content" field.
 func (m *ChallengeMutation) SetContent(s string) {
 	m.content = &s
@@ -351,6 +316,55 @@ func (m *ChallengeMutation) ResetDescription() {
 	delete(m.clearedFields, challenge.FieldDescription)
 }
 
+// SetOutcome sets the "outcome" field.
+func (m *ChallengeMutation) SetOutcome(b bool) {
+	m.outcome = &b
+}
+
+// Outcome returns the value of the "outcome" field in the mutation.
+func (m *ChallengeMutation) Outcome() (r bool, exists bool) {
+	v := m.outcome
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOutcome returns the old "outcome" field's value of the Challenge entity.
+// If the Challenge object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChallengeMutation) OldOutcome(ctx context.Context) (v *bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOutcome is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOutcome requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOutcome: %w", err)
+	}
+	return oldValue.Outcome, nil
+}
+
+// ClearOutcome clears the value of the "outcome" field.
+func (m *ChallengeMutation) ClearOutcome() {
+	m.outcome = nil
+	m.clearedFields[challenge.FieldOutcome] = struct{}{}
+}
+
+// OutcomeCleared returns if the "outcome" field was cleared in this mutation.
+func (m *ChallengeMutation) OutcomeCleared() bool {
+	_, ok := m.clearedFields[challenge.FieldOutcome]
+	return ok
+}
+
+// ResetOutcome resets all changes to the "outcome" field.
+func (m *ChallengeMutation) ResetOutcome() {
+	m.outcome = nil
+	delete(m.clearedFields, challenge.FieldOutcome)
+}
+
 // SetStartTime sets the "start_time" field.
 func (m *ChallengeMutation) SetStartTime(t time.Time) {
 	m.start_time = &t
@@ -421,6 +435,42 @@ func (m *ChallengeMutation) OldEndTime(ctx context.Context) (v time.Time, err er
 // ResetEndTime resets all changes to the "end_time" field.
 func (m *ChallengeMutation) ResetEndTime() {
 	m.end_time = nil
+}
+
+// SetType sets the "type" field.
+func (m *ChallengeMutation) SetType(c challenge.Type) {
+	m._type = &c
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *ChallengeMutation) GetType() (r challenge.Type, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the Challenge entity.
+// If the Challenge object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChallengeMutation) OldType(ctx context.Context) (v challenge.Type, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *ChallengeMutation) ResetType() {
+	m._type = nil
 }
 
 // AddPredictionIDs adds the "predictions" edge to the Prediction entity by ids.
@@ -496,15 +546,12 @@ func (m *ChallengeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ChallengeMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.create_time != nil {
 		fields = append(fields, challenge.FieldCreateTime)
 	}
 	if m.update_time != nil {
 		fields = append(fields, challenge.FieldUpdateTime)
-	}
-	if m._type != nil {
-		fields = append(fields, challenge.FieldType)
 	}
 	if m.content != nil {
 		fields = append(fields, challenge.FieldContent)
@@ -512,11 +559,17 @@ func (m *ChallengeMutation) Fields() []string {
 	if m.description != nil {
 		fields = append(fields, challenge.FieldDescription)
 	}
+	if m.outcome != nil {
+		fields = append(fields, challenge.FieldOutcome)
+	}
 	if m.start_time != nil {
 		fields = append(fields, challenge.FieldStartTime)
 	}
 	if m.end_time != nil {
 		fields = append(fields, challenge.FieldEndTime)
+	}
+	if m._type != nil {
+		fields = append(fields, challenge.FieldType)
 	}
 	return fields
 }
@@ -530,16 +583,18 @@ func (m *ChallengeMutation) Field(name string) (ent.Value, bool) {
 		return m.CreateTime()
 	case challenge.FieldUpdateTime:
 		return m.UpdateTime()
-	case challenge.FieldType:
-		return m.GetType()
 	case challenge.FieldContent:
 		return m.Content()
 	case challenge.FieldDescription:
 		return m.Description()
+	case challenge.FieldOutcome:
+		return m.Outcome()
 	case challenge.FieldStartTime:
 		return m.StartTime()
 	case challenge.FieldEndTime:
 		return m.EndTime()
+	case challenge.FieldType:
+		return m.GetType()
 	}
 	return nil, false
 }
@@ -553,16 +608,18 @@ func (m *ChallengeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldCreateTime(ctx)
 	case challenge.FieldUpdateTime:
 		return m.OldUpdateTime(ctx)
-	case challenge.FieldType:
-		return m.OldType(ctx)
 	case challenge.FieldContent:
 		return m.OldContent(ctx)
 	case challenge.FieldDescription:
 		return m.OldDescription(ctx)
+	case challenge.FieldOutcome:
+		return m.OldOutcome(ctx)
 	case challenge.FieldStartTime:
 		return m.OldStartTime(ctx)
 	case challenge.FieldEndTime:
 		return m.OldEndTime(ctx)
+	case challenge.FieldType:
+		return m.OldType(ctx)
 	}
 	return nil, fmt.Errorf("unknown Challenge field %s", name)
 }
@@ -586,13 +643,6 @@ func (m *ChallengeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdateTime(v)
 		return nil
-	case challenge.FieldType:
-		v, ok := value.(challenge.Type)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetType(v)
-		return nil
 	case challenge.FieldContent:
 		v, ok := value.(string)
 		if !ok {
@@ -607,6 +657,13 @@ func (m *ChallengeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDescription(v)
 		return nil
+	case challenge.FieldOutcome:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOutcome(v)
+		return nil
 	case challenge.FieldStartTime:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -620,6 +677,13 @@ func (m *ChallengeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEndTime(v)
+		return nil
+	case challenge.FieldType:
+		v, ok := value.(challenge.Type)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Challenge field %s", name)
@@ -654,6 +718,9 @@ func (m *ChallengeMutation) ClearedFields() []string {
 	if m.FieldCleared(challenge.FieldDescription) {
 		fields = append(fields, challenge.FieldDescription)
 	}
+	if m.FieldCleared(challenge.FieldOutcome) {
+		fields = append(fields, challenge.FieldOutcome)
+	}
 	return fields
 }
 
@@ -671,6 +738,9 @@ func (m *ChallengeMutation) ClearField(name string) error {
 	case challenge.FieldDescription:
 		m.ClearDescription()
 		return nil
+	case challenge.FieldOutcome:
+		m.ClearOutcome()
+		return nil
 	}
 	return fmt.Errorf("unknown Challenge nullable field %s", name)
 }
@@ -685,20 +755,23 @@ func (m *ChallengeMutation) ResetField(name string) error {
 	case challenge.FieldUpdateTime:
 		m.ResetUpdateTime()
 		return nil
-	case challenge.FieldType:
-		m.ResetType()
-		return nil
 	case challenge.FieldContent:
 		m.ResetContent()
 		return nil
 	case challenge.FieldDescription:
 		m.ResetDescription()
 		return nil
+	case challenge.FieldOutcome:
+		m.ResetOutcome()
+		return nil
 	case challenge.FieldStartTime:
 		m.ResetStartTime()
 		return nil
 	case challenge.FieldEndTime:
 		m.ResetEndTime()
+		return nil
+	case challenge.FieldType:
+		m.ResetType()
 		return nil
 	}
 	return fmt.Errorf("unknown Challenge field %s", name)
@@ -1428,6 +1501,7 @@ type UserMutation struct {
 	name               *string
 	email              *string
 	admin              *bool
+	password_hash      *string
 	meta               *map[string]interface{}
 	clearedFields      map[string]struct{}
 	predictions        map[uuid.UUID]struct{}
@@ -1722,6 +1796,42 @@ func (m *UserMutation) ResetAdmin() {
 	m.admin = nil
 }
 
+// SetPasswordHash sets the "password_hash" field.
+func (m *UserMutation) SetPasswordHash(s string) {
+	m.password_hash = &s
+}
+
+// PasswordHash returns the value of the "password_hash" field in the mutation.
+func (m *UserMutation) PasswordHash() (r string, exists bool) {
+	v := m.password_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPasswordHash returns the old "password_hash" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldPasswordHash(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPasswordHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPasswordHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPasswordHash: %w", err)
+	}
+	return oldValue.PasswordHash, nil
+}
+
+// ResetPasswordHash resets all changes to the "password_hash" field.
+func (m *UserMutation) ResetPasswordHash() {
+	m.password_hash = nil
+}
+
 // SetMeta sets the "meta" field.
 func (m *UserMutation) SetMeta(value map[string]interface{}) {
 	m.meta = &value
@@ -1844,7 +1954,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.create_time != nil {
 		fields = append(fields, user.FieldCreateTime)
 	}
@@ -1859,6 +1969,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.admin != nil {
 		fields = append(fields, user.FieldAdmin)
+	}
+	if m.password_hash != nil {
+		fields = append(fields, user.FieldPasswordHash)
 	}
 	if m.meta != nil {
 		fields = append(fields, user.FieldMeta)
@@ -1881,6 +1994,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Email()
 	case user.FieldAdmin:
 		return m.Admin()
+	case user.FieldPasswordHash:
+		return m.PasswordHash()
 	case user.FieldMeta:
 		return m.Meta()
 	}
@@ -1902,6 +2017,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldEmail(ctx)
 	case user.FieldAdmin:
 		return m.OldAdmin(ctx)
+	case user.FieldPasswordHash:
+		return m.OldPasswordHash(ctx)
 	case user.FieldMeta:
 		return m.OldMeta(ctx)
 	}
@@ -1947,6 +2064,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAdmin(v)
+		return nil
+	case user.FieldPasswordHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPasswordHash(v)
 		return nil
 	case user.FieldMeta:
 		v, ok := value.(map[string]interface{})
@@ -2027,6 +2151,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldAdmin:
 		m.ResetAdmin()
+		return nil
+	case user.FieldPasswordHash:
+		m.ResetPasswordHash()
 		return nil
 	case user.FieldMeta:
 		m.ResetMeta()

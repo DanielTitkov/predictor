@@ -32,7 +32,7 @@ func init() {
 	// challenge.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	challenge.UpdateDefaultUpdateTime = challengeDescUpdateTime.UpdateDefault.(func() time.Time)
 	// challengeDescContent is the schema descriptor for content field.
-	challengeDescContent := challengeFields[2].Descriptor()
+	challengeDescContent := challengeFields[1].Descriptor()
 	// challenge.ContentValidator is a validator for the "content" field. It is called by the builders before save.
 	challenge.ContentValidator = func() func(string) error {
 		validators := challengeDescContent.Validators
@@ -50,7 +50,7 @@ func init() {
 		}
 	}()
 	// challengeDescDescription is the schema descriptor for description field.
-	challengeDescDescription := challengeFields[3].Descriptor()
+	challengeDescDescription := challengeFields[2].Descriptor()
 	// challenge.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	challenge.DescriptionValidator = challengeDescDescription.Validators[0].(func(string) error)
 	// challengeDescID is the schema descriptor for id field.

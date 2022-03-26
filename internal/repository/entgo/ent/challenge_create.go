@@ -50,20 +50,6 @@ func (cc *ChallengeCreate) SetNillableUpdateTime(t *time.Time) *ChallengeCreate 
 	return cc
 }
 
-// SetType sets the "type" field.
-func (cc *ChallengeCreate) SetType(c challenge.Type) *ChallengeCreate {
-	cc.mutation.SetType(c)
-	return cc
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (cc *ChallengeCreate) SetNillableType(c *challenge.Type) *ChallengeCreate {
-	if c != nil {
-		cc.SetType(*c)
-	}
-	return cc
-}
-
 // SetContent sets the "content" field.
 func (cc *ChallengeCreate) SetContent(s string) *ChallengeCreate {
 	cc.mutation.SetContent(s)
@@ -84,6 +70,20 @@ func (cc *ChallengeCreate) SetNillableDescription(s *string) *ChallengeCreate {
 	return cc
 }
 
+// SetOutcome sets the "outcome" field.
+func (cc *ChallengeCreate) SetOutcome(b bool) *ChallengeCreate {
+	cc.mutation.SetOutcome(b)
+	return cc
+}
+
+// SetNillableOutcome sets the "outcome" field if the given value is not nil.
+func (cc *ChallengeCreate) SetNillableOutcome(b *bool) *ChallengeCreate {
+	if b != nil {
+		cc.SetOutcome(*b)
+	}
+	return cc
+}
+
 // SetStartTime sets the "start_time" field.
 func (cc *ChallengeCreate) SetStartTime(t time.Time) *ChallengeCreate {
 	cc.mutation.SetStartTime(t)
@@ -93,6 +93,20 @@ func (cc *ChallengeCreate) SetStartTime(t time.Time) *ChallengeCreate {
 // SetEndTime sets the "end_time" field.
 func (cc *ChallengeCreate) SetEndTime(t time.Time) *ChallengeCreate {
 	cc.mutation.SetEndTime(t)
+	return cc
+}
+
+// SetType sets the "type" field.
+func (cc *ChallengeCreate) SetType(c challenge.Type) *ChallengeCreate {
+	cc.mutation.SetType(c)
+	return cc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (cc *ChallengeCreate) SetNillableType(c *challenge.Type) *ChallengeCreate {
+	if c != nil {
+		cc.SetType(*c)
+	}
 	return cc
 }
 
@@ -222,14 +236,6 @@ func (cc *ChallengeCreate) check() error {
 	if _, ok := cc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "Challenge.update_time"`)}
 	}
-	if _, ok := cc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Challenge.type"`)}
-	}
-	if v, ok := cc.mutation.GetType(); ok {
-		if err := challenge.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Challenge.type": %w`, err)}
-		}
-	}
 	if _, ok := cc.mutation.Content(); !ok {
 		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Challenge.content"`)}
 	}
@@ -248,6 +254,14 @@ func (cc *ChallengeCreate) check() error {
 	}
 	if _, ok := cc.mutation.EndTime(); !ok {
 		return &ValidationError{Name: "end_time", err: errors.New(`ent: missing required field "Challenge.end_time"`)}
+	}
+	if _, ok := cc.mutation.GetType(); !ok {
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Challenge.type"`)}
+	}
+	if v, ok := cc.mutation.GetType(); ok {
+		if err := challenge.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Challenge.type": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -301,14 +315,6 @@ func (cc *ChallengeCreate) createSpec() (*Challenge, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdateTime = value
 	}
-	if value, ok := cc.mutation.GetType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: challenge.FieldType,
-		})
-		_node.Type = value
-	}
 	if value, ok := cc.mutation.Content(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -325,6 +331,14 @@ func (cc *ChallengeCreate) createSpec() (*Challenge, *sqlgraph.CreateSpec) {
 		})
 		_node.Description = value
 	}
+	if value, ok := cc.mutation.Outcome(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: challenge.FieldOutcome,
+		})
+		_node.Outcome = &value
+	}
 	if value, ok := cc.mutation.StartTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -340,6 +354,14 @@ func (cc *ChallengeCreate) createSpec() (*Challenge, *sqlgraph.CreateSpec) {
 			Column: challenge.FieldEndTime,
 		})
 		_node.EndTime = value
+	}
+	if value, ok := cc.mutation.GetType(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: challenge.FieldType,
+		})
+		_node.Type = value
 	}
 	if nodes := cc.mutation.PredictionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

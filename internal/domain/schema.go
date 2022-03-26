@@ -8,11 +8,13 @@ import (
 
 type (
 	User struct {
-		ID    uuid.UUID
-		Name  string
-		Email string
-		Admin bool
-		Meta  map[string]interface{}
+		ID           uuid.UUID
+		Name         string
+		Email        string
+		Admin        bool
+		Password     string
+		PasswordHash string
+		Meta         map[string]interface{}
 	}
 
 	Challenge struct {
@@ -20,6 +22,7 @@ type (
 		Type        string
 		Content     string
 		Description string
+		Outcome     bool
 		StartTime   time.Time
 		EndTime     time.Time
 		Predictions []*Prediction

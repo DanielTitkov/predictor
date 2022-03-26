@@ -10,7 +10,11 @@ import (
 	"github.com/DanielTitkov/predictor/internal/domain"
 )
 
-func (a *App) CreateTaskFromArgs(ctx context.Context, args domain.CreateChallengeArgs) (*domain.Challenge, error) {
+func (a *App) GetChallengeByContent(ctx context.Context, content string) (*domain.Challenge, error) {
+	return a.repo.GetChallengeByContent(ctx, content)
+}
+
+func (a *App) CreateChallengeFromArgs(ctx context.Context, args domain.CreateChallengeArgs) (*domain.Challenge, error) {
 	startTime, err := time.Parse(args.TimeLayout, args.StartTime)
 	if err != nil {
 		return nil, err
@@ -56,12 +60,12 @@ func (a *App) loadChallengePresets() error {
 		for _, args := range presets {
 			ctx := context.Background()
 
-			challenge, err := a.CreateTaskFromArgs(ctx, args)
+			challenge, err := a.CreateChallengeFromArgs(ctx, args)
 			if err != nil {
 				return err
 			}
 
-			a.log.Info("loaded challenge", fmt.Sprintf("%+v", challenge))
+			a.log.Debug("loaded challenge", fmt.Sprintf("%+v", challenge))
 		}
 	}
 

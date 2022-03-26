@@ -5,6 +5,8 @@ type (
 		Presets PresetsConfig
 	}
 	PresetsConfig struct {
-		ChallengePresetsPaths []string `yaml:"challengePresetsPaths"`
+		ChallengePresetsPaths  []string `yaml:"challengePresetsPaths"`
+		UserPresetsPaths       []string `yaml:"userPresetsPaths"`
+		PredictionPresetsPaths []string `yaml:"predictionPresetsPaths"`
 	}
 )

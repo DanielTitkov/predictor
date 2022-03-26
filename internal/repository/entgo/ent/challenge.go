@@ -21,16 +21,18 @@ type Challenge struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
-	// Type holds the value of the "type" field.
-	Type challenge.Type `json:"type,omitempty"`
 	// Content holds the value of the "content" field.
 	Content string `json:"content,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// Outcome holds the value of the "outcome" field.
+	Outcome *bool `json:"outcome,omitempty"`
 	// StartTime holds the value of the "start_time" field.
 	StartTime time.Time `json:"start_time,omitempty"`
 	// EndTime holds the value of the "end_time" field.
 	EndTime time.Time `json:"end_time,omitempty"`
+	// Type holds the value of the "type" field.
+	Type challenge.Type `json:"type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ChallengeQuery when eager-loading is set.
 	Edges ChallengeEdges `json:"edges"`
@@ -59,7 +61,9 @@ func (*Challenge) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case challenge.FieldType, challenge.FieldContent, challenge.FieldDescription:
+		case challenge.FieldOutcome:
+			values[i] = new(sql.NullBool)
+		case challenge.FieldContent, challenge.FieldDescription, challenge.FieldType:
 			values[i] = new(sql.NullString)
 		case challenge.FieldCreateTime, challenge.FieldUpdateTime, challenge.FieldStartTime, challenge.FieldEndTime:
 			values[i] = new(sql.NullTime)
@@ -98,12 +102,6 @@ func (c *Challenge) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.UpdateTime = value.Time
 			}
-		case challenge.FieldType:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field type", values[i])
-			} else if value.Valid {
-				c.Type = challenge.Type(value.String)
-			}
 		case challenge.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content", values[i])
@@ -116,6 +114,13 @@ func (c *Challenge) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.Description = value.String
 			}
+		case challenge.FieldOutcome:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field outcome", values[i])
+			} else if value.Valid {
+				c.Outcome = new(bool)
+				*c.Outcome = value.Bool
+			}
 		case challenge.FieldStartTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field start_time", values[i])
@@ -127,6 +132,12 @@ func (c *Challenge) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field end_time", values[i])
 			} else if value.Valid {
 				c.EndTime = value.Time
+			}
+		case challenge.FieldType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				c.Type = challenge.Type(value.String)
 			}
 		}
 	}
@@ -165,16 +176,20 @@ func (c *Challenge) String() string {
 	builder.WriteString(c.CreateTime.Format(time.ANSIC))
 	builder.WriteString(", update_time=")
 	builder.WriteString(c.UpdateTime.Format(time.ANSIC))
-	builder.WriteString(", type=")
-	builder.WriteString(fmt.Sprintf("%v", c.Type))
 	builder.WriteString(", content=")
 	builder.WriteString(c.Content)
 	builder.WriteString(", description=")
 	builder.WriteString(c.Description)
+	if v := c.Outcome; v != nil {
+		builder.WriteString(", outcome=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", start_time=")
 	builder.WriteString(c.StartTime.Format(time.ANSIC))
 	builder.WriteString(", end_time=")
 	builder.WriteString(c.EndTime.Format(time.ANSIC))
+	builder.WriteString(", type=")
+	builder.WriteString(fmt.Sprintf("%v", c.Type))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -13,11 +13,12 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"bool"}, Default: "bool"},
 		{Name: "content", Type: field.TypeString, Unique: true, Size: 140},
 		{Name: "description", Type: field.TypeString, Nullable: true, Size: 280},
+		{Name: "outcome", Type: field.TypeBool, Nullable: true},
 		{Name: "start_time", Type: field.TypeTime},
 		{Name: "end_time", Type: field.TypeTime},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"bool"}, Default: "bool"},
 	}
 	// ChallengesTable holds the schema information for the "challenges" table.
 	ChallengesTable = &schema.Table{
@@ -70,6 +71,7 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
 		{Name: "admin", Type: field.TypeBool, Default: false},
+		{Name: "password_hash", Type: field.TypeString},
 		{Name: "meta", Type: field.TypeJSON, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.

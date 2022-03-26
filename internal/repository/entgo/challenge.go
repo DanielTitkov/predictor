@@ -9,6 +9,18 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent"
 )
 
+func (r *EntgoRepository) GetChallengeByContent(ctx context.Context, content string) (*domain.Challenge, error) {
+	c, err := r.client.Challenge.
+		Query().
+		Where(challenge.ContentEQ(content)).
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return entToDomainChallenge(c), nil
+}
+
 func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, ch *domain.Challenge) (*domain.Challenge, error) {
 	// query challenge by content
 	c, err := r.client.Challenge.

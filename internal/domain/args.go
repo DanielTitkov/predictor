@@ -9,4 +9,9 @@ type (
 		EndTime     string `json:"endTime"`
 		TimeLayout  string `json:"timeLayout"`
 	}
+	CreatePredictionFromPresetArgs struct {
+		UserEmail        string `json:"userEmail"`
+		ChallengeContent string `json:"challengeContent"`
+		Prognosis        bool   `json:"prognosis"`
+	}
 )
