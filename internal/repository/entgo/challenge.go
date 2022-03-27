@@ -13,6 +13,34 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent"
 )
 
+func (r *EntgoRepository) GetChallengeCount(ctx context.Context) (int, error) {
+	return r.client.Challenge.Query().Count(ctx)
+}
+
+func (r *EntgoRepository) GetOngoingChallengeCount(ctx context.Context) (int, error) {
+	return r.client.Challenge.
+		Query().
+		Where(
+			challenge.And(
+				challenge.CreateTimeLT(time.Now()),
+				challenge.EndTimeGT(time.Now()),
+			),
+		).
+		Count(ctx)
+}
+
+func (r *EntgoRepository) GetFinishedChallengeCount(ctx context.Context) (int, error) {
+	return r.client.Challenge.
+		Query().
+		Where(
+			challenge.And(
+				challenge.CreateTimeLT(time.Now()),
+				challenge.EndTimeLT(time.Now()),
+			),
+		).
+		Count(ctx)
+}
+
 func (r *EntgoRepository) GetChallengeByContent(ctx context.Context, content string) (*domain.Challenge, error) {
 	c, err := r.client.Challenge.
 		Query().

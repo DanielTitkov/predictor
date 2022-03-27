@@ -47,58 +47,38 @@ func (a *App) UpdateSystemSummaryJob() {
 func (a *App) updateSystemSummary(ctx context.Context) error {
 	a.log.Debug("updating system summary", "")
 
-	// metricCount, err := a.repo.GetMetricCount(ctx)
-	// if err != nil {
-	// 	return err
-	// }
+	userCount, err := a.repo.GetUserCount(ctx)
+	if err != nil {
+		return err
+	}
 
-	// taskCount, err := a.repo.GetTaskCount(ctx)
-	// if err != nil {
-	// 	return err
-	// }
+	challengeCount, err := a.repo.GetChallengeCount(ctx)
+	if err != nil {
+		return err
+	}
 
-	// activeTaskCount, err := a.repo.GetActiveTaskCount(ctx)
-	// if err != nil {
-	// 	return err
-	// }
+	ongoingChallengeCount, err := a.repo.GetOngoingChallengeCount(ctx)
+	if err != nil {
+		return err
+	}
 
-	// taskInstanceCount, err := a.repo.GetTaskInstanceCount(ctx)
-	// if err != nil {
-	// 	return err
-	// }
+	finishedChallengeCount, err := a.repo.GetFinishedChallengeCount(ctx)
+	if err != nil {
+		return err
+	}
 
-	// failedTaskCount, err := a.repo.GetFailedTaskInstanceCount(ctx)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// runningTaskCount, err := a.repo.GetRunningTaskInstanceCount(ctx)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// successfulTaskCount, err := a.repo.GetSuccesfulTaskInstanceCount(ctx)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// itemCount, err := a.repo.GetItemCount(ctx)
-	// if err != nil {
-	// 	return err
-	// }
+	predictionCount, err := a.repo.GetPredictionCount(ctx)
+	if err != nil {
+		return err
+	}
 
 	a.systemSummary = &domain.SystemSymmary{
-		// Tasks:                   taskCount,
-		// ActiveTasks:             activeTaskCount,
-		// FailedTasks:             failedTaskCount,
-		// RunningTasks:            runningTaskCount,
-		// CompletedTasks:          successfulTaskCount,
-		// Metrics:                 metricCount,
-		// CollectedItems:          itemCount,
-		// AvgItemsPerTask:         float64(itemCount) / float64(taskCount),
-		// AvgItemsPerTaskInstance: float64(itemCount) / float64(taskInstanceCount),
-		// AvgItemsPerMetric:       float64(itemCount) / float64(metricCount),
-		CreateTime: time.Now(),
+		Users:              userCount,
+		Predictions:        predictionCount,
+		Challenges:         challengeCount,
+		OngoingChallenges:  ongoingChallengeCount,
+		FinishedChallenges: finishedChallengeCount,
+		CreateTime:         time.Now(),
 	}
 
 	a.log.Debug("system summary updated", fmt.Sprintf("%+v", a.systemSummary))

@@ -25,7 +25,7 @@ type (
 		GetRandomOngoingChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error)
 
 		// user
-		GetUserCount(context.Context) (int, error)
+		// GetUserCount(context.Context) (int, error)
 		GetUserByEmail(context.Context, string) (*domain.User, error)
 		GetUserByID(context.Context, uuid.UUID) (*domain.User, error)
 		CreateUser(context.Context, *domain.User) (*domain.User, error)
@@ -33,6 +33,13 @@ type (
 		// prediction
 		CreatePrediction(context.Context, *domain.Prediction) (*domain.Prediction, error)
 		GetPredictionByUserAndChallenge(ctx context.Context, userID, challengeID uuid.UUID) (*domain.Prediction, error)
+
+		// for system summary
+		GetChallengeCount(ctx context.Context) (int, error)
+		GetOngoingChallengeCount(ctx context.Context) (int, error)
+		GetFinishedChallengeCount(ctx context.Context) (int, error)
+		GetUserCount(ctx context.Context) (int, error)
+		GetPredictionCount(ctx context.Context) (int, error)
 	}
 )
 

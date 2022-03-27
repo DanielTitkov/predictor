@@ -37,7 +37,12 @@ type (
 	}
 
 	SystemSymmary struct {
-		ID         int
-		CreateTime time.Time
+		ID                 int
+		Users              int
+		Challenges         int
+		OngoingChallenges  int
+		FinishedChallenges int
+		Predictions        int
+		CreateTime         time.Time
 	}
 )

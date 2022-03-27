@@ -13,6 +13,10 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 )
 
+func (r *EntgoRepository) GetPredictionCount(ctx context.Context) (int, error) {
+	return r.client.Prediction.Query().Count(ctx)
+}
+
 func (r *EntgoRepository) CreatePrediction(ctx context.Context, pred *domain.Prediction) (*domain.Prediction, error) {
 	p, err := r.client.Prediction.
 		Create().

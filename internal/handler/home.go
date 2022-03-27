@@ -14,6 +14,7 @@ import (
 type (
 	HomeInstance struct {
 		Session                  string
+		Summary                  *domain.SystemSymmary
 		RandomFinishedChallenges []*domain.Challenge
 		RandomOngoingChallenges  []*domain.Challenge
 		Error                    error
@@ -32,7 +33,12 @@ func NewHomeInstance(s live.Socket) *HomeInstance {
 }
 
 func (h *Handler) Home() live.Handler {
-	t, err := template.ParseFiles(h.t+"layout.html", h.t+"home.html", h.t+"challenge_card.html")
+	t, err := template.ParseFiles(
+		h.t+"layout.html",
+		h.t+"home.html",
+		h.t+"challenge_card.html",
+		h.t+"system_summary.html",
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,6 +59,12 @@ func (h *Handler) Home() live.Handler {
 			instance.Error = err
 		}
 		instance.RandomOngoingChallenges = randomOngoingChallenges
+
+		summary, err := h.app.GetSystemSummary(ctx)
+		if err != nil {
+			instance.Error = err
+		}
+		instance.Summary = summary
 
 		return instance, nil
 	})

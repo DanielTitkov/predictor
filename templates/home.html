@@ -2,8 +2,10 @@
 {{ define "view" }}
 
 <main>
-  <h1 class="title is-1">Predictor</h1>
-  <h3 class="subtitle is-3">Crowd predictions on various topics</h3>
+  <div class="section has-text-centered">
+    <h1 class="title is-1">Predictor</h1>
+    <h3 class="subtitle is-3">Crowd predictions on various topics</h3>
+  </div>
   <div class="block">
     <div class="columns">
       <div class="column">
@@ -24,9 +26,8 @@
       </div>
     </div>
   </div>
-  <div class="level">
-    <!-- <a class="button is-large is-primary" href="/tasks">Tasks</a> -->
-    <a class="button is-large is-primary" href="/summary">System summary</a>
+  <div class="section">
+    {{ template "system-summary" .Summary }}
   </div>
 </main>
 
