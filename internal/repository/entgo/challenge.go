@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 
 	"github.com/DanielTitkov/predictor/internal/domain"
@@ -15,6 +17,20 @@ func (r *EntgoRepository) GetChallengeByContent(ctx context.Context, content str
 	c, err := r.client.Challenge.
 		Query().
 		Where(challenge.ContentEQ(content)).
+		WithPredictions().
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return entToDomainChallenge(c), nil
+}
+
+func (r *EntgoRepository) GetChallengeByID(ctx context.Context, id uuid.UUID) (*domain.Challenge, error) {
+	c, err := r.client.Challenge.
+		Query().
+		Where(challenge.IDEQ(id)).
+		WithPredictions().
 		Only(ctx)
 	if err != nil {
 		return nil, err
@@ -119,6 +135,7 @@ func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, 
 			SetContent(ch.Content).
 			SetStartTime(ch.StartTime).
 			SetEndTime(ch.EndTime).
+			SetNillableOutcome(ch.Outcome).
 			SetDescription(ch.Description)
 
 		c, err = chQuery.Save(ctx)
@@ -132,6 +149,7 @@ func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, 
 	chUpdateQuery := c.Update().
 		SetStartTime(ch.StartTime).
 		SetEndTime(ch.EndTime).
+		SetNillableOutcome(ch.Outcome).
 		SetDescription(ch.Description)
 
 	c, err = chUpdateQuery.Save(ctx)
@@ -153,6 +171,7 @@ func entToDomainChallenge(ch *ent.Challenge) *domain.Challenge {
 	return &domain.Challenge{
 		ID:          ch.ID,
 		Content:     ch.Content,
+		Outcome:     ch.Outcome,
 		Description: ch.Description,
 		StartTime:   ch.StartTime,
 		EndTime:     ch.EndTime,

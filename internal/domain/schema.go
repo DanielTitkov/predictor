@@ -22,7 +22,7 @@ type (
 		Type        string
 		Content     string
 		Description string
-		Outcome     bool
+		Outcome     *bool
 		StartTime   time.Time
 		EndTime     time.Time
 		Predictions []*Prediction

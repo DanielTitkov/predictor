@@ -68,7 +68,7 @@ func main() {
 	// Run the server.
 	r.Handle("/", live.NewHttpHandler(live.NewCookieStore("session-name", []byte(cfg.Auth.Secret)), h.Home()))
 	r.Handle("/summary", live.NewHttpHandler(live.NewCookieStore("session-name", []byte(cfg.Auth.Secret)), h.SystemSummary()))
-	r.Handle("/task-details/{taskID}", live.NewHttpHandler(live.NewCookieStore("session-name", []byte(cfg.Auth.Secret)), h.TaskDetails()))
+	r.Handle("/challenge/{challengeID}", live.NewHttpHandler(live.NewCookieStore("session-name", []byte(cfg.Auth.Secret)), h.ChallengeDetails()))
 	r.Handle("/tasks", live.NewHttpHandler(live.NewCookieStore("session-name", []byte(cfg.Auth.Secret)), h.Tasks()))
 	// live scripts
 	r.Handle("/live.js", live.Javascript{})

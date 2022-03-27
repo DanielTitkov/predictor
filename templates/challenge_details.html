@@ -1,0 +1,96 @@
+{{ define "title" }} Challenge details {{ end }}
+{{ define "view" }}
+<div class="block">
+    <h3 class="title is-3">
+        <a href="/"><i class="bi-arrow-left"></i> Назад</a>
+    </h3>
+    <div class="block">
+        <h1 class="title is-1">{{ .Challenge.Content }}</h5>
+            <h3 class="subtitle is-3">{{ .Challenge.Description }}</h5>
+    </div>
+
+
+    {{ if .Challenge.Finished }}
+    <progress class="progress is-large" value="{{ .Challenge.VotesTrue }}" max="{{ .Challenge.Votes }}">{{
+        .Challenge.PercTrue }}%</progress>
+    <div class="level is-mobile">
+        <!-- Left side -->
+        <div class="level-left">
+            <div class="level-item">
+                <div>
+                    <p class="heading">Считают что это верно</p>
+                    <p class="title is-1">
+                        {{ .Challenge.PercTrue }}%
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- center -->
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Всего голосов</p>
+                <p class="title is-1">{{ .Challenge.Votes }}</p>
+            </div>
+        </div>
+
+        <!-- Right side -->
+        <div class="level-right has-text-right">
+            <div class="level-item">
+                <div>
+                    <p class="heading">Считают что это неверно</p>
+                    <p class="title is-1">
+                        {{ .Challenge.PercFalse }}%
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ else }}
+    <div class="level is-mobile">
+        <!-- Left side -->
+
+        <!-- center -->
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Голосов</p>
+                <p class="title is-1">{{ .Challenge.Votes }}</p>
+            </div>
+        </div>
+
+        <!-- Right side -->
+    </div>
+    {{ end }}
+
+    <div class="section">
+        <h3 class="title is-3 has-text-centered">Фактический исход:
+            {{ if .Challenge.HasOutcome }}
+            {{ if .Challenge.HasOutcomeAndTrue }}
+            <span class="has-text-success">
+                сбылось
+                <i class="bi-check-circle-fill"></i>
+            </span>
+            {{ else }}
+            <span class="has-text-danger">
+                не сбылось
+                <i class="bi-x-circle-fill"></i>
+            </span>
+            {{ end }}
+            {{ else }}
+            <span class="has-text-link">
+                пока не известно
+                <i class="bi-question-circle-fill"></i>
+            </span>
+            {{ end }}
+        </h3>
+        <div class="has-text-centered">
+            <a class="twitter-share-button"
+                href="https://twitter.com/intent/tweet?text={{ .Challenge.Content }} - народный прогноз"
+                data-size="large" data-show-count="false">
+                Tweet
+            </a>
+            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>
+    </div>
+</div>
+{{end}}

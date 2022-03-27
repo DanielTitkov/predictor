@@ -8,6 +8,7 @@ type (
 		StartTime   string `json:"startTime"`
 		EndTime     string `json:"endTime"`
 		TimeLayout  string `json:"timeLayout"`
+		Outcome     *bool  `json:"outcome"`
 	}
 	CreatePredictionFromPresetArgs struct {
 		UserEmail        string `json:"userEmail"`

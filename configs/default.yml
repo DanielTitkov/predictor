@@ -6,7 +6,7 @@ server:
   port: 8000
   host: "0.0.0.0"
 app:
-  defaultChallengePageLimit: 8
+  defaultChallengePageLimit: 5
   systemSummaryInterval: 10 # minutes
   systemSummaryTimeout: 100 # milliseconds
 auth:

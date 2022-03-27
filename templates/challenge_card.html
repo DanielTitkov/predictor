@@ -1,6 +1,78 @@
 {{define "challenge-card"}}
-<div class="notification is-success level">
-    <span><strong>{{.Content}}</strong></span>
-    <i class="bi-exclamation-triangle-fill" style="font-size: 1.5rem;"></i>
+<style>
+    .challenge-link {
+        text-decoration: none !important;
+    }
+</style>
+
+<div class="notification">
+    <div class="columns">
+        <div class="column">
+            <div class="block">
+                <a class="challenge-link" href="/challenge/{{ .ID }}">
+                    <h5 class="title is-5">{{ .Content }} <i class="bi-link-45deg"></i></h5>
+                </a>
+                <h5 class="subtitle is-6">{{ .Description }}</h5>
+            </div>
+        </div>
+        <div class="column is-narrow">
+            {{ if .HasOutcome }}
+            {{ if .HasOutcomeAndTrue }}
+            <i class="bi-check-circle-fill" style="font-size: 2.5rem;"></i>
+            {{ else }}
+            <i class="bi-x-circle-fill" style="font-size: 2.5rem;"></i>
+            {{ end }}
+            {{ else }}
+            <i class="bi-question-circle-fill" style="font-size: 2.5rem;"></i>
+            {{ end }}
+        </div>
+    </div>
+
+    {{ if .Finished }}
+    <progress class="progress is-large" value="{{ .VotesTrue }}" max="{{ .Votes }}">80%</progress>
+    <div class="level is-mobile">
+        <!-- Left side -->
+        <div class="level-left">
+            <div class="level-item">
+                <i class="bi-check-lg" style="font-size: 1.5rem;"></i>
+            </div>
+            <div class="level-item">
+                <p class="title is-4">{{ .PercTrue }}%</p>
+            </div>
+        </div>
+
+        <!-- center -->
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Голосов</p>
+                <p class="title is-4">{{ .Votes }}</p>
+            </div>
+        </div>
+
+        <!-- Right side -->
+        <div class="level-right">
+            <div class="level-item">
+                <p class="title is-4">{{ .PercFalse }}%</p>
+            </div>
+            <div class="level-item">
+                <i class="bi-x-lg" style="font-size: 1.5rem;"></i>
+            </div>
+        </div>
+    </div>
+    {{ else }}
+    <div class="level is-mobile">
+        <!-- Left side -->
+
+        <!-- center -->
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Голосов</p>
+                <p class="title is-4">{{ .Votes }}</p>
+            </div>
+        </div>
+
+        <!-- Right side -->
+    </div>
+    {{ end }}
 </div>
 {{end}}

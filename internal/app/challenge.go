@@ -7,11 +7,17 @@ import (
 	"io/ioutil"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/DanielTitkov/predictor/internal/domain"
 )
 
 func (a *App) GetChallengeByContent(ctx context.Context, content string) (*domain.Challenge, error) {
 	return a.repo.GetChallengeByContent(ctx, content)
+}
+
+func (a *App) GetChallengeByID(ctx context.Context, id uuid.UUID) (*domain.Challenge, error) {
+	return a.repo.GetChallengeByID(ctx, id)
 }
 
 func (a *App) GetRandomFinishedChallenges(ctx context.Context) ([]*domain.Challenge, error) {
@@ -39,6 +45,7 @@ func (a *App) CreateChallengeFromArgs(ctx context.Context, args domain.CreateCha
 		Description: args.Description,
 		StartTime:   startTime,
 		EndTime:     endTime,
+		Outcome:     args.Outcome,
 	}
 
 	challenge, err = a.repo.CreateOrUpdateChallengeByContent(ctx, challenge)
