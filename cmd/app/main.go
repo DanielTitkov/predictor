@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -16,6 +17,9 @@ import (
 	"github.com/DanielTitkov/predictor/logger"
 	"github.com/gorilla/mux"
 	"github.com/jfyne/live"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
+	"github.com/markbates/goth/providers/google"
 
 	_ "github.com/lib/pq"
 )
@@ -53,7 +57,14 @@ func main() {
 
 	repo := entgo.NewEntgoRepository(db, logger)
 
-	a, err := app.New(cfg, logger, repo)
+	store := live.NewCookieStore("go-live-session", []byte(cfg.Auth.Secret))
+	store.Store.Options.SameSite = http.SameSiteLaxMode
+	store.Store.MaxAge(cfg.Auth.Exp)
+	store.Store.Options.Path = "/"
+	store.Store.Options.HttpOnly = true
+	store.Store.Options.Secure = !(cfg.Env == "dev")
+
+	a, err := app.New(cfg, logger, repo, store.Store)
 	if err != nil {
 		logger.Fatal("failed to init app", err)
 	}
@@ -64,18 +75,53 @@ func main() {
 		"templates/",
 	)
 
+	gothic.Store = store.Store
+
+	// store1 := sessions.NewCookieStore([]byte(cfg.Auth.Secret))
+	// store1.MaxAge(cfg.Auth.Exp)
+	// store1.Options.Path = "/"
+	// store1.Options.HttpOnly = true
+	// store1.Options.Secure = !(cfg.Env == "dev")
+
+	// gothic.Store = store1
+
+	goth.UseProviders(
+		google.New(
+			cfg.Auth.Google.Client,   // client
+			cfg.Auth.Google.Secret,   // secret
+			cfg.Auth.Google.Callback, // callback url
+			// scopes
+			"email",
+			"profile",
+		),
+	)
+
 	r := mux.NewRouter()
 	// Run the server.
-	r.Handle("/", live.NewHttpHandler(live.NewCookieStore("session-name", []byte(cfg.Auth.Secret)), h.Home()))
-	r.Handle("/summary", live.NewHttpHandler(live.NewCookieStore("session-name", []byte(cfg.Auth.Secret)), h.SystemSummary()))
-	r.Handle("/challenge/{challengeID}", live.NewHttpHandler(live.NewCookieStore("session-name", []byte(cfg.Auth.Secret)), h.ChallengeDetails()))
-	r.Handle("/tasks", live.NewHttpHandler(live.NewCookieStore("session-name", []byte(cfg.Auth.Secret)), h.Tasks()))
+	r.Handle("/", live.NewHttpHandler(store, h.Home()))
+	r.Handle("/challenge/{challengeID}", live.NewHttpHandler(store, h.ChallengeDetails()))
+	r.Handle("/tasks", live.NewHttpHandler(store, h.Tasks()))
 	// live scripts
 	r.Handle("/live.js", live.Javascript{})
 	r.Handle("/auto.js.map", live.JavascriptMap{})
+	// auth
+	r.HandleFunc("/auth/{provider}", func(res http.ResponseWriter, req *http.Request) {
+		gothic.BeginAuthHandler(res, req)
+	})
+	r.HandleFunc("/auth/{provider}/callback", func(res http.ResponseWriter, req *http.Request) {
+		user, err := gothic.CompleteUserAuth(res, req)
+		if err != nil {
+			fmt.Fprintln(res, err)
+			return
+		}
+		fmt.Printf("GOTH USER\n%+v", user) // FIXME
+		http.Redirect(res, req, "/", http.StatusTemporaryRedirect)
+	})
 	// favicon
 	r.HandleFunc("/favicon.ico", faviconHandler)
+
 	// serve
+	logger.Info("starting server", cfg.Server.GetAddress())
 	log.Fatal(http.ListenAndServe(cfg.Server.GetAddress(), r))
 }
 

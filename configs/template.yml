@@ -6,11 +6,6 @@ db:
 server:
   port: 8000
   host: "0.0.0.0"
-task:
-  defaultSchedule: "24h"
-  defaultRetryNumber: 3
-  defaultRetryDelay: "300s"
-  maxConcurrency: 50
 app:
   defaultChallengePageLimit: 5
   systemSummaryInterval: 5 # minutes

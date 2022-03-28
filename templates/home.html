@@ -29,6 +29,17 @@
   <div class="section">
     {{ template "system-summary" .Summary }}
   </div>
+  <div class="section">
+    <div class="box">
+      <p>Login or Register with:</p>
+      <a href="/auth/google" class="button is-large is-danger">
+        <span class="icon is-medium">
+          <i class="bi bi-google"></i>
+        </span>
+        <span>SignIn with Google</span>
+      </a>
+    </div>
+  </div>
 </main>
 
 {{ end }}

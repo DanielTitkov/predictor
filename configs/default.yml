@@ -10,8 +10,12 @@ app:
   systemSummaryInterval: 10 # minutes
   systemSummaryTimeout: 100 # milliseconds
 auth:
-  exp: 7200 # hours
+  exp: 2592000 # sec
   secret: secret-key
+  google:
+    client: google-client-id
+    secret: google-oauth-secret
+    callback: "http://localhost:8000/auth/google/callback"
 data:
   presets:
     challengePresetsPaths: 

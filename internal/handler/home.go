@@ -13,19 +13,22 @@ import (
 
 type (
 	HomeInstance struct {
-		Session                  string
+		*CommonInstance
 		Summary                  *domain.SystemSymmary
 		RandomFinishedChallenges []*domain.Challenge
 		RandomOngoingChallenges  []*domain.Challenge
-		Error                    error
 	}
 )
 
-func NewHomeInstance(s live.Socket) *HomeInstance {
+func (h *Handler) NewHomeInstance(s live.Socket) *HomeInstance {
 	m, ok := s.Assigns().(*HomeInstance)
 	if !ok {
 		return &HomeInstance{
-			Session: fmt.Sprint(s.Session()),
+			CommonInstance: &CommonInstance{
+				Env:     h.app.Cfg.Env,
+				Session: fmt.Sprint(s.Session()),
+				Error:   nil,
+			},
 		}
 	}
 
@@ -47,7 +50,7 @@ func (h *Handler) Home() live.Handler {
 
 	// Set the mount function for this handler.
 	lvh.HandleMount(func(ctx context.Context, s live.Socket) (interface{}, error) {
-		instance := NewHomeInstance(s)
+		instance := h.NewHomeInstance(s)
 		randomFinishedChallenges, err := h.app.GetRandomFinishedChallenges(ctx)
 		if err != nil {
 			instance.Error = err

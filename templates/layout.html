@@ -13,6 +13,17 @@
 </head>
 
 <body>
+  <!-- debug start -->
+  {{ if .Env }}
+  {{ if eq .Env "dev" }}
+  <div class="box">
+    <p class="heading">Debug info</p>
+    <p><b>Session: </b>{{ .Session }}</p>
+    <p><b>Error: </b>{{ .Error }}</p>
+  </div>
+  {{ end }}
+  {{ end }}
+  <!-- debug end -->
   <section class="section">
     <div class="container">
       {{ template "view" . }}

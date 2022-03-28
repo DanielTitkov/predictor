@@ -11,6 +11,14 @@ type (
 		log *logger.Logger
 		t   string // template path
 	}
+
+	CommonInstance struct {
+		Env       string
+		Session   string
+		Error     error
+		UserEmail string
+		UserName  string
+	}
 )
 
 func NewHandler(

@@ -23,9 +23,8 @@ const (
 
 type (
 	ChallengeDetailsInstance struct {
-		Session   string
+		*CommonInstance
 		Challenge *domain.Challenge
-		Error     error
 	}
 )
 
@@ -33,8 +32,11 @@ func (h *Handler) NewChallengeDetailsInstance(ctx context.Context, s live.Socket
 	m, ok := s.Assigns().(*ChallengeDetailsInstance)
 	if !ok {
 		return &ChallengeDetailsInstance{
-			Session: fmt.Sprint(s.Session()),
-			Error:   nil,
+			CommonInstance: &CommonInstance{
+				Env:     h.app.Cfg.Env,
+				Session: fmt.Sprint(s.Session()),
+				Error:   nil,
+			},
 		}
 	}
 
@@ -66,6 +68,10 @@ func (h *Handler) ChallengeDetails() live.Handler {
 			instance.Error = err
 		}
 		instance.Challenge = challenge
+
+		// ses, err := h.app.Store.Get(r, "email") // FIXME
+		// fmt.Println("SES", ses.ID, ses.Name(), ses.Values, err)
+
 		return instance, nil
 	})
 

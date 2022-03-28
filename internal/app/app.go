@@ -7,6 +7,7 @@ import (
 	"github.com/DanielTitkov/predictor/internal/domain"
 	"github.com/DanielTitkov/predictor/logger"
 	"github.com/google/uuid"
+	"github.com/gorilla/sessions"
 )
 
 type (
@@ -15,6 +16,7 @@ type (
 		log           *logger.Logger
 		repo          Repository
 		systemSummary *domain.SystemSymmary
+		Store         sessions.Store
 	}
 	Repository interface {
 		// challenge
@@ -47,11 +49,13 @@ func New(
 	cfg configs.Config,
 	logger *logger.Logger,
 	repo Repository,
+	store sessions.Store,
 ) (*App, error) {
 	app := App{
-		Cfg:  cfg,
-		log:  logger,
-		repo: repo,
+		Cfg:   cfg,
+		log:   logger,
+		repo:  repo,
+		Store: store,
 	}
 
 	err := app.loadChallengePresets()
