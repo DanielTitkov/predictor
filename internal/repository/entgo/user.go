@@ -14,6 +14,18 @@ func (r *EntgoRepository) GetUserCount(ctx context.Context) (int, error) {
 	return r.client.User.Query().Count(ctx)
 }
 
+func (r *EntgoRepository) IfEmailRegistered(ctx context.Context, email string) (bool, error) {
+	exists, err := r.client.User.
+		Query().
+		Where(user.EmailEQ(email)).
+		Exist(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
+
 func (r *EntgoRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
 	user, err := r.client.User.
 		Query().

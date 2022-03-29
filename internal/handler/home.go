@@ -50,6 +50,9 @@ func (h *Handler) Home() live.Handler {
 
 	// Set the mount function for this handler.
 	lvh.HandleMount(func(ctx context.Context, s live.Socket) (interface{}, error) {
+		sesID, err := h.app.LiveSessionID(live.Request(ctx)) // FIXME
+		fmt.Println("LIVE SESSION", sesID, err)
+
 		instance := h.NewHomeInstance(s)
 		randomFinishedChallenges, err := h.app.GetRandomFinishedChallenges(ctx)
 		if err != nil {

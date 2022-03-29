@@ -69,7 +69,7 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
-		{Name: "email", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "admin", Type: field.TypeBool, Default: false},
 		{Name: "password_hash", Type: field.TypeString},
 		{Name: "meta", Type: field.TypeJSON, Nullable: true},

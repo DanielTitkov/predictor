@@ -7,6 +7,9 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/markbates/goth"
+	"github.com/sethvargo/go-password/password"
+
 	"github.com/DanielTitkov/predictor/internal/domain"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -27,6 +30,50 @@ func (a *App) CreateUser(ctx context.Context, u *domain.User) (*domain.User, err
 	if err != nil {
 		return nil, err
 	}
+
+	return user, nil
+}
+
+// AuthenticateGothUser creates new user or returns existsing one.
+// It relies on goth authetication to verify user has access
+// to that profile and thus doesn't check password.
+func (a *App) AuthenticateGothUser(ctx context.Context, gu *goth.User) (*domain.User, error) {
+	exists, err := a.repo.IfEmailRegistered(ctx, gu.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	if !exists {
+		return a.CreateUserFromGoth(ctx, gu)
+	}
+
+	// TODO if user came from another provider add new data to meta
+	return a.GetUserByEmail(ctx, gu.Email)
+}
+
+func (a *App) CreateUserFromGoth(ctx context.Context, gu *goth.User) (*domain.User, error) {
+	passw, err := password.Generate(16, 5, 0, false, true)
+	if err != nil {
+		return nil, err
+	}
+
+	meta := make(map[string]interface{})
+	meta[gu.Provider] = *gu
+
+	user := &domain.User{
+		Name:     gu.NickName,
+		Email:    gu.Email,
+		Password: passw,
+		Admin:    false,
+		Meta:     meta,
+	}
+
+	user, err = a.CreateUser(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	user.Password = passw // TODO: this is to show or send password to the user
 
 	return user, nil
 }

@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/DanielTitkov/predictor/internal/auth"
 
 	"github.com/DanielTitkov/predictor/cmd/app/prepare"
 	"github.com/DanielTitkov/predictor/internal/app"
@@ -69,22 +70,7 @@ func main() {
 		logger.Fatal("failed to init app", err)
 	}
 
-	h := handler.NewHandler(
-		a,
-		logger,
-		"templates/",
-	)
-
 	gothic.Store = store.Store
-
-	// store1 := sessions.NewCookieStore([]byte(cfg.Auth.Secret))
-	// store1.MaxAge(cfg.Auth.Exp)
-	// store1.Options.Path = "/"
-	// store1.Options.HttpOnly = true
-	// store1.Options.Secure = !(cfg.Env == "dev")
-
-	// gothic.Store = store1
-
 	goth.UseProviders(
 		google.New(
 			cfg.Auth.Google.Client,   // client
@@ -97,27 +83,23 @@ func main() {
 	)
 
 	r := mux.NewRouter()
-	// Run the server.
+
+	// main handler
+	h := handler.NewHandler(a, logger, "templates/")
 	r.Handle("/", live.NewHttpHandler(store, h.Home()))
 	r.Handle("/challenge/{challengeID}", live.NewHttpHandler(store, h.ChallengeDetails()))
 	r.Handle("/tasks", live.NewHttpHandler(store, h.Tasks()))
+
 	// live scripts
 	r.Handle("/live.js", live.Javascript{})
 	r.Handle("/auto.js.map", live.JavascriptMap{})
+
 	// auth
-	r.HandleFunc("/auth/{provider}", func(res http.ResponseWriter, req *http.Request) {
-		gothic.BeginAuthHandler(res, req)
-	})
-	r.HandleFunc("/auth/{provider}/callback", func(res http.ResponseWriter, req *http.Request) {
-		user, err := gothic.CompleteUserAuth(res, req)
-		if err != nil {
-			fmt.Fprintln(res, err)
-			return
-		}
-		fmt.Printf("GOTH USER\n%+v", user) // FIXME
-		http.Redirect(res, req, "/", http.StatusTemporaryRedirect)
-	})
-	// favicon
+	ah := auth.NewHandler(a, logger)
+	r.HandleFunc("/auth/{provider}", ah.BeginOAuth)
+	r.HandleFunc("/auth/{provider}/callback", ah.CompleteOAuth)
+
+	// media
 	r.HandleFunc("/favicon.ico", faviconHandler)
 
 	// serve
