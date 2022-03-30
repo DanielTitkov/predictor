@@ -17,6 +17,17 @@ type (
 		Meta         map[string]interface{}
 	}
 
+	Session struct {
+		ID           int // probably uuid not needed here, sessions are temporary anyways
+		SID          int // code to identify the session
+		UserID       uuid.UUID
+		IP           string
+		UserAgent    string
+		CreateTime   time.Time
+		LastActivity time.Time
+		Meta         map[string]interface{}
+	}
+
 	Challenge struct {
 		ID          uuid.UUID
 		Type        string

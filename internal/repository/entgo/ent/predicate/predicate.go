@@ -12,5 +12,8 @@ type Challenge func(*sql.Selector)
 // Prediction is the predicate function for prediction builders.
 type Prediction func(*sql.Selector)
 
+// Session is the predicate function for session builders.
+type Session func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

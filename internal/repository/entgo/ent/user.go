@@ -41,9 +41,11 @@ type User struct {
 type UserEdges struct {
 	// Predictions holds the value of the predictions edge.
 	Predictions []*Prediction `json:"predictions,omitempty"`
+	// Sessions holds the value of the sessions edge.
+	Sessions []*Session `json:"sessions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // PredictionsOrErr returns the Predictions value or an error if the edge
@@ -53,6 +55,15 @@ func (e UserEdges) PredictionsOrErr() ([]*Prediction, error) {
 		return e.Predictions, nil
 	}
 	return nil, &NotLoadedError{edge: "predictions"}
+}
+
+// SessionsOrErr returns the Sessions value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) SessionsOrErr() ([]*Session, error) {
+	if e.loadedTypes[1] {
+		return e.Sessions, nil
+	}
+	return nil, &NotLoadedError{edge: "sessions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -143,6 +154,11 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 // QueryPredictions queries the "predictions" edge of the User entity.
 func (u *User) QueryPredictions() *PredictionQuery {
 	return (&UserClient{config: u.config}).QueryPredictions(u)
+}
+
+// QuerySessions queries the "sessions" edge of the User entity.
+func (u *User) QuerySessions() *SessionQuery {
+	return (&UserClient{config: u.config}).QuerySessions(u)
 }
 
 // Update returns a builder for updating this User.

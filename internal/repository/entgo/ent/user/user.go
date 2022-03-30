@@ -29,6 +29,8 @@ const (
 	FieldMeta = "meta"
 	// EdgePredictions holds the string denoting the predictions edge name in mutations.
 	EdgePredictions = "predictions"
+	// EdgeSessions holds the string denoting the sessions edge name in mutations.
+	EdgeSessions = "sessions"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// PredictionsTable is the table that holds the predictions relation/edge.
@@ -38,6 +40,13 @@ const (
 	PredictionsInverseTable = "predictions"
 	// PredictionsColumn is the table column denoting the predictions relation/edge.
 	PredictionsColumn = "user_predictions"
+	// SessionsTable is the table that holds the sessions relation/edge.
+	SessionsTable = "sessions"
+	// SessionsInverseTable is the table name for the Session entity.
+	// It exists in this package in order to avoid circular dependency with the "session" package.
+	SessionsInverseTable = "sessions"
+	// SessionsColumn is the table column denoting the sessions relation/edge.
+	SessionsColumn = "user_sessions"
 )
 
 // Columns holds all SQL columns for user fields.

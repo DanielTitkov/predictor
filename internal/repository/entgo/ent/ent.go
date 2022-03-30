@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/session"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 )
 
@@ -33,6 +34,7 @@ func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		challenge.Table:  challenge.ValidColumn,
 		prediction.Table: prediction.ValidColumn,
+		session.Table:    session.ValidColumn,
 		user.Table:       user.ValidColumn,
 	}
 	check, ok := checks[table]

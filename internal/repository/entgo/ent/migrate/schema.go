@@ -63,6 +63,32 @@ var (
 			},
 		},
 	}
+	// SessionsColumns holds the columns for the "sessions" table.
+	SessionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "sid", Type: field.TypeString, Unique: true},
+		{Name: "ip", Type: field.TypeString},
+		{Name: "user_agent", Type: field.TypeString},
+		{Name: "last_activity", Type: field.TypeTime},
+		{Name: "meta", Type: field.TypeJSON, Nullable: true},
+		{Name: "user_sessions", Type: field.TypeUUID},
+	}
+	// SessionsTable holds the schema information for the "sessions" table.
+	SessionsTable = &schema.Table{
+		Name:       "sessions",
+		Columns:    SessionsColumns,
+		PrimaryKey: []*schema.Column{SessionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sessions_users_sessions",
+				Columns:    []*schema.Column{SessionsColumns[8]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -84,6 +110,7 @@ var (
 	Tables = []*schema.Table{
 		ChallengesTable,
 		PredictionsTable,
+		SessionsTable,
 		UsersTable,
 	}
 )
@@ -91,4 +118,5 @@ var (
 func init() {
 	PredictionsTable.ForeignKeys[0].RefTable = ChallengesTable
 	PredictionsTable.ForeignKeys[1].RefTable = UsersTable
+	SessionsTable.ForeignKeys[0].RefTable = UsersTable
 }

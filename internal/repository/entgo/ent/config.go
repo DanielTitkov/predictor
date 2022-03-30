@@ -26,6 +26,7 @@ type config struct {
 type hooks struct {
 	Challenge  []ent.Hook
 	Prediction []ent.Hook
+	Session    []ent.Hook
 	User       []ent.Hook
 }
 

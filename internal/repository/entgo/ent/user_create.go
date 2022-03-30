@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/session"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/google/uuid"
 )
@@ -115,6 +116,21 @@ func (uc *UserCreate) AddPredictions(p ...*Prediction) *UserCreate {
 		ids[i] = p[i].ID
 	}
 	return uc.AddPredictionIDs(ids...)
+}
+
+// AddSessionIDs adds the "sessions" edge to the Session entity by IDs.
+func (uc *UserCreate) AddSessionIDs(ids ...int) *UserCreate {
+	uc.mutation.AddSessionIDs(ids...)
+	return uc
+}
+
+// AddSessions adds the "sessions" edges to the Session entity.
+func (uc *UserCreate) AddSessions(s ...*Session) *UserCreate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uc.AddSessionIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -339,6 +355,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: prediction.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.SessionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SessionsTable,
+			Columns: []string{user.SessionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: session.FieldID,
 				},
 			},
 		}
