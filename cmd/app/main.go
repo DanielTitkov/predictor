@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/DanielTitkov/predictor/internal/auth"
-
 	"github.com/DanielTitkov/predictor/cmd/app/prepare"
 	"github.com/DanielTitkov/predictor/internal/app"
 	"github.com/DanielTitkov/predictor/internal/configs"
@@ -76,16 +74,14 @@ func main() {
 			cfg.Auth.Google.Client,   // client
 			cfg.Auth.Google.Secret,   // secret
 			cfg.Auth.Google.Callback, // callback url
-			// scopes
-			"email",
-			"profile",
+			"email", "profile",       // scopes
 		),
 	)
 
-	r := mux.NewRouter()
-
-	// main handler
 	h := handler.NewHandler(a, logger, "templates/")
+	r := mux.NewRouter()
+	r.Use(h.Middleware)
+	// main handler
 	r.Handle("/", live.NewHttpHandler(store, h.Home()))
 	r.Handle("/challenge/{challengeID}", live.NewHttpHandler(store, h.ChallengeDetails()))
 	r.Handle("/tasks", live.NewHttpHandler(store, h.Tasks()))
@@ -95,9 +91,8 @@ func main() {
 	r.Handle("/auto.js.map", live.JavascriptMap{})
 
 	// auth
-	ah := auth.NewHandler(a, logger)
-	r.HandleFunc("/auth/{provider}", ah.BeginOAuth)
-	r.HandleFunc("/auth/{provider}/callback", ah.CompleteOAuth)
+	r.HandleFunc("/auth/{provider}", h.BeginOAuth)
+	r.HandleFunc("/auth/{provider}/callback", h.CompleteOAuth)
 
 	// media
 	r.HandleFunc("/favicon.ico", faviconHandler)

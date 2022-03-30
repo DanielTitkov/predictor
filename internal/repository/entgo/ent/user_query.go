@@ -14,8 +14,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/predicate"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
-	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/session"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/usersession"
 	"github.com/google/uuid"
 )
 
@@ -30,7 +30,7 @@ type UserQuery struct {
 	predicates []predicate.User
 	// eager-loading edges.
 	withPredictions *PredictionQuery
-	withSessions    *SessionQuery
+	withSessions    *UserSessionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -90,8 +90,8 @@ func (uq *UserQuery) QueryPredictions() *PredictionQuery {
 }
 
 // QuerySessions chains the current query on the "sessions" edge.
-func (uq *UserQuery) QuerySessions() *SessionQuery {
-	query := &SessionQuery{config: uq.config}
+func (uq *UserQuery) QuerySessions() *UserSessionQuery {
+	query := &UserSessionQuery{config: uq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -102,7 +102,7 @@ func (uq *UserQuery) QuerySessions() *SessionQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(session.Table, session.FieldID),
+			sqlgraph.To(usersession.Table, usersession.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.SessionsTable, user.SessionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
@@ -314,8 +314,8 @@ func (uq *UserQuery) WithPredictions(opts ...func(*PredictionQuery)) *UserQuery 
 
 // WithSessions tells the query-builder to eager-load the nodes that are connected to
 // the "sessions" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithSessions(opts ...func(*SessionQuery)) *UserQuery {
-	query := &SessionQuery{config: uq.config}
+func (uq *UserQuery) WithSessions(opts ...func(*UserSessionQuery)) *UserQuery {
+	query := &UserSessionQuery{config: uq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -448,10 +448,10 @@ func (uq *UserQuery) sqlAll(ctx context.Context) ([]*User, error) {
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Sessions = []*Session{}
+			nodes[i].Edges.Sessions = []*UserSession{}
 		}
 		query.withFKs = true
-		query.Where(predicate.Session(func(s *sql.Selector) {
+		query.Where(predicate.UserSession(func(s *sql.Selector) {
 			s.Where(sql.InValues(user.SessionsColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)

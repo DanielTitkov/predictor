@@ -23,7 +23,7 @@ const (
 
 type (
 	ChallengeDetailsInstance struct {
-		*CommonInstance
+		CommonInstance
 		Challenge *domain.Challenge
 	}
 )
@@ -32,7 +32,7 @@ func (h *Handler) NewChallengeDetailsInstance(ctx context.Context, s live.Socket
 	m, ok := s.Assigns().(*ChallengeDetailsInstance)
 	if !ok {
 		return &ChallengeDetailsInstance{
-			CommonInstance: &CommonInstance{
+			CommonInstance: CommonInstance{
 				Env:     h.app.Cfg.Env,
 				Session: fmt.Sprint(s.Session()),
 				Error:   nil,
@@ -63,6 +63,7 @@ func (h *Handler) ChallengeDetails() live.Handler {
 			return nil, err
 		}
 		instance := h.NewChallengeDetailsInstance(ctx, s)
+		instance.User = UserFromCtx(ctx)
 		challenge, err := h.app.GetChallengeByID(ctx, challengeID)
 		if err != nil {
 			instance.Error = err

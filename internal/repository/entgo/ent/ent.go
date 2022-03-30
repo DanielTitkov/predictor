@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
-	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/session"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/usersession"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -32,10 +32,10 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		challenge.Table:  challenge.ValidColumn,
-		prediction.Table: prediction.ValidColumn,
-		session.Table:    session.ValidColumn,
-		user.Table:       user.ValidColumn,
+		challenge.Table:   challenge.ValidColumn,
+		prediction.Table:  prediction.ValidColumn,
+		user.Table:        user.ValidColumn,
+		usersession.Table: usersession.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

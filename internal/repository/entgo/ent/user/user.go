@@ -41,10 +41,10 @@ const (
 	// PredictionsColumn is the table column denoting the predictions relation/edge.
 	PredictionsColumn = "user_predictions"
 	// SessionsTable is the table that holds the sessions relation/edge.
-	SessionsTable = "sessions"
-	// SessionsInverseTable is the table name for the Session entity.
-	// It exists in this package in order to avoid circular dependency with the "session" package.
-	SessionsInverseTable = "sessions"
+	SessionsTable = "user_sessions"
+	// SessionsInverseTable is the table name for the UserSession entity.
+	// It exists in this package in order to avoid circular dependency with the "usersession" package.
+	SessionsInverseTable = "user_sessions"
 	// SessionsColumn is the table column denoting the sessions relation/edge.
 	SessionsColumn = "user_sessions"
 )

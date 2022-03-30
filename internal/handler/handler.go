@@ -1,8 +1,15 @@
 package handler
 
 import (
+	"context"
+
 	"github.com/DanielTitkov/predictor/internal/app"
+	"github.com/DanielTitkov/predictor/internal/domain"
 	"github.com/DanielTitkov/predictor/logger"
+)
+
+const (
+	userCtxKeyValue = "user"
 )
 
 type (
@@ -13,13 +20,18 @@ type (
 	}
 
 	CommonInstance struct {
-		Env       string
-		Session   string
-		Error     error
-		UserEmail string
-		UserName  string
+		Env     string
+		Session string
+		Error   error
+		User    *domain.User
+	}
+
+	contextKey struct {
+		name string
 	}
 )
+
+var userCtxKey = &contextKey{userCtxKeyValue}
 
 func NewHandler(
 	app *app.App,
@@ -31,4 +43,12 @@ func NewHandler(
 		log: logger,
 		t:   t,
 	}
+}
+
+func UserFromCtx(ctx context.Context) *domain.User {
+	user, ok := ctx.Value(userCtxKey).(*domain.User)
+	if !ok {
+		return nil
+	}
+	return user
 }

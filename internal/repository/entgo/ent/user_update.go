@@ -13,8 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/predicate"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
-	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/session"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/usersession"
 	"github.com/google/uuid"
 )
 
@@ -96,17 +96,17 @@ func (uu *UserUpdate) AddPredictions(p ...*Prediction) *UserUpdate {
 	return uu.AddPredictionIDs(ids...)
 }
 
-// AddSessionIDs adds the "sessions" edge to the Session entity by IDs.
+// AddSessionIDs adds the "sessions" edge to the UserSession entity by IDs.
 func (uu *UserUpdate) AddSessionIDs(ids ...int) *UserUpdate {
 	uu.mutation.AddSessionIDs(ids...)
 	return uu
 }
 
-// AddSessions adds the "sessions" edges to the Session entity.
-func (uu *UserUpdate) AddSessions(s ...*Session) *UserUpdate {
-	ids := make([]int, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddSessions adds the "sessions" edges to the UserSession entity.
+func (uu *UserUpdate) AddSessions(u ...*UserSession) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
 	}
 	return uu.AddSessionIDs(ids...)
 }
@@ -137,23 +137,23 @@ func (uu *UserUpdate) RemovePredictions(p ...*Prediction) *UserUpdate {
 	return uu.RemovePredictionIDs(ids...)
 }
 
-// ClearSessions clears all "sessions" edges to the Session entity.
+// ClearSessions clears all "sessions" edges to the UserSession entity.
 func (uu *UserUpdate) ClearSessions() *UserUpdate {
 	uu.mutation.ClearSessions()
 	return uu
 }
 
-// RemoveSessionIDs removes the "sessions" edge to Session entities by IDs.
+// RemoveSessionIDs removes the "sessions" edge to UserSession entities by IDs.
 func (uu *UserUpdate) RemoveSessionIDs(ids ...int) *UserUpdate {
 	uu.mutation.RemoveSessionIDs(ids...)
 	return uu
 }
 
-// RemoveSessions removes "sessions" edges to Session entities.
-func (uu *UserUpdate) RemoveSessions(s ...*Session) *UserUpdate {
-	ids := make([]int, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// RemoveSessions removes "sessions" edges to UserSession entities.
+func (uu *UserUpdate) RemoveSessions(u ...*UserSession) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
 	}
 	return uu.RemoveSessionIDs(ids...)
 }
@@ -372,7 +372,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: session.FieldID,
+					Column: usersession.FieldID,
 				},
 			},
 		}
@@ -388,7 +388,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: session.FieldID,
+					Column: usersession.FieldID,
 				},
 			},
 		}
@@ -407,7 +407,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: session.FieldID,
+					Column: usersession.FieldID,
 				},
 			},
 		}
@@ -500,17 +500,17 @@ func (uuo *UserUpdateOne) AddPredictions(p ...*Prediction) *UserUpdateOne {
 	return uuo.AddPredictionIDs(ids...)
 }
 
-// AddSessionIDs adds the "sessions" edge to the Session entity by IDs.
+// AddSessionIDs adds the "sessions" edge to the UserSession entity by IDs.
 func (uuo *UserUpdateOne) AddSessionIDs(ids ...int) *UserUpdateOne {
 	uuo.mutation.AddSessionIDs(ids...)
 	return uuo
 }
 
-// AddSessions adds the "sessions" edges to the Session entity.
-func (uuo *UserUpdateOne) AddSessions(s ...*Session) *UserUpdateOne {
-	ids := make([]int, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddSessions adds the "sessions" edges to the UserSession entity.
+func (uuo *UserUpdateOne) AddSessions(u ...*UserSession) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
 	}
 	return uuo.AddSessionIDs(ids...)
 }
@@ -541,23 +541,23 @@ func (uuo *UserUpdateOne) RemovePredictions(p ...*Prediction) *UserUpdateOne {
 	return uuo.RemovePredictionIDs(ids...)
 }
 
-// ClearSessions clears all "sessions" edges to the Session entity.
+// ClearSessions clears all "sessions" edges to the UserSession entity.
 func (uuo *UserUpdateOne) ClearSessions() *UserUpdateOne {
 	uuo.mutation.ClearSessions()
 	return uuo
 }
 
-// RemoveSessionIDs removes the "sessions" edge to Session entities by IDs.
+// RemoveSessionIDs removes the "sessions" edge to UserSession entities by IDs.
 func (uuo *UserUpdateOne) RemoveSessionIDs(ids ...int) *UserUpdateOne {
 	uuo.mutation.RemoveSessionIDs(ids...)
 	return uuo
 }
 
-// RemoveSessions removes "sessions" edges to Session entities.
-func (uuo *UserUpdateOne) RemoveSessions(s ...*Session) *UserUpdateOne {
-	ids := make([]int, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// RemoveSessions removes "sessions" edges to UserSession entities.
+func (uuo *UserUpdateOne) RemoveSessions(u ...*UserSession) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
 	}
 	return uuo.RemoveSessionIDs(ids...)
 }
@@ -800,7 +800,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: session.FieldID,
+					Column: usersession.FieldID,
 				},
 			},
 		}
@@ -816,7 +816,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: session.FieldID,
+					Column: usersession.FieldID,
 				},
 			},
 		}
@@ -835,7 +835,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: session.FieldID,
+					Column: usersession.FieldID,
 				},
 			},
 		}

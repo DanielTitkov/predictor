@@ -22,9 +22,8 @@ const (
 
 type (
 	TaskDetailsInstance struct {
-		Session string
+		CommonInstance
 		Page    int
-		Error   error
 		MaxPage int
 	}
 )
@@ -58,9 +57,12 @@ func (h *Handler) NewTaskDetailsInstance(ctx context.Context, s live.Socket, tas
 	if !ok {
 		var nTasks int
 		return &TaskDetailsInstance{
-			Session: fmt.Sprint(s.Session()),
+			CommonInstance: CommonInstance{
+				Env:     h.app.Cfg.Env,
+				Session: fmt.Sprint(s.Session()),
+				Error:   nil,
+			},
 			Page:    1,
-			Error:   nil,
 			MaxPage: int(math.Ceil(float64(nTasks) / float64(h.app.Cfg.App.DefaultChallengePageLimit))),
 		}
 	}
@@ -86,9 +88,11 @@ func (h *Handler) TaskDetails() live.Handler {
 		if err != nil {
 			return nil, err
 		}
-		i := h.NewTaskDetailsInstance(ctx, s, int(taskID))
+		instance := h.NewTaskDetailsInstance(ctx, s, int(taskID))
+		instance.User = UserFromCtx(ctx)
+
 		// i.updateTasks(ctx, h)
-		return i, nil
+		return instance, nil
 	})
 
 	// lvh.HandleEvent(eventTasksUpdatePage, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {

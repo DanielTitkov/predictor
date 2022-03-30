@@ -8,8 +8,8 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/schema"
-	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/session"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/usersession"
 	"github.com/google/uuid"
 )
 
@@ -77,29 +77,6 @@ func init() {
 	predictionDescID := predictionFields[0].Descriptor()
 	// prediction.DefaultID holds the default value on creation for the id field.
 	prediction.DefaultID = predictionDescID.Default.(func() uuid.UUID)
-	sessionMixin := schema.Session{}.Mixin()
-	sessionMixinFields0 := sessionMixin[0].Fields()
-	_ = sessionMixinFields0
-	sessionFields := schema.Session{}.Fields()
-	_ = sessionFields
-	// sessionDescCreateTime is the schema descriptor for create_time field.
-	sessionDescCreateTime := sessionMixinFields0[0].Descriptor()
-	// session.DefaultCreateTime holds the default value on creation for the create_time field.
-	session.DefaultCreateTime = sessionDescCreateTime.Default.(func() time.Time)
-	// sessionDescUpdateTime is the schema descriptor for update_time field.
-	sessionDescUpdateTime := sessionMixinFields0[1].Descriptor()
-	// session.DefaultUpdateTime holds the default value on creation for the update_time field.
-	session.DefaultUpdateTime = sessionDescUpdateTime.Default.(func() time.Time)
-	// session.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
-	session.UpdateDefaultUpdateTime = sessionDescUpdateTime.UpdateDefault.(func() time.Time)
-	// sessionDescSid is the schema descriptor for sid field.
-	sessionDescSid := sessionFields[0].Descriptor()
-	// session.SidValidator is a validator for the "sid" field. It is called by the builders before save.
-	session.SidValidator = sessionDescSid.Validators[0].(func(string) error)
-	// sessionDescLastActivity is the schema descriptor for last_activity field.
-	sessionDescLastActivity := sessionFields[3].Descriptor()
-	// session.DefaultLastActivity holds the default value on creation for the last_activity field.
-	session.DefaultLastActivity = sessionDescLastActivity.Default.(func() time.Time)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
@@ -131,4 +108,27 @@ func init() {
 	userDescID := userFields[0].Descriptor()
 	// user.DefaultID holds the default value on creation for the id field.
 	user.DefaultID = userDescID.Default.(func() uuid.UUID)
+	usersessionMixin := schema.UserSession{}.Mixin()
+	usersessionMixinFields0 := usersessionMixin[0].Fields()
+	_ = usersessionMixinFields0
+	usersessionFields := schema.UserSession{}.Fields()
+	_ = usersessionFields
+	// usersessionDescCreateTime is the schema descriptor for create_time field.
+	usersessionDescCreateTime := usersessionMixinFields0[0].Descriptor()
+	// usersession.DefaultCreateTime holds the default value on creation for the create_time field.
+	usersession.DefaultCreateTime = usersessionDescCreateTime.Default.(func() time.Time)
+	// usersessionDescUpdateTime is the schema descriptor for update_time field.
+	usersessionDescUpdateTime := usersessionMixinFields0[1].Descriptor()
+	// usersession.DefaultUpdateTime holds the default value on creation for the update_time field.
+	usersession.DefaultUpdateTime = usersessionDescUpdateTime.Default.(func() time.Time)
+	// usersession.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	usersession.UpdateDefaultUpdateTime = usersessionDescUpdateTime.UpdateDefault.(func() time.Time)
+	// usersessionDescSid is the schema descriptor for sid field.
+	usersessionDescSid := usersessionFields[0].Descriptor()
+	// usersession.SidValidator is a validator for the "sid" field. It is called by the builders before save.
+	usersession.SidValidator = usersessionDescSid.Validators[0].(func(string) error)
+	// usersessionDescLastActivity is the schema descriptor for last_activity field.
+	usersessionDescLastActivity := usersessionFields[3].Descriptor()
+	// usersession.DefaultLastActivity holds the default value on creation for the last_activity field.
+	usersession.DefaultLastActivity = usersessionDescLastActivity.Default.(func() time.Time)
 }

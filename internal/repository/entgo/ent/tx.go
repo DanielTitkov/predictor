@@ -16,10 +16,10 @@ type Tx struct {
 	Challenge *ChallengeClient
 	// Prediction is the client for interacting with the Prediction builders.
 	Prediction *PredictionClient
-	// Session is the client for interacting with the Session builders.
-	Session *SessionClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// UserSession is the client for interacting with the UserSession builders.
+	UserSession *UserSessionClient
 
 	// lazily loaded.
 	client     *Client
@@ -157,8 +157,8 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Challenge = NewChallengeClient(tx.config)
 	tx.Prediction = NewPredictionClient(tx.config)
-	tx.Session = NewSessionClient(tx.config)
 	tx.User = NewUserClient(tx.config)
+	tx.UserSession = NewUserSessionClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

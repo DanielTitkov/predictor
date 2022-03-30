@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
-	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/session"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/usersession"
 	"github.com/google/uuid"
 )
 
@@ -118,17 +118,17 @@ func (uc *UserCreate) AddPredictions(p ...*Prediction) *UserCreate {
 	return uc.AddPredictionIDs(ids...)
 }
 
-// AddSessionIDs adds the "sessions" edge to the Session entity by IDs.
+// AddSessionIDs adds the "sessions" edge to the UserSession entity by IDs.
 func (uc *UserCreate) AddSessionIDs(ids ...int) *UserCreate {
 	uc.mutation.AddSessionIDs(ids...)
 	return uc
 }
 
-// AddSessions adds the "sessions" edges to the Session entity.
-func (uc *UserCreate) AddSessions(s ...*Session) *UserCreate {
-	ids := make([]int, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddSessions adds the "sessions" edges to the UserSession entity.
+func (uc *UserCreate) AddSessions(u ...*UserSession) *UserCreate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
 	}
 	return uc.AddSessionIDs(ids...)
 }
@@ -373,7 +373,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
-					Column: session.FieldID,
+					Column: usersession.FieldID,
 				},
 			},
 		}

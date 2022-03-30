@@ -9,13 +9,13 @@ import (
 	"entgo.io/ent/schema/mixin"
 )
 
-// Session holds the schema definition for the Session entity.
-type Session struct {
+// UserSession holds the schema definition for the UserSession entity.
+type UserSession struct {
 	ent.Schema
 }
 
-// Fields of the Session.
-func (Session) Fields() []ent.Field {
+// Fields of the UserSession.
+func (UserSession) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("sid").NotEmpty().Unique().Immutable(),
 		field.String("ip"),
@@ -25,15 +25,15 @@ func (Session) Fields() []ent.Field {
 	}
 }
 
-// Edges of the Session.
-func (Session) Edges() []ent.Edge {
+// Edges of the UserSession.
+func (UserSession) Edges() []ent.Edge {
 	return []ent.Edge{
 		// belongs to
 		edge.From("user", User.Type).Ref("sessions").Unique().Required(),
 	}
 }
 
-func (Session) Mixin() []ent.Mixin {
+func (UserSession) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.Time{},
 	}

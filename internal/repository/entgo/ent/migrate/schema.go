@@ -63,32 +63,6 @@ var (
 			},
 		},
 	}
-	// SessionsColumns holds the columns for the "sessions" table.
-	SessionsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "create_time", Type: field.TypeTime},
-		{Name: "update_time", Type: field.TypeTime},
-		{Name: "sid", Type: field.TypeString, Unique: true},
-		{Name: "ip", Type: field.TypeString},
-		{Name: "user_agent", Type: field.TypeString},
-		{Name: "last_activity", Type: field.TypeTime},
-		{Name: "meta", Type: field.TypeJSON, Nullable: true},
-		{Name: "user_sessions", Type: field.TypeUUID},
-	}
-	// SessionsTable holds the schema information for the "sessions" table.
-	SessionsTable = &schema.Table{
-		Name:       "sessions",
-		Columns:    SessionsColumns,
-		PrimaryKey: []*schema.Column{SessionsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "sessions_users_sessions",
-				Columns:    []*schema.Column{SessionsColumns[8]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -106,17 +80,43 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
+	// UserSessionsColumns holds the columns for the "user_sessions" table.
+	UserSessionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "sid", Type: field.TypeString, Unique: true},
+		{Name: "ip", Type: field.TypeString},
+		{Name: "user_agent", Type: field.TypeString},
+		{Name: "last_activity", Type: field.TypeTime},
+		{Name: "meta", Type: field.TypeJSON, Nullable: true},
+		{Name: "user_sessions", Type: field.TypeUUID},
+	}
+	// UserSessionsTable holds the schema information for the "user_sessions" table.
+	UserSessionsTable = &schema.Table{
+		Name:       "user_sessions",
+		Columns:    UserSessionsColumns,
+		PrimaryKey: []*schema.Column{UserSessionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_sessions_users_sessions",
+				Columns:    []*schema.Column{UserSessionsColumns[8]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ChallengesTable,
 		PredictionsTable,
-		SessionsTable,
 		UsersTable,
+		UserSessionsTable,
 	}
 )
 
 func init() {
 	PredictionsTable.ForeignKeys[0].RefTable = ChallengesTable
 	PredictionsTable.ForeignKeys[1].RefTable = UsersTable
-	SessionsTable.ForeignKeys[0].RefTable = UsersTable
+	UserSessionsTable.ForeignKeys[0].RefTable = UsersTable
 }
