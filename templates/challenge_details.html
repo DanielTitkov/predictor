@@ -21,13 +21,16 @@
     <!-- else user prediction -->
     <div class="columns">
         <div class="column">
-            <button live-click="add-prediction" live-value-addprediction="true"
+            <button live-click="add-prediction-modal" live-value-addprediction="true"
                 class="button is-large is-success is-fullwidth">Да</button>
         </div>
         <div class="column">
-            <button live-click="add-prediction" live-value-addprediction="false"
+            <button live-click="add-prediction-modal" live-value-addprediction="false"
                 class="button is-large is-danger is-fullwidth">Нет</button>
         </div>
+        {{ if .ShowModal }}
+        {{ template "challenge-details-modal" . }}
+        {{ end }}
     </div>
     {{ template "challenge-details-no-prediction-counter" . }}
     {{ end }}
@@ -86,5 +89,38 @@
     </div>
 
     <!-- Right side -->
+</div>
+{{end}}
+
+{{ define "challenge-details-modal" }}
+<div class="modal is-active">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Подтверджение</p>
+            <button live-click="close-modal" class="delete" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body has-text-centered">
+            <p class="title is-4">Предсказание:</p>
+            <p class="title is-3">{{ .Challenge.Content }}</p>
+            <p class="title is-4">Ваш прогноз:</p>
+            <p class="title is-2 {{ if .ModalPrediction }}is-success{{else}}is-danger{{end}}">
+                {{ if .ModalPrediction }}
+                это случится
+                {{ else }}
+                это не случится
+                {{ end }}
+            </p>
+            <div class="columns">
+                <div class="column">
+                    <button live-click="add-prediction" live-value-addprediction="{{ .ModalPrediction }}"
+                        class="button is-large is-success is-fullwidth">Подтвердить</button>
+                </div>
+                <div class="column">
+                    <button live-click="close-modal" class="button is-large is-danger is-fullwidth">Отмена</button>
+                </div>
+            </div>
+        </section>
+    </div>
 </div>
 {{end}}

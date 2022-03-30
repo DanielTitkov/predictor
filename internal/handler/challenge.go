@@ -18,19 +18,21 @@ import (
 
 const (
 	// events
-	eventAddPrediction = "add-prediction"
+	eventAddPrediction      = "add-prediction"
+	eventAddPredictionModal = "add-prediction-modal"
+	eventCloseModal         = "close-modal"
 	// params
 	paramChallengeDetailsChallengeID = "challengeID"
 	paramAddPredictionValue          = "addprediction"
 	// params values
-	valueAddPredictionTrue  = "true"
-	valueAddPredictionFalse = "false"
 )
 
 type (
 	ChallengeDetailsInstance struct {
 		CommonInstance
-		Challenge *domain.Challenge
+		Challenge       *domain.Challenge
+		ShowModal       bool
+		ModalPrediction bool
 	}
 )
 
@@ -43,6 +45,7 @@ func (h *Handler) NewChallengeDetailsInstance(ctx context.Context, s live.Socket
 				Session: fmt.Sprint(s.Session()),
 				Error:   nil,
 			},
+			ShowModal: false,
 		}
 	}
 
@@ -80,6 +83,24 @@ func (h *Handler) ChallengeDetails() live.Handler {
 		}
 		instance.Challenge = challenge
 
+		return instance, nil
+	})
+
+	lvh.HandleEvent(eventAddPredictionModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+		instance := h.NewChallengeDetailsInstance(ctx, s)
+		predictionValue, err := strconv.ParseBool(p.String(paramAddPredictionValue))
+		if err != nil {
+			instance.Error = err
+			return instance, nil
+		}
+		instance.ModalPrediction = predictionValue
+		instance.ShowModal = true
+		return instance, nil
+	})
+
+	lvh.HandleEvent(eventCloseModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+		instance := h.NewChallengeDetailsInstance(ctx, s)
+		instance.ShowModal = false
 		return instance, nil
 	})
 
