@@ -22,7 +22,7 @@ type (
 		// challenge
 		CreateOrUpdateChallengeByContent(context.Context, *domain.Challenge) (*domain.Challenge, error)
 		GetChallengeByContent(context.Context, string) (*domain.Challenge, error)
-		GetChallengeByID(context.Context, uuid.UUID) (*domain.Challenge, error)
+		GetChallengeByID(ctx context.Context, id uuid.UUID, userID uuid.UUID) (*domain.Challenge, error)
 		GetRandomFinishedChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error)
 		GetRandomOngoingChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error)
 

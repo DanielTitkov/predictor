@@ -16,8 +16,8 @@ func (a *App) GetChallengeByContent(ctx context.Context, content string) (*domai
 	return a.repo.GetChallengeByContent(ctx, content)
 }
 
-func (a *App) GetChallengeByID(ctx context.Context, id uuid.UUID) (*domain.Challenge, error) {
-	return a.repo.GetChallengeByID(ctx, id)
+func (a *App) GetChallengeByID(ctx context.Context, id uuid.UUID, userID uuid.UUID) (*domain.Challenge, error) {
+	return a.repo.GetChallengeByID(ctx, id, userID)
 }
 
 func (a *App) GetRandomFinishedChallenges(ctx context.Context) ([]*domain.Challenge, error) {

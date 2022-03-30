@@ -90,7 +90,7 @@ func (r *EntgoRepository) IfSessionRegistered(ctx context.Context, s *domain.Use
 		Where(
 			usersession.And(
 				usersession.SidEQ(s.SID),
-				usersession.IPEQ(s.IP),
+				// usersession.IPEQ(s.IP), // FIXME for commented out for debug
 				usersession.UserAgentEQ(s.UserAgent),
 			),
 		).
@@ -113,7 +113,7 @@ func (r *EntgoRepository) GetUserBySession(ctx context.Context, s *domain.UserSe
 		Where(
 			usersession.And(
 				usersession.SidEQ(s.SID),
-				usersession.IPEQ(s.IP),
+				// usersession.IPEQ(s.IP), // FIXME commented out for debug
 				usersession.UserAgentEQ(s.UserAgent),
 			),
 		).

@@ -82,9 +82,9 @@ func main() {
 	r := mux.NewRouter()
 	r.Use(h.Middleware)
 	// main handler
-	r.Handle("/", live.NewHttpHandler(store, h.Home()))
 	r.Handle("/challenge/{challengeID}", live.NewHttpHandler(store, h.ChallengeDetails()))
-	r.Handle("/tasks", live.NewHttpHandler(store, h.Tasks()))
+	r.Handle("/", live.NewHttpHandler(store, h.Home()))
+	// r.Handle("/tasks", live.NewHttpHandler(store, h.Tasks()))
 
 	// live scripts
 	r.Handle("/live.js", live.Javascript{})

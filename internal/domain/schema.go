@@ -30,14 +30,15 @@ type (
 	}
 
 	Challenge struct {
-		ID          uuid.UUID
-		Type        string
-		Content     string
-		Description string
-		Outcome     *bool
-		StartTime   time.Time
-		EndTime     time.Time
-		Predictions []*Prediction
+		ID             uuid.UUID
+		Type           string
+		Content        string
+		Description    string
+		Outcome        *bool
+		StartTime      time.Time
+		EndTime        time.Time
+		Predictions    []*Prediction
+		UserPrediction *Prediction
 	}
 
 	Prediction struct {

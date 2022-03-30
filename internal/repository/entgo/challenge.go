@@ -5,6 +5,9 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
+
 	"github.com/google/uuid"
 
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
@@ -51,10 +54,10 @@ func (r *EntgoRepository) GetChallengeByContent(ctx context.Context, content str
 		return nil, err
 	}
 
-	return entToDomainChallenge(c), nil
+	return entToDomainChallenge(c, nil), nil
 }
 
-func (r *EntgoRepository) GetChallengeByID(ctx context.Context, id uuid.UUID) (*domain.Challenge, error) {
+func (r *EntgoRepository) GetChallengeByID(ctx context.Context, id uuid.UUID, userID uuid.UUID) (*domain.Challenge, error) {
 	c, err := r.client.Challenge.
 		Query().
 		Where(challenge.IDEQ(id)).
@@ -64,7 +67,30 @@ func (r *EntgoRepository) GetChallengeByID(ctx context.Context, id uuid.UUID) (*
 		return nil, err
 	}
 
-	return entToDomainChallenge(c), nil
+	var userPrediction *domain.Prediction
+	if userID != uuid.Nil {
+		pred, err := r.client.Prediction.
+			Query().
+			Where(
+				prediction.And(
+					prediction.HasUserWith(
+						user.IDEQ(userID),
+					),
+					prediction.HasChallengeWith(
+						challenge.IDEQ(id),
+					),
+				),
+			).
+			Only(ctx)
+		if err != nil && !ent.IsNotFound(err) {
+			return nil, err
+		}
+		if pred != nil {
+			userPrediction = entToDomainPrediction(pred)
+		}
+	}
+
+	return entToDomainChallenge(c, userPrediction), nil
 }
 
 func (r *EntgoRepository) GetRandomFinishedChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error) {
@@ -96,7 +122,7 @@ func (r *EntgoRepository) GetRandomFinishedChallenges(ctx context.Context, limit
 
 	var res []*domain.Challenge
 	for _, ch := range sampledChs {
-		res = append(res, entToDomainChallenge(ch))
+		res = append(res, entToDomainChallenge(ch, nil))
 	}
 
 	return res, nil
@@ -131,7 +157,7 @@ func (r *EntgoRepository) GetRandomOngoingChallenges(ctx context.Context, limit 
 
 	var res []*domain.Challenge
 	for _, ch := range sampledChs {
-		res = append(res, entToDomainChallenge(ch))
+		res = append(res, entToDomainChallenge(ch, nil))
 	}
 
 	return res, nil
@@ -170,7 +196,7 @@ func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, 
 		if err != nil {
 			return nil, err
 		}
-		return entToDomainChallenge(c), nil
+		return entToDomainChallenge(c, nil), nil
 	}
 
 	// update challenge
@@ -185,10 +211,10 @@ func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, 
 		return nil, err
 	}
 
-	return entToDomainChallenge(c), nil
+	return entToDomainChallenge(c, nil), nil
 }
 
-func entToDomainChallenge(ch *ent.Challenge) *domain.Challenge {
+func entToDomainChallenge(ch *ent.Challenge, userPrediction *domain.Prediction) *domain.Challenge {
 	var predictions []*domain.Prediction
 	if ch.Edges.Predictions != nil {
 		for _, p := range ch.Edges.Predictions {
@@ -197,12 +223,13 @@ func entToDomainChallenge(ch *ent.Challenge) *domain.Challenge {
 	}
 
 	return &domain.Challenge{
-		ID:          ch.ID,
-		Content:     ch.Content,
-		Outcome:     ch.Outcome,
-		Description: ch.Description,
-		StartTime:   ch.StartTime,
-		EndTime:     ch.EndTime,
-		Predictions: predictions,
+		ID:             ch.ID,
+		Content:        ch.Content,
+		Outcome:        ch.Outcome,
+		Description:    ch.Description,
+		StartTime:      ch.StartTime,
+		EndTime:        ch.EndTime,
+		Predictions:    predictions,
+		UserPrediction: userPrediction,
 	}
 }

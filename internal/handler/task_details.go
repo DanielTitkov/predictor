@@ -89,7 +89,7 @@ func (h *Handler) TaskDetails() live.Handler {
 			return nil, err
 		}
 		instance := h.NewTaskDetailsInstance(ctx, s, int(taskID))
-		instance.User = UserFromCtx(ctx)
+		instance.User, instance.UserID = UserFromCtx(ctx)
 
 		// i.updateTasks(ctx, h)
 		return instance, nil

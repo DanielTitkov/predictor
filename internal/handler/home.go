@@ -51,7 +51,7 @@ func (h *Handler) Home() live.Handler {
 	// Set the mount function for this handler.
 	lvh.HandleMount(func(ctx context.Context, s live.Socket) (interface{}, error) {
 		instance := h.NewHomeInstance(s)
-		instance.User = UserFromCtx(ctx)
+		instance.User, instance.UserID = UserFromCtx(ctx)
 		randomFinishedChallenges, err := h.app.GetRandomFinishedChallenges(ctx)
 		if err != nil {
 			instance.Error = err
