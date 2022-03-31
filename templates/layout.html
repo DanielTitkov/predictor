@@ -25,6 +25,7 @@
   {{ end }}
   {{ end }}
   <!-- debug end -->
+  {{ template "navigation" . }}
   <section class="section">
     <div class="container">
       {{ template "view" . }}
@@ -68,3 +69,47 @@
 </script>
 
 </html>
+
+{{ define "login-block" }}
+<div class="block has-text-centered">
+  <p class="heading">Вход или регистрация</p>
+  <a href="/auth/google" class="button is-large is-danger">
+    <span class="icon is-medium">
+      <i class="bi bi-google"></i>
+    </span>
+    <span>SignIn with Google</span>
+  </a>
+</div>
+{{ end }}
+
+{{ define "navigation" }}
+<!-- Main container -->
+<nav class="level p-4 is-size-4">
+  <!-- Left side -->
+  <div class="level-left">
+    <div class="level-item">
+      <p class="level-item mr-5"><a href="/"><b class="has-text-dark">Predictor</b></a></p>
+    </div>
+    <div class="level-item">
+      <p class="level-item mr-5"><a href="/about">О проекте</a></p>
+    </div>
+  </div>
+
+  <!-- Right side -->
+  <div class="level-right">
+    {{ if .User }}
+    <div class="level-item mr-5">
+      <div class="media-left">
+        <figure class="image is-48x48">
+          <img class="is-rounded" src="{{ .User.Picture }}" alt="userpic">
+        </figure>
+      </div>
+      <a>Профиль</a>
+    </div>
+    <p class="level-item"><a>Выход</a></p>
+    {{ else }}
+    <p class="level-item"><a>Вход</a></p>
+    {{ end }}
+  </div>
+</nav>
+{{ end }}

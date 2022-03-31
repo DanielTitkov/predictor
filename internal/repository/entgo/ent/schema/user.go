@@ -19,6 +19,7 @@ func (User) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
 		field.String("name").NotEmpty(),
 		field.String("email").NotEmpty().Unique(),
+		field.String("picture").Optional().Default("https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"),
 		field.Bool("admin").Default(false),
 		field.String("password_hash"),
 		field.JSON("meta", make(map[string]interface{})).Optional(),

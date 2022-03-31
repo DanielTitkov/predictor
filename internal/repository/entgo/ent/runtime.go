@@ -100,8 +100,12 @@ func init() {
 	userDescEmail := userFields[2].Descriptor()
 	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	user.EmailValidator = userDescEmail.Validators[0].(func(string) error)
+	// userDescPicture is the schema descriptor for picture field.
+	userDescPicture := userFields[3].Descriptor()
+	// user.DefaultPicture holds the default value on creation for the picture field.
+	user.DefaultPicture = userDescPicture.Default.(string)
 	// userDescAdmin is the schema descriptor for admin field.
-	userDescAdmin := userFields[3].Descriptor()
+	userDescAdmin := userFields[4].Descriptor()
 	// user.DefaultAdmin holds the default value on creation for the admin field.
 	user.DefaultAdmin = userDescAdmin.Default.(bool)
 	// userDescID is the schema descriptor for id field.

@@ -128,13 +128,20 @@ func (r *EntgoRepository) GetRandomFinishedChallenges(ctx context.Context, limit
 	return res, nil
 }
 
-func (r *EntgoRepository) GetRandomOngoingChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error) {
+func (r *EntgoRepository) GetRandomOngoingChallenges(ctx context.Context, limit int, userID uuid.UUID) ([]*domain.Challenge, error) {
 	chs, err := r.client.Challenge.
 		Query().
 		Where(
 			challenge.And(
 				challenge.CreateTimeLT(time.Now()),
 				challenge.EndTimeGT(time.Now()),
+				challenge.Not(
+					challenge.HasPredictionsWith(
+						prediction.HasUserWith(
+							user.IDEQ(userID),
+						),
+					),
+				),
 			),
 		).
 		WithPredictions().

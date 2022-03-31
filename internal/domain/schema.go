@@ -12,6 +12,7 @@ type (
 		Name         string
 		Email        string
 		Admin        bool
+		Picture      string
 		Password     string
 		PasswordHash string
 		Meta         map[string]interface{}

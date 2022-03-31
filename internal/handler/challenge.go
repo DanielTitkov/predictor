@@ -76,7 +76,7 @@ func (h *Handler) ChallengeDetails() live.Handler {
 			return nil, err
 		}
 		instance := h.NewChallengeDetailsInstance(ctx, s)
-		instance.User, instance.UserID = UserFromCtx(ctx)
+		instance.fromContext(ctx)
 		challenge, err := h.app.GetChallengeByID(ctx, challengeID, instance.UserID)
 		if err != nil {
 			instance.Error = err

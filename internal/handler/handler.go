@@ -53,5 +53,14 @@ func UserFromCtx(ctx context.Context) (*domain.User, uuid.UUID) {
 	if !ok {
 		return nil, uuid.Nil
 	}
+	if user == nil {
+		return nil, uuid.Nil
+	}
 	return user, user.ID
+}
+
+func (c *CommonInstance) fromContext(ctx context.Context) {
+	user, userID := UserFromCtx(ctx)
+	c.User = user
+	c.UserID = userID
 }

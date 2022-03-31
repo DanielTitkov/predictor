@@ -11,8 +11,12 @@
       <div class="column">
         <div class="box">
           <h4 class="title is-4">Random Ongoing Challenges</h4>
+          {{ if eq .RandomOngoingChallengesCount 0 }}
+          <h5 class="title is-5">Пока нет вопросов на которые вы ещё не ответили</h5>
+          {{ else }}
           {{ range $i, $challenge := .RandomOngoingChallenges }}
           {{ template "challenge-card" $challenge }}
+          {{ end }}
           {{ end }}
         </div>
       </div>
@@ -31,13 +35,7 @@
   </div>
   <div class="section">
     <div class="box">
-      <p>Login or Register with:</p>
-      <a href="/auth/google" class="button is-large is-danger">
-        <span class="icon is-medium">
-          <i class="bi bi-google"></i>
-        </span>
-        <span>SignIn with Google</span>
-      </a>
+      {{ template "login-block" }}
     </div>
   </div>
 </main>

@@ -56,6 +56,7 @@ func (r *EntgoRepository) CreateUser(ctx context.Context, u *domain.User) (*doma
 		SetName(u.Name).
 		SetEmail(u.Email).
 		SetPasswordHash(u.PasswordHash).
+		SetPicture(u.Picture).
 		// TODO: not setting admin here
 		SetMeta(u.Meta).
 		Save(ctx)
@@ -71,6 +72,7 @@ func entToDomainUser(user *ent.User) *domain.User {
 		ID:           user.ID,
 		Name:         user.Name,
 		Email:        user.Email,
+		Picture:      user.Picture,
 		PasswordHash: user.PasswordHash,
 		Meta:         user.Meta,
 		Admin:        user.Admin,

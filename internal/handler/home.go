@@ -14,9 +14,11 @@ import (
 type (
 	HomeInstance struct {
 		CommonInstance
-		Summary                  *domain.SystemSymmary
-		RandomFinishedChallenges []*domain.Challenge
-		RandomOngoingChallenges  []*domain.Challenge
+		Summary                       *domain.SystemSymmary
+		RandomFinishedChallenges      []*domain.Challenge
+		RandomFinishedChallengesCount int
+		RandomOngoingChallenges       []*domain.Challenge
+		RandomOngoingChallengesCount  int
 	}
 )
 
@@ -51,18 +53,20 @@ func (h *Handler) Home() live.Handler {
 	// Set the mount function for this handler.
 	lvh.HandleMount(func(ctx context.Context, s live.Socket) (interface{}, error) {
 		instance := h.NewHomeInstance(s)
-		instance.User, instance.UserID = UserFromCtx(ctx)
+		instance.fromContext(ctx)
 		randomFinishedChallenges, err := h.app.GetRandomFinishedChallenges(ctx)
 		if err != nil {
 			instance.Error = err
 		}
 		instance.RandomFinishedChallenges = randomFinishedChallenges
+		instance.RandomFinishedChallengesCount = len(randomFinishedChallenges)
 
-		randomOngoingChallenges, err := h.app.GetRandomOngoingChallenges(ctx)
+		randomOngoingChallenges, err := h.app.GetRandomOngoingChallenges(ctx, instance.UserID)
 		if err != nil {
 			instance.Error = err
 		}
 		instance.RandomOngoingChallenges = randomOngoingChallenges
+		instance.RandomOngoingChallengesCount = len(randomOngoingChallenges)
 
 		summary, err := h.app.GetSystemSummary(ctx)
 		if err != nil {

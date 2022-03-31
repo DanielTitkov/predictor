@@ -70,6 +70,7 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "picture", Type: field.TypeString, Nullable: true, Default: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"},
 		{Name: "admin", Type: field.TypeBool, Default: false},
 		{Name: "password_hash", Type: field.TypeString},
 		{Name: "meta", Type: field.TypeJSON, Nullable: true},

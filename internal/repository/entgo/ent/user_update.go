@@ -49,6 +49,26 @@ func (uu *UserUpdate) SetEmail(s string) *UserUpdate {
 	return uu
 }
 
+// SetPicture sets the "picture" field.
+func (uu *UserUpdate) SetPicture(s string) *UserUpdate {
+	uu.mutation.SetPicture(s)
+	return uu
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (uu *UserUpdate) SetNillablePicture(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetPicture(*s)
+	}
+	return uu
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (uu *UserUpdate) ClearPicture() *UserUpdate {
+	uu.mutation.ClearPicture()
+	return uu
+}
+
 // SetAdmin sets the "admin" field.
 func (uu *UserUpdate) SetAdmin(b bool) *UserUpdate {
 	uu.mutation.SetAdmin(b)
@@ -281,6 +301,19 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldEmail,
 		})
 	}
+	if value, ok := uu.mutation.Picture(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldPicture,
+		})
+	}
+	if uu.mutation.PictureCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldPicture,
+		})
+	}
 	if value, ok := uu.mutation.Admin(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
@@ -450,6 +483,26 @@ func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
 // SetEmail sets the "email" field.
 func (uuo *UserUpdateOne) SetEmail(s string) *UserUpdateOne {
 	uuo.mutation.SetEmail(s)
+	return uuo
+}
+
+// SetPicture sets the "picture" field.
+func (uuo *UserUpdateOne) SetPicture(s string) *UserUpdateOne {
+	uuo.mutation.SetPicture(s)
+	return uuo
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillablePicture(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetPicture(*s)
+	}
+	return uuo
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (uuo *UserUpdateOne) ClearPicture() *UserUpdateOne {
+	uuo.mutation.ClearPicture()
 	return uuo
 }
 
@@ -707,6 +760,19 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: user.FieldEmail,
+		})
+	}
+	if value, ok := uuo.mutation.Picture(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldPicture,
+		})
+	}
+	if uuo.mutation.PictureCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldPicture,
 		})
 	}
 	if value, ok := uuo.mutation.Admin(); ok {

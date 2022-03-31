@@ -1502,6 +1502,7 @@ type UserMutation struct {
 	update_time        *time.Time
 	name               *string
 	email              *string
+	picture            *string
 	admin              *bool
 	password_hash      *string
 	meta               *map[string]interface{}
@@ -1765,6 +1766,55 @@ func (m *UserMutation) ResetEmail() {
 	m.email = nil
 }
 
+// SetPicture sets the "picture" field.
+func (m *UserMutation) SetPicture(s string) {
+	m.picture = &s
+}
+
+// Picture returns the value of the "picture" field in the mutation.
+func (m *UserMutation) Picture() (r string, exists bool) {
+	v := m.picture
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPicture returns the old "picture" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldPicture(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPicture is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPicture requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPicture: %w", err)
+	}
+	return oldValue.Picture, nil
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (m *UserMutation) ClearPicture() {
+	m.picture = nil
+	m.clearedFields[user.FieldPicture] = struct{}{}
+}
+
+// PictureCleared returns if the "picture" field was cleared in this mutation.
+func (m *UserMutation) PictureCleared() bool {
+	_, ok := m.clearedFields[user.FieldPicture]
+	return ok
+}
+
+// ResetPicture resets all changes to the "picture" field.
+func (m *UserMutation) ResetPicture() {
+	m.picture = nil
+	delete(m.clearedFields, user.FieldPicture)
+}
+
 // SetAdmin sets the "admin" field.
 func (m *UserMutation) SetAdmin(b bool) {
 	m.admin = &b
@@ -2013,7 +2063,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.create_time != nil {
 		fields = append(fields, user.FieldCreateTime)
 	}
@@ -2025,6 +2075,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.email != nil {
 		fields = append(fields, user.FieldEmail)
+	}
+	if m.picture != nil {
+		fields = append(fields, user.FieldPicture)
 	}
 	if m.admin != nil {
 		fields = append(fields, user.FieldAdmin)
@@ -2051,6 +2104,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case user.FieldEmail:
 		return m.Email()
+	case user.FieldPicture:
+		return m.Picture()
 	case user.FieldAdmin:
 		return m.Admin()
 	case user.FieldPasswordHash:
@@ -2074,6 +2129,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case user.FieldEmail:
 		return m.OldEmail(ctx)
+	case user.FieldPicture:
+		return m.OldPicture(ctx)
 	case user.FieldAdmin:
 		return m.OldAdmin(ctx)
 	case user.FieldPasswordHash:
@@ -2116,6 +2173,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEmail(v)
+		return nil
+	case user.FieldPicture:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPicture(v)
 		return nil
 	case user.FieldAdmin:
 		v, ok := value.(bool)
@@ -2168,6 +2232,9 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(user.FieldPicture) {
+		fields = append(fields, user.FieldPicture)
+	}
 	if m.FieldCleared(user.FieldMeta) {
 		fields = append(fields, user.FieldMeta)
 	}
@@ -2185,6 +2252,9 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
 	switch name {
+	case user.FieldPicture:
+		m.ClearPicture()
+		return nil
 	case user.FieldMeta:
 		m.ClearMeta()
 		return nil
@@ -2207,6 +2277,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldEmail:
 		m.ResetEmail()
+		return nil
+	case user.FieldPicture:
+		m.ResetPicture()
 		return nil
 	case user.FieldAdmin:
 		m.ResetAdmin()

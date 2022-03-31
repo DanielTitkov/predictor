@@ -24,7 +24,7 @@ type (
 		GetChallengeByContent(context.Context, string) (*domain.Challenge, error)
 		GetChallengeByID(ctx context.Context, id uuid.UUID, userID uuid.UUID) (*domain.Challenge, error)
 		GetRandomFinishedChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error)
-		GetRandomOngoingChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error)
+		GetRandomOngoingChallenges(ctx context.Context, limit int, userID uuid.UUID) ([]*domain.Challenge, error)
 
 		// user
 		IfEmailRegistered(context.Context, string) (bool, error)

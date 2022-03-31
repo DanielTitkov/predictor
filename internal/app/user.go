@@ -63,6 +63,7 @@ func (a *App) CreateUserFromGoth(ctx context.Context, gu *goth.User) (*domain.Us
 	user := &domain.User{
 		Name:     gu.NickName,
 		Email:    gu.Email,
+		Picture:  gu.AvatarURL,
 		Password: passw,
 		Admin:    false,
 		Meta:     meta,
@@ -86,11 +87,12 @@ func (a *App) GetUserByEmail(ctx context.Context, email string) (*domain.User, e
 
 	// we should not return password hash if this is not needed
 	return &domain.User{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-		Admin: user.Admin,
-		Meta:  user.Meta,
+		ID:      user.ID,
+		Name:    user.Name,
+		Email:   user.Email,
+		Picture: user.Picture,
+		Admin:   user.Admin,
+		Meta:    user.Meta,
 	}, nil
 }
 

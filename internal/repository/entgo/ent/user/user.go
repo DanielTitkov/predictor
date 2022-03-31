@@ -21,6 +21,8 @@ const (
 	FieldName = "name"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
+	// FieldPicture holds the string denoting the picture field in the database.
+	FieldPicture = "picture"
 	// FieldAdmin holds the string denoting the admin field in the database.
 	FieldAdmin = "admin"
 	// FieldPasswordHash holds the string denoting the password_hash field in the database.
@@ -56,6 +58,7 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldName,
 	FieldEmail,
+	FieldPicture,
 	FieldAdmin,
 	FieldPasswordHash,
 	FieldMeta,
@@ -82,6 +85,8 @@ var (
 	NameValidator func(string) error
 	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	EmailValidator func(string) error
+	// DefaultPicture holds the default value on creation for the "picture" field.
+	DefaultPicture string
 	// DefaultAdmin holds the default value on creation for the "admin" field.
 	DefaultAdmin bool
 	// DefaultID holds the default value on creation for the "id" field.

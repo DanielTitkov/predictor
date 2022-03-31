@@ -24,8 +24,8 @@ func (a *App) GetRandomFinishedChallenges(ctx context.Context) ([]*domain.Challe
 	return a.repo.GetRandomFinishedChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit)
 }
 
-func (a *App) GetRandomOngoingChallenges(ctx context.Context) ([]*domain.Challenge, error) {
-	return a.repo.GetRandomOngoingChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit)
+func (a *App) GetRandomOngoingChallenges(ctx context.Context, userID uuid.UUID) ([]*domain.Challenge, error) {
+	return a.repo.GetRandomOngoingChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit, userID)
 }
 
 func (a *App) CreateChallengeFromArgs(ctx context.Context, args domain.CreateChallengeArgs) (*domain.Challenge, error) {

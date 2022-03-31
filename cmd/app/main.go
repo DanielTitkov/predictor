@@ -41,7 +41,11 @@ func main() {
 	defer logger.Sync()
 	logger.Info("starting service", "")
 
-	db, err := ent.Open(cfg.DB.Driver, cfg.DB.URI)
+	var dbOptions []ent.Option
+	if cfg.Env == "dev" {
+		dbOptions = append(dbOptions, ent.Debug())
+	}
+	db, err := ent.Open(cfg.DB.Driver, cfg.DB.URI, dbOptions...)
 	if err != nil {
 		logger.Fatal("failed connecting to database", err)
 	}
@@ -83,6 +87,7 @@ func main() {
 	r.Use(h.Middleware)
 	// main handler
 	r.Handle("/challenge/{challengeID}", live.NewHttpHandler(store, h.ChallengeDetails()))
+	r.Handle("/about", live.NewHttpHandler(store, h.About()))
 	r.Handle("/", live.NewHttpHandler(store, h.Home()))
 	// r.Handle("/tasks", live.NewHttpHandler(store, h.Tasks()))
 

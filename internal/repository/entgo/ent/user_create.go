@@ -63,6 +63,20 @@ func (uc *UserCreate) SetEmail(s string) *UserCreate {
 	return uc
 }
 
+// SetPicture sets the "picture" field.
+func (uc *UserCreate) SetPicture(s string) *UserCreate {
+	uc.mutation.SetPicture(s)
+	return uc
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (uc *UserCreate) SetNillablePicture(s *string) *UserCreate {
+	if s != nil {
+		uc.SetPicture(*s)
+	}
+	return uc
+}
+
 // SetAdmin sets the "admin" field.
 func (uc *UserCreate) SetAdmin(b bool) *UserCreate {
 	uc.mutation.SetAdmin(b)
@@ -212,6 +226,10 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultUpdateTime()
 		uc.mutation.SetUpdateTime(v)
 	}
+	if _, ok := uc.mutation.Picture(); !ok {
+		v := user.DefaultPicture
+		uc.mutation.SetPicture(v)
+	}
 	if _, ok := uc.mutation.Admin(); !ok {
 		v := user.DefaultAdmin
 		uc.mutation.SetAdmin(v)
@@ -319,6 +337,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldEmail,
 		})
 		_node.Email = value
+	}
+	if value, ok := uc.mutation.Picture(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldPicture,
+		})
+		_node.Picture = value
 	}
 	if value, ok := uc.mutation.Admin(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
