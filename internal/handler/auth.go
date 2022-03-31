@@ -7,6 +7,11 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
+func (h *Handler) Logout(res http.ResponseWriter, req *http.Request) {
+	fmt.Println("START LOGOUT") // FIXME
+	http.Redirect(res, req, "/", http.StatusTemporaryRedirect)
+}
+
 func (h *Handler) BeginOAuth(res http.ResponseWriter, req *http.Request) {
 	gothic.BeginAuthHandler(res, req)
 }

@@ -43,7 +43,7 @@ func main() {
 
 	var dbOptions []ent.Option
 	if cfg.Env == "dev" {
-		dbOptions = append(dbOptions, ent.Debug())
+		// dbOptions = append(dbOptions, ent.Debug())
 	}
 	db, err := ent.Open(cfg.DB.Driver, cfg.DB.URI, dbOptions...)
 	if err != nil {
@@ -96,6 +96,7 @@ func main() {
 	r.Handle("/auto.js.map", live.JavascriptMap{})
 
 	// auth
+	r.HandleFunc("/auth/logout", h.Logout)
 	r.HandleFunc("/auth/{provider}", h.BeginOAuth)
 	r.HandleFunc("/auth/{provider}/callback", h.CompleteOAuth)
 

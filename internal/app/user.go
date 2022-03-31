@@ -51,6 +51,10 @@ func (a *App) AuthenticateGothUser(ctx context.Context, gu *goth.User) (*domain.
 	return a.GetUserByEmail(ctx, gu.Email)
 }
 
+func (a *App) LogoutUser(ctx context.Context) error {
+	return nil
+}
+
 func (a *App) CreateUserFromGoth(ctx context.Context, gu *goth.User) (*domain.User, error) {
 	passw, err := password.Generate(16, 5, 0, false, true)
 	if err != nil {
