@@ -128,6 +128,69 @@ func (r *EntgoRepository) GetRandomFinishedChallenges(ctx context.Context, limit
 	return res, nil
 }
 
+// GetClosingChallenges returns challenges that are to be closed soon.
+func (r *EntgoRepository) GetClosingChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error) {
+	chs, err := r.client.Challenge.
+		Query().
+		Where(
+			challenge.And(
+				challenge.CreateTimeLT(time.Now()),
+				challenge.EndTimeGT(time.Now()),
+				challenge.OutcomeIsNil(),
+			),
+		).
+		WithPredictions().
+		Order(ent.Asc(challenge.FieldEndTime)).
+		Limit(limit).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var res []*domain.Challenge
+	for _, ch := range chs {
+		res = append(res, entToDomainChallenge(ch, nil))
+	}
+
+	return res, nil
+}
+
+func (r *EntgoRepository) GetRandomPendingChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error) {
+	chs, err := r.client.Challenge.
+		Query().
+		Where(
+			challenge.And(
+				challenge.CreateTimeLT(time.Now()),
+				challenge.EndTimeLT(time.Now()),
+				challenge.OutcomeIsNil(),
+			),
+		).
+		WithPredictions().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var sampledChs []*ent.Challenge
+	if len(chs) > limit {
+		for i := 0; i < limit; i++ {
+			rnd := rand.New(rand.NewSource(time.Now().Unix()))
+			index := rnd.Intn(len(chs))
+			sampledChs = append(sampledChs, chs[index])
+			chs = append(chs[:index], chs[index+1:]...)
+		}
+	} else {
+		sampledChs = chs
+	}
+
+	var res []*domain.Challenge
+	for _, ch := range sampledChs {
+		res = append(res, entToDomainChallenge(ch, nil))
+	}
+
+	return res, nil
+}
+
 func (r *EntgoRepository) GetRandomOngoingChallenges(ctx context.Context, limit int, userID uuid.UUID) ([]*domain.Challenge, error) {
 	chs, err := r.client.Challenge.
 		Query().

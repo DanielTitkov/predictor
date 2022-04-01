@@ -31,15 +31,13 @@
       {{ template "view" . }}
       <script type="text/javascript" src="/live.js"></script>
     </div>
-  </section>
-  {{ if not .User }}
-  <section class="section">
-    <div class="box has-background-white-ter">
+    {{ if not .User }}
+    <div class="container box has-background-white-ter">
       <h3 class="title is-3 has-text-centered">Войдите, чтобы оставлять прогнозы</h3>
       {{ template "login-block" }}
     </div>
+    {{ end }}
   </section>
-  {{ end }}
   <footer class="footer">
     <div class="content has-text-centered">
       <p>

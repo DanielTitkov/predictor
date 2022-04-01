@@ -24,6 +24,14 @@ func (a *App) GetRandomFinishedChallenges(ctx context.Context) ([]*domain.Challe
 	return a.repo.GetRandomFinishedChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit)
 }
 
+func (a *App) GetRandomPendingChallenges(ctx context.Context) ([]*domain.Challenge, error) {
+	return a.repo.GetRandomPendingChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit)
+}
+
+func (a *App) GetClosingChallenges(ctx context.Context) ([]*domain.Challenge, error) {
+	return a.repo.GetClosingChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit)
+}
+
 func (a *App) GetRandomOngoingChallenges(ctx context.Context, userID uuid.UUID) ([]*domain.Challenge, error) {
 	return a.repo.GetRandomOngoingChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit, userID)
 }

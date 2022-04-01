@@ -1,6 +1,8 @@
 {{define "challenge-details-scale"}}
-<progress class="progress is-large" value="{{ .Challenge.VotesTrue }}" max="{{ .Challenge.Votes }}">{{
-    .Challenge.PercTrue }}%</progress>
+<div class="block mb-6">
+    <progress class="progress is-large" value="{{ .Challenge.VotesTrue }}" max="{{ .Challenge.Votes }}">{{
+        .Challenge.PercTrue }}%</progress>
+</div>
 <div class="level is-mobile">
     <!-- Left side -->
     <div class="level-left">

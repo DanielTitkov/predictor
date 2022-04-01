@@ -1,5 +1,6 @@
 package domain
 
 const (
-	ChallengeTypeBool = "bool"
+	ChallengeTypeBool   = "bool"
+	ChallengeTimeFormat = "2006-01-02"
 )

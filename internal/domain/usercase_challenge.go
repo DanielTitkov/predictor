@@ -49,3 +49,11 @@ func (ch *Challenge) HasOutcomeAndTrue() bool {
 	}
 	return *ch.Outcome
 }
+
+func (ch *Challenge) StartStr() string {
+	return ch.StartTime.Format(ChallengeTimeFormat)
+}
+
+func (ch *Challenge) EndStr() string {
+	return ch.EndTime.Format(ChallengeTimeFormat)
+}

@@ -1,10 +1,34 @@
 {{ define "title" }} Challenge details {{ end }}
 {{ define "view" }}
 <div class="block">
-    <h3 class="title is-3">
+    <h3 class="title is-3 mb-6">
         <a href="/"><i class="bi-arrow-left"></i> Назад</a>
     </h3>
-    <div class="block mb-5">
+    <div class="level">
+        <!-- Left side -->
+        <div class="level-left">
+            <div class="level-item">
+                <div>
+                    <p class="heading">Начало голосования</p>
+                    <p class="title is-4 has-text-grey">
+                        {{ .Challenge.StartStr }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- Right side -->
+        <div class="level-right has-text-right">
+            <div class="level-item">
+                <div>
+                    <p class="heading">Конец голосования</p>
+                    <p class="title is-4 has-text-grey">
+                        {{ .Challenge.EndStr }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="block mb-5 mt-6">
         <h1 class="title is-1">{{ .Challenge.Content }}</h1>
         <h3 class="subtitle is-3">{{ .Challenge.Description }}</h3>
     </div>
