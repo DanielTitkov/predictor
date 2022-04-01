@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"html/template"
 	"log"
 
@@ -13,7 +12,7 @@ import (
 
 type (
 	AboutInstance struct {
-		CommonInstance
+		*CommonInstance
 		Summary *domain.SystemSymmary
 	}
 )
@@ -22,11 +21,7 @@ func (h *Handler) NewAboutInstance(s live.Socket) *AboutInstance {
 	m, ok := s.Assigns().(*AboutInstance)
 	if !ok {
 		return &AboutInstance{
-			CommonInstance: CommonInstance{
-				Env:     h.app.Cfg.Env,
-				Session: fmt.Sprint(s.Session()),
-				Error:   nil,
-			},
+			CommonInstance: h.NewCommon(s),
 		}
 	}
 
@@ -44,6 +39,31 @@ func (h *Handler) About() live.Handler {
 	}
 
 	lvh := live.NewHandler(live.WithTemplateRenderer(t))
+	// COMMON BLOCK START
+	// this logic must be present in all handlers
+	{
+		constructor := h.NewAboutInstance // NB: make sure constructor is correct
+		// SAFE TO COPY
+		lvh.HandleEvent(eventCloseAuthModals, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.CloseAuthModals()
+			return instance, nil
+		})
+
+		lvh.HandleEvent(eventOpenLogoutModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.OpenLogoutModal()
+			return instance, nil
+		})
+
+		lvh.HandleEvent(eventOpenLoginModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.OpenLoginModal()
+			return instance, nil
+		})
+		// SAFE TO COPY END
+	}
+	// COMMON BLOCK END
 
 	lvh.HandleMount(func(ctx context.Context, s live.Socket) (interface{}, error) {
 		instance := h.NewAboutInstance(s)

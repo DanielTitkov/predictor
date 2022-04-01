@@ -90,6 +90,7 @@ var (
 		{Name: "ip", Type: field.TypeString},
 		{Name: "user_agent", Type: field.TypeString},
 		{Name: "last_activity", Type: field.TypeTime},
+		{Name: "active", Type: field.TypeBool, Default: false},
 		{Name: "meta", Type: field.TypeJSON, Nullable: true},
 		{Name: "user_sessions", Type: field.TypeUUID},
 	}
@@ -101,9 +102,16 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "user_sessions_users_sessions",
-				Columns:    []*schema.Column{UserSessionsColumns[8]},
+				Columns:    []*schema.Column{UserSessionsColumns[9]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "usersession_active",
+				Unique:  false,
+				Columns: []*schema.Column{UserSessionsColumns[7]},
 			},
 		},
 	}

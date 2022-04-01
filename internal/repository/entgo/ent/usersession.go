@@ -31,6 +31,8 @@ type UserSession struct {
 	UserAgent string `json:"user_agent,omitempty"`
 	// LastActivity holds the value of the "last_activity" field.
 	LastActivity time.Time `json:"last_activity,omitempty"`
+	// Active holds the value of the "active" field.
+	Active bool `json:"active,omitempty"`
 	// Meta holds the value of the "meta" field.
 	Meta map[string]interface{} `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -69,6 +71,8 @@ func (*UserSession) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case usersession.FieldMeta:
 			values[i] = new([]byte)
+		case usersession.FieldActive:
+			values[i] = new(sql.NullBool)
 		case usersession.FieldID:
 			values[i] = new(sql.NullInt64)
 		case usersession.FieldSid, usersession.FieldIP, usersession.FieldUserAgent:
@@ -134,6 +138,12 @@ func (us *UserSession) assignValues(columns []string, values []interface{}) erro
 			} else if value.Valid {
 				us.LastActivity = value.Time
 			}
+		case usersession.FieldActive:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field active", values[i])
+			} else if value.Valid {
+				us.Active = value.Bool
+			}
 		case usersession.FieldMeta:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field meta", values[i])
@@ -194,6 +204,8 @@ func (us *UserSession) String() string {
 	builder.WriteString(us.UserAgent)
 	builder.WriteString(", last_activity=")
 	builder.WriteString(us.LastActivity.Format(time.ANSIC))
+	builder.WriteString(", active=")
+	builder.WriteString(fmt.Sprintf("%v", us.Active))
 	builder.WriteString(", meta=")
 	builder.WriteString(fmt.Sprintf("%v", us.Meta))
 	builder.WriteByte(')')

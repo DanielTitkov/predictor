@@ -150,23 +150,3 @@ func (a *App) loadUserPresets() error {
 
 	return nil
 }
-
-// func (a *App) GetUserToken(u *domain.User) (string, error) {
-// 	user, err := a.repo.GetUserByUsername(u.Username)
-// 	if err != nil {
-// 		return "", err
-// 	}
-
-// 	token := jwt.New(jwt.SigningMethodHS256)
-// 	claims := token.Claims.(jwt.MapClaims)
-// 	claims["id"] = user.ID
-// 	claims["username"] = user.Username
-// 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(a.cfg.Auth.Exp)).Unix()
-
-// 	t, err := token.SignedString([]byte(a.cfg.Auth.Secret))
-// 	if err != nil {
-// 		return "", err
-// 	}
-
-// 	return t, nil
-// }

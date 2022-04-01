@@ -28,6 +28,7 @@ type (
 		UpdateTime   time.Time
 		LastActivity time.Time
 		Meta         map[string]interface{}
+		Active       bool
 	}
 
 	Challenge struct {

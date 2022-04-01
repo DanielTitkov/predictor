@@ -135,4 +135,8 @@ func init() {
 	usersessionDescLastActivity := usersessionFields[3].Descriptor()
 	// usersession.DefaultLastActivity holds the default value on creation for the last_activity field.
 	usersession.DefaultLastActivity = usersessionDescLastActivity.Default.(func() time.Time)
+	// usersessionDescActive is the schema descriptor for active field.
+	usersessionDescActive := usersessionFields[4].Descriptor()
+	// usersession.DefaultActive holds the default value on creation for the active field.
+	usersession.DefaultActive = usersessionDescActive.Default.(bool)
 }

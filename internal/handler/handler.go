@@ -2,6 +2,9 @@ package handler
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/jfyne/live"
 
 	"github.com/google/uuid"
 
@@ -11,6 +14,11 @@ import (
 )
 
 const (
+	// events (common)
+	eventCloseAuthModals = "close-auth-modals"
+	eventOpenLogoutModal = "open-logout-modal"
+	eventOpenLoginModal  = "open-login-modal"
+	// context
 	userCtxKeyValue = "user"
 )
 
@@ -22,11 +30,13 @@ type (
 	}
 
 	CommonInstance struct {
-		Env     string
-		Session string
-		Error   error
-		User    *domain.User
-		UserID  uuid.UUID
+		Env             string
+		Session         string
+		Error           error
+		User            *domain.User
+		UserID          uuid.UUID
+		ShowLoginModal  bool
+		ShowLogoutModal bool
 	}
 
 	contextKey struct {
@@ -46,6 +56,29 @@ func NewHandler(
 		log: logger,
 		t:   t,
 	}
+}
+
+func (h *Handler) NewCommon(s live.Socket) *CommonInstance {
+	return &CommonInstance{
+		Env:             h.app.Cfg.Env,
+		Session:         fmt.Sprint(s.Session()),
+		Error:           nil,
+		ShowLoginModal:  false,
+		ShowLogoutModal: false,
+	}
+}
+
+func (c *CommonInstance) CloseAuthModals() {
+	c.ShowLoginModal = false
+	c.ShowLogoutModal = false
+}
+
+func (c *CommonInstance) OpenLoginModal() {
+	c.ShowLoginModal = true
+}
+
+func (c *CommonInstance) OpenLogoutModal() {
+	c.ShowLogoutModal = true
 }
 
 func UserFromCtx(ctx context.Context) (*domain.User, uuid.UUID) {

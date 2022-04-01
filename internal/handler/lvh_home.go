@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"html/template"
 	"log"
 
@@ -13,7 +12,7 @@ import (
 
 type (
 	HomeInstance struct {
-		CommonInstance
+		*CommonInstance
 		Summary                       *domain.SystemSymmary
 		RandomFinishedChallenges      []*domain.Challenge
 		RandomFinishedChallengesCount int
@@ -26,11 +25,7 @@ func (h *Handler) NewHomeInstance(s live.Socket) *HomeInstance {
 	m, ok := s.Assigns().(*HomeInstance)
 	if !ok {
 		return &HomeInstance{
-			CommonInstance: CommonInstance{
-				Env:     h.app.Cfg.Env,
-				Session: fmt.Sprint(s.Session()),
-				Error:   nil,
-			},
+			CommonInstance: h.NewCommon(s),
 		}
 	}
 
@@ -49,6 +44,31 @@ func (h *Handler) Home() live.Handler {
 	}
 
 	lvh := live.NewHandler(live.WithTemplateRenderer(t))
+	// COMMON BLOCK START
+	// this logic must be present in all handlers
+	{
+		constructor := h.NewHomeInstance // NB: make sure constructor is correct
+		// SAFE TO COPY
+		lvh.HandleEvent(eventCloseAuthModals, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.CloseAuthModals()
+			return instance, nil
+		})
+
+		lvh.HandleEvent(eventOpenLogoutModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.OpenLogoutModal()
+			return instance, nil
+		})
+
+		lvh.HandleEvent(eventOpenLoginModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.OpenLoginModal()
+			return instance, nil
+		})
+		// SAFE TO COPY END
+	}
+	// COMMON BLOCK END
 
 	// Set the mount function for this handler.
 	lvh.HandleMount(func(ctx context.Context, s live.Socket) (interface{}, error) {

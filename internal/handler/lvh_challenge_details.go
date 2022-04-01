@@ -29,23 +29,19 @@ const (
 
 type (
 	ChallengeDetailsInstance struct {
-		CommonInstance
+		*CommonInstance
 		Challenge       *domain.Challenge
 		ShowModal       bool
 		ModalPrediction bool
 	}
 )
 
-func (h *Handler) NewChallengeDetailsInstance(ctx context.Context, s live.Socket) *ChallengeDetailsInstance {
+func (h *Handler) NewChallengeDetailsInstance(s live.Socket) *ChallengeDetailsInstance {
 	m, ok := s.Assigns().(*ChallengeDetailsInstance)
 	if !ok {
 		return &ChallengeDetailsInstance{
-			CommonInstance: CommonInstance{
-				Env:     h.app.Cfg.Env,
-				Session: fmt.Sprint(s.Session()),
-				Error:   nil,
-			},
-			ShowModal: false,
+			CommonInstance: h.NewCommon(s),
+			ShowModal:      false,
 		}
 	}
 
@@ -63,6 +59,31 @@ func (h *Handler) ChallengeDetails() live.Handler {
 	}
 
 	lvh := live.NewHandler(live.WithTemplateRenderer(t))
+	// COMMON BLOCK START
+	// this logic must be present in all handlers
+	{
+		constructor := h.NewChallengeDetailsInstance // NB: make sure constructor is correct
+		// SAFE TO COPY
+		lvh.HandleEvent(eventCloseAuthModals, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.CloseAuthModals()
+			return instance, nil
+		})
+
+		lvh.HandleEvent(eventOpenLogoutModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.OpenLogoutModal()
+			return instance, nil
+		})
+
+		lvh.HandleEvent(eventOpenLoginModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.OpenLoginModal()
+			return instance, nil
+		})
+		// SAFE TO COPY END
+	}
+	// COMMON BLOCK END
 
 	lvh.HandleMount(func(ctx context.Context, s live.Socket) (interface{}, error) {
 		r := live.Request(ctx)
@@ -75,7 +96,7 @@ func (h *Handler) ChallengeDetails() live.Handler {
 		if err != nil {
 			return nil, err
 		}
-		instance := h.NewChallengeDetailsInstance(ctx, s)
+		instance := h.NewChallengeDetailsInstance(s)
 		instance.fromContext(ctx)
 		challenge, err := h.app.GetChallengeByID(ctx, challengeID, instance.UserID)
 		if err != nil {
@@ -87,7 +108,7 @@ func (h *Handler) ChallengeDetails() live.Handler {
 	})
 
 	lvh.HandleEvent(eventAddPredictionModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
-		instance := h.NewChallengeDetailsInstance(ctx, s)
+		instance := h.NewChallengeDetailsInstance(s)
 		predictionValue, err := strconv.ParseBool(p.String(paramAddPredictionValue))
 		if err != nil {
 			instance.Error = err
@@ -99,13 +120,13 @@ func (h *Handler) ChallengeDetails() live.Handler {
 	})
 
 	lvh.HandleEvent(eventCloseModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
-		instance := h.NewChallengeDetailsInstance(ctx, s)
+		instance := h.NewChallengeDetailsInstance(s)
 		instance.ShowModal = false
 		return instance, nil
 	})
 
 	lvh.HandleEvent(eventAddPrediction, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
-		instance := h.NewChallengeDetailsInstance(ctx, s)
+		instance := h.NewChallengeDetailsInstance(s)
 		predictionValue, err := strconv.ParseBool(p.String(paramAddPredictionValue))
 		if err != nil {
 			instance.Error = err

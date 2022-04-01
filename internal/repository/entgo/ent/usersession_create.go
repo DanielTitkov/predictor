@@ -82,6 +82,20 @@ func (usc *UserSessionCreate) SetNillableLastActivity(t *time.Time) *UserSession
 	return usc
 }
 
+// SetActive sets the "active" field.
+func (usc *UserSessionCreate) SetActive(b bool) *UserSessionCreate {
+	usc.mutation.SetActive(b)
+	return usc
+}
+
+// SetNillableActive sets the "active" field if the given value is not nil.
+func (usc *UserSessionCreate) SetNillableActive(b *bool) *UserSessionCreate {
+	if b != nil {
+		usc.SetActive(*b)
+	}
+	return usc
+}
+
 // SetMeta sets the "meta" field.
 func (usc *UserSessionCreate) SetMeta(m map[string]interface{}) *UserSessionCreate {
 	usc.mutation.SetMeta(m)
@@ -182,6 +196,10 @@ func (usc *UserSessionCreate) defaults() {
 		v := usersession.DefaultLastActivity()
 		usc.mutation.SetLastActivity(v)
 	}
+	if _, ok := usc.mutation.Active(); !ok {
+		v := usersession.DefaultActive
+		usc.mutation.SetActive(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -208,6 +226,9 @@ func (usc *UserSessionCreate) check() error {
 	}
 	if _, ok := usc.mutation.LastActivity(); !ok {
 		return &ValidationError{Name: "last_activity", err: errors.New(`ent: missing required field "UserSession.last_activity"`)}
+	}
+	if _, ok := usc.mutation.Active(); !ok {
+		return &ValidationError{Name: "active", err: errors.New(`ent: missing required field "UserSession.active"`)}
 	}
 	if _, ok := usc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "UserSession.user"`)}
@@ -286,6 +307,14 @@ func (usc *UserSessionCreate) createSpec() (*UserSession, *sqlgraph.CreateSpec) 
 			Column: usersession.FieldLastActivity,
 		})
 		_node.LastActivity = value
+	}
+	if value, ok := usc.mutation.Active(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: usersession.FieldActive,
+		})
+		_node.Active = value
 	}
 	if value, ok := usc.mutation.Meta(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

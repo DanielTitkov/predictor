@@ -135,6 +135,13 @@ func LastActivity(v time.Time) predicate.UserSession {
 	})
 }
 
+// Active applies equality check predicate on the "active" field. It's identical to ActiveEQ.
+func Active(v bool) predicate.UserSession {
+	return predicate.UserSession(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldActive), v))
+	})
+}
+
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.UserSession {
 	return predicate.UserSession(func(s *sql.Selector) {
@@ -693,6 +700,20 @@ func LastActivityLT(v time.Time) predicate.UserSession {
 func LastActivityLTE(v time.Time) predicate.UserSession {
 	return predicate.UserSession(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldLastActivity), v))
+	})
+}
+
+// ActiveEQ applies the EQ predicate on the "active" field.
+func ActiveEQ(v bool) predicate.UserSession {
+	return predicate.UserSession(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldActive), v))
+	})
+}
+
+// ActiveNEQ applies the NEQ predicate on the "active" field.
+func ActiveNEQ(v bool) predicate.UserSession {
+	return predicate.UserSession(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldActive), v))
 	})
 }
 

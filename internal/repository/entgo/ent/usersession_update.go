@@ -62,6 +62,20 @@ func (usu *UserSessionUpdate) SetNillableLastActivity(t *time.Time) *UserSession
 	return usu
 }
 
+// SetActive sets the "active" field.
+func (usu *UserSessionUpdate) SetActive(b bool) *UserSessionUpdate {
+	usu.mutation.SetActive(b)
+	return usu
+}
+
+// SetNillableActive sets the "active" field if the given value is not nil.
+func (usu *UserSessionUpdate) SetNillableActive(b *bool) *UserSessionUpdate {
+	if b != nil {
+		usu.SetActive(*b)
+	}
+	return usu
+}
+
 // SetMeta sets the "meta" field.
 func (usu *UserSessionUpdate) SetMeta(m map[string]interface{}) *UserSessionUpdate {
 	usu.mutation.SetMeta(m)
@@ -219,6 +233,13 @@ func (usu *UserSessionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: usersession.FieldLastActivity,
 		})
 	}
+	if value, ok := usu.mutation.Active(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: usersession.FieldActive,
+		})
+	}
 	if value, ok := usu.mutation.Meta(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -314,6 +335,20 @@ func (usuo *UserSessionUpdateOne) SetLastActivity(t time.Time) *UserSessionUpdat
 func (usuo *UserSessionUpdateOne) SetNillableLastActivity(t *time.Time) *UserSessionUpdateOne {
 	if t != nil {
 		usuo.SetLastActivity(*t)
+	}
+	return usuo
+}
+
+// SetActive sets the "active" field.
+func (usuo *UserSessionUpdateOne) SetActive(b bool) *UserSessionUpdateOne {
+	usuo.mutation.SetActive(b)
+	return usuo
+}
+
+// SetNillableActive sets the "active" field if the given value is not nil.
+func (usuo *UserSessionUpdateOne) SetNillableActive(b *bool) *UserSessionUpdateOne {
+	if b != nil {
+		usuo.SetActive(*b)
 	}
 	return usuo
 }
@@ -497,6 +532,13 @@ func (usuo *UserSessionUpdateOne) sqlSave(ctx context.Context) (_node *UserSessi
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: usersession.FieldLastActivity,
+		})
+	}
+	if value, ok := usuo.mutation.Active(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: usersession.FieldActive,
 		})
 	}
 	if value, ok := usuo.mutation.Meta(); ok {

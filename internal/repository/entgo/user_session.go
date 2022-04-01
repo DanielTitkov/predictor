@@ -22,6 +22,7 @@ func (r *EntgoRepository) CreateUserSession(ctx context.Context, s *domain.UserS
 		SetIP(s.IP).
 		SetUserAgent(s.UserAgent).
 		SetMeta(s.Meta).
+		SetActive(s.Active).
 		SetLastActivity(time.Now()).
 		Save(ctx)
 	if err != nil {
@@ -62,6 +63,7 @@ func (r *EntgoRepository) CreateOrUpdateUserSession(ctx context.Context, s *doma
 			SetIP(s.IP).
 			SetUserAgent(s.UserAgent).
 			SetMeta(s.Meta).
+			SetActive(s.Active).
 			SetLastActivity(time.Now()).
 			Save(ctx)
 		if err != nil {
@@ -76,6 +78,7 @@ func (r *EntgoRepository) CreateOrUpdateUserSession(ctx context.Context, s *doma
 		SetUserAgent(s.UserAgent).
 		SetLastActivity(time.Now()).
 		SetMeta(s.Meta).
+		SetActive(s.Active).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -89,6 +92,7 @@ func (r *EntgoRepository) IfSessionRegistered(ctx context.Context, s *domain.Use
 		Query().
 		Where(
 			usersession.And(
+				usersession.Active(true),
 				usersession.SidEQ(s.SID),
 				// usersession.IPEQ(s.IP), // FIXME for commented out for debug
 				usersession.UserAgentEQ(s.UserAgent),
@@ -112,6 +116,7 @@ func (r *EntgoRepository) GetUserBySession(ctx context.Context, s *domain.UserSe
 		Query().
 		Where(
 			usersession.And(
+				usersession.Active(true),
 				usersession.SidEQ(s.SID),
 				// usersession.IPEQ(s.IP), // FIXME commented out for debug
 				usersession.UserAgentEQ(s.UserAgent),
@@ -137,6 +142,7 @@ func entToDomainUserSession(s *ent.UserSession) *domain.UserSession {
 		UserID:       userID,
 		SID:          s.Sid,
 		IP:           s.IP,
+		Active:       s.Active,
 		UserAgent:    s.UserAgent,
 		CreateTime:   s.CreateTime,
 		UpdateTime:   s.UpdateTime,

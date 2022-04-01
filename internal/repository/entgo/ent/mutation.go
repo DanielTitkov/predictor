@@ -2416,6 +2416,7 @@ type UserSessionMutation struct {
 	ip            *string
 	user_agent    *string
 	last_activity *time.Time
+	active        *bool
 	meta          *map[string]interface{}
 	clearedFields map[string]struct{}
 	user          *uuid.UUID
@@ -2739,6 +2740,42 @@ func (m *UserSessionMutation) ResetLastActivity() {
 	m.last_activity = nil
 }
 
+// SetActive sets the "active" field.
+func (m *UserSessionMutation) SetActive(b bool) {
+	m.active = &b
+}
+
+// Active returns the value of the "active" field in the mutation.
+func (m *UserSessionMutation) Active() (r bool, exists bool) {
+	v := m.active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActive returns the old "active" field's value of the UserSession entity.
+// If the UserSession object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSessionMutation) OldActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActive: %w", err)
+	}
+	return oldValue.Active, nil
+}
+
+// ResetActive resets all changes to the "active" field.
+func (m *UserSessionMutation) ResetActive() {
+	m.active = nil
+}
+
 // SetMeta sets the "meta" field.
 func (m *UserSessionMutation) SetMeta(value map[string]interface{}) {
 	m.meta = &value
@@ -2846,7 +2883,7 @@ func (m *UserSessionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserSessionMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.create_time != nil {
 		fields = append(fields, usersession.FieldCreateTime)
 	}
@@ -2864,6 +2901,9 @@ func (m *UserSessionMutation) Fields() []string {
 	}
 	if m.last_activity != nil {
 		fields = append(fields, usersession.FieldLastActivity)
+	}
+	if m.active != nil {
+		fields = append(fields, usersession.FieldActive)
 	}
 	if m.meta != nil {
 		fields = append(fields, usersession.FieldMeta)
@@ -2888,6 +2928,8 @@ func (m *UserSessionMutation) Field(name string) (ent.Value, bool) {
 		return m.UserAgent()
 	case usersession.FieldLastActivity:
 		return m.LastActivity()
+	case usersession.FieldActive:
+		return m.Active()
 	case usersession.FieldMeta:
 		return m.Meta()
 	}
@@ -2911,6 +2953,8 @@ func (m *UserSessionMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldUserAgent(ctx)
 	case usersession.FieldLastActivity:
 		return m.OldLastActivity(ctx)
+	case usersession.FieldActive:
+		return m.OldActive(ctx)
 	case usersession.FieldMeta:
 		return m.OldMeta(ctx)
 	}
@@ -2963,6 +3007,13 @@ func (m *UserSessionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLastActivity(v)
+		return nil
+	case usersession.FieldActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActive(v)
 		return nil
 	case usersession.FieldMeta:
 		v, ok := value.(map[string]interface{})
@@ -3046,6 +3097,9 @@ func (m *UserSessionMutation) ResetField(name string) error {
 		return nil
 	case usersession.FieldLastActivity:
 		m.ResetLastActivity()
+		return nil
+	case usersession.FieldActive:
+		m.ResetActive()
 		return nil
 	case usersession.FieldMeta:
 		m.ResetMeta()

@@ -32,7 +32,7 @@ func (a *App) CreateUserSession(req *http.Request, user *domain.User) (*domain.U
 	return session, nil
 }
 
-func (a *App) CreateOrUpdateUserSession(req *http.Request, user *domain.User, withOAuth bool) (*domain.UserSession, error) {
+func (a *App) CreateOrUpdateUserSession(req *http.Request, user *domain.User, withOAuth bool, setActiveStatus bool) (*domain.UserSession, error) {
 	if !withOAuth {
 		return nil, errors.New("not allowed without oauth")
 	}
@@ -48,6 +48,7 @@ func (a *App) CreateOrUpdateUserSession(req *http.Request, user *domain.User, wi
 		UserAgent: req.UserAgent(),
 		IP:        req.RemoteAddr,
 		UserID:    user.ID,
+		Active:    setActiveStatus,
 	}
 
 	// create session record for user

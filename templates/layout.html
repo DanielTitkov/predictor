@@ -32,6 +32,14 @@
       <script type="text/javascript" src="/live.js"></script>
     </div>
   </section>
+  {{ if not .User }}
+  <section class="section">
+    <div class="box has-background-white-ter">
+      <h3 class="title is-3 has-text-centered">Войдите, чтобы оставлять прогнозы</h3>
+      {{ template "login-block" }}
+    </div>
+  </section>
+  {{ end }}
   <footer class="footer">
     <div class="content has-text-centered">
       <p>
@@ -40,6 +48,12 @@
       </p>
     </div>
   </footer>
+  {{ if .ShowLoginModal }}
+  {{ template "login-modal" . }}
+  {{ end }}
+  {{ if .ShowLogoutModal }}
+  {{ template "logout-modal" . }}
+  {{ end }}
 </body>
 
 <script>
@@ -48,7 +62,6 @@
   }
 </script>
 
-<!-- <script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script> -->
 <script>
   window.Hooks = {
     "addTermHook": {
@@ -58,13 +71,6 @@
         });
       }
     },
-    "makeChartsHook": {
-      updated: function () {
-        var chartsData = window.getChartsData()
-        Plotly.newPlot('terms-corr-heatmap', chartsData.termsCorrHeatmap.data, chartsData.termsCorrHeatmap.layout, chartsData.config);
-        Plotly.newPlot('constructs-corr-heatmap', chartsData.constructsCorrHeatmap.data, chartsData.constructsCorrHeatmap.layout, chartsData.config);
-      }
-    }
   };
 </script>
 
@@ -79,6 +85,45 @@
     </span>
     <span>SignIn with Google</span>
   </a>
+</div>
+{{ end }}
+
+{{ define "logout-modal" }}
+<div class="modal is-active">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Подтверждение</p>
+      <button live-click="close-auth-modals" class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body has-text-centered">
+      <p class="title is-4">Выход:</p>
+      <p class="title is-3">Действительно хотите выйти?</p>
+      <div class="columns">
+        <div class="column">
+          <a href="/auth/logout" class="button is-large is-danger is-fullwidth">Выйти</a>
+        </div>
+        <div class="column">
+          <button live-click="close-auth-modals" class="button is-large is-fullwidth">Отмена</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+{{ end }}
+
+{{ define "login-modal" }}
+<div class="modal is-active">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Войти</p>
+      <button live-click="close-auth-modals" class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body has-text-centered">
+      {{ template "login-block" }}
+    </section>
+  </div>
 </div>
 {{ end }}
 
@@ -106,9 +151,9 @@
       </div>
       <a>Профиль</a>
     </div>
-    <p class="level-item"><a href="/auth/logout">Выход</a></p>
+    <p class="level-item"><a live-click="open-logout-modal">Выход</a></p>
     {{ else }}
-    <p class="level-item"><a>Вход</a></p>
+    <p class="level-item"><a live-click="open-login-modal">Вход</a></p>
     {{ end }}
   </div>
 </nav>

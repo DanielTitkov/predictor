@@ -23,6 +23,8 @@ const (
 	FieldUserAgent = "user_agent"
 	// FieldLastActivity holds the string denoting the last_activity field in the database.
 	FieldLastActivity = "last_activity"
+	// FieldActive holds the string denoting the active field in the database.
+	FieldActive = "active"
 	// FieldMeta holds the string denoting the meta field in the database.
 	FieldMeta = "meta"
 	// EdgeUser holds the string denoting the user edge name in mutations.
@@ -47,6 +49,7 @@ var Columns = []string{
 	FieldIP,
 	FieldUserAgent,
 	FieldLastActivity,
+	FieldActive,
 	FieldMeta,
 }
 
@@ -82,4 +85,6 @@ var (
 	SidValidator func(string) error
 	// DefaultLastActivity holds the default value on creation for the "last_activity" field.
 	DefaultLastActivity func() time.Time
+	// DefaultActive holds the default value on creation for the "active" field.
+	DefaultActive bool
 )
