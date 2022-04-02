@@ -88,6 +88,7 @@ func main() {
 	// main handler
 	r.Handle("/challenge/{challengeID}", live.NewHttpHandler(store, h.ChallengeDetails()))
 	r.Handle("/about", live.NewHttpHandler(store, h.About()))
+	r.Handle("/profile", live.NewHttpHandler(store, h.Profile()))
 	r.Handle("/", live.NewHttpHandler(store, h.Home()))
 	// r.Handle("/tasks", live.NewHttpHandler(store, h.Tasks()))
 

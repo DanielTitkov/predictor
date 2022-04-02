@@ -36,6 +36,10 @@ func (a *App) GetRandomOngoingChallenges(ctx context.Context, userID uuid.UUID) 
 	return a.repo.GetRandomOngoingChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit, userID)
 }
 
+func (a *App) GetUserChallenges(ctx context.Context, userID uuid.UUID) ([]*domain.Challenge, error) {
+	return a.repo.GetUserChallenges(ctx, userID)
+}
+
 func (a *App) CreateChallengeFromArgs(ctx context.Context, args domain.CreateChallengeArgs) (*domain.Challenge, error) {
 	startTime, err := time.Parse(args.TimeLayout, args.StartTime)
 	if err != nil {

@@ -2,6 +2,7 @@ package entgo
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -282,6 +283,41 @@ func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, 
 	}
 
 	return entToDomainChallenge(c, nil), nil
+}
+
+func (r *EntgoRepository) GetUserChallenges(ctx context.Context, userID uuid.UUID) ([]*domain.Challenge, error) {
+	chs, err := r.client.Challenge.
+		Query().
+		Where(challenge.HasPredictionsWith(
+			prediction.HasUserWith(
+				user.IDEQ(userID),
+			),
+		)).
+		WithPredictions(func(q *ent.PredictionQuery) {
+			q.Where(prediction.HasUserWith(
+				user.IDEQ(userID),
+			))
+		}).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var res []*domain.Challenge
+	for _, ch := range chs {
+		if ch.Edges.Predictions != nil {
+			if len(ch.Edges.Predictions) == 1 {
+				res = append(res, entToDomainChallenge(
+					ch,
+					entToDomainPrediction(ch.Edges.Predictions[0])),
+				)
+			} else {
+				return nil, fmt.Errorf("expected exactly 1 prediction, but got %d", len(ch.Edges.Predictions))
+			}
+		}
+	}
+
+	return res, nil
 }
 
 func entToDomainChallenge(ch *ent.Challenge, userPrediction *domain.Prediction) *domain.Challenge {
