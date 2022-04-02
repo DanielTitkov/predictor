@@ -25,9 +25,11 @@
       </div>
     </div>
   </div>
+  {{ if .Summary }}
   <div class="section">
     {{ template "system-summary" .Summary }}
   </div>
+  {{ end }}
 </main>
 
 {{ end }}

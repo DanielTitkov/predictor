@@ -18,6 +18,7 @@ const (
 	eventCloseAuthModals = "close-auth-modals"
 	eventOpenLogoutModal = "open-logout-modal"
 	eventOpenLoginModal  = "open-login-modal"
+	eventCloseError      = "close-error-notification"
 	// context
 	userCtxKeyValue = "user"
 )
@@ -79,6 +80,10 @@ func (c *CommonInstance) OpenLoginModal() {
 
 func (c *CommonInstance) OpenLogoutModal() {
 	c.ShowLogoutModal = true
+}
+
+func (c *CommonInstance) CloseError() {
+	c.Error = nil
 }
 
 func UserFromCtx(ctx context.Context) (*domain.User, uuid.UUID) {

@@ -38,10 +38,10 @@ func (h *Handler) NewHomeInstance(s live.Socket) *HomeInstance {
 
 func (h *Handler) Home() live.Handler {
 	t, err := template.ParseFiles(
-		h.t+"layout.html",
-		h.t+"home.html",
-		h.t+"challenge_card.html",
-		h.t+"system_summary.html",
+		h.t+"base.layout.html",
+		h.t+"page.home.html",
+		h.t+"part.challenge_card.html",
+		h.t+"part.system_summary.html",
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -68,6 +68,12 @@ func (h *Handler) Home() live.Handler {
 		lvh.HandleEvent(eventOpenLoginModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
 			instance := constructor(s)
 			instance.OpenLoginModal()
+			return instance, nil
+		})
+
+		lvh.HandleEvent(eventCloseError, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.CloseError()
 			return instance, nil
 		})
 		// SAFE TO COPY END
