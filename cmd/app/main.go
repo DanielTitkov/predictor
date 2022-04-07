@@ -42,9 +42,10 @@ func main() {
 	logger.Info("starting service", "")
 
 	var dbOptions []ent.Option
-	if cfg.Env == "dev" {
-		// dbOptions = append(dbOptions, ent.Debug())
-	}
+
+	// if cfg.Env == "dev" {
+	// 	dbOptions = append(dbOptions, ent.Debug())
+	// }
 	db, err := ent.Open(cfg.DB.Driver, cfg.DB.URI, dbOptions...)
 	if err != nil {
 		logger.Fatal("failed connecting to database", err)
