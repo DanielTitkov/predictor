@@ -2,8 +2,11 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"html/template"
 	"log"
+	"math"
+	"net/url"
 
 	"github.com/DanielTitkov/predictor/internal/domain"
 
@@ -11,10 +14,11 @@ import (
 )
 
 const (
-// events
-// params
-// paramChallengeListChallengeID = "challengeID"
-// params values
+	// events
+	eventChallengeListUpdatePage = "challenge-list-update-page"
+	// params
+	paramChallengeListPage = "page"
+	// params value
 )
 
 type (
@@ -22,14 +26,56 @@ type (
 		*CommonInstance
 		Challenges     []*domain.Challenge
 		ChallengeCount int
+		FilterArgs     domain.FilterChallengesArgs
+		Page           int
+		MaxPage        int
 	}
 )
+
+func (ins *ChallengeListInstance) withError(err error) *ChallengeListInstance {
+	ins.Error = err
+	return ins
+}
+
+func (ins *ChallengeListInstance) NextPage() int {
+	if ins.Page >= ins.MaxPage {
+		return ins.Page
+	}
+	return ins.Page + 1
+}
+
+func (ins *ChallengeListInstance) PrevPage() int {
+	if ins.Page == 1 {
+		return ins.Page
+	}
+	return ins.Page - 1
+}
+
+func (ins *ChallengeListInstance) updateChallenges(ctx context.Context, h *Handler) error {
+	ins.FilterArgs.Limit = h.app.Cfg.App.DefaultChallengePageLimit
+	if ins.Page > 0 {
+		ins.FilterArgs.Offset = (ins.Page - 1) * h.app.Cfg.App.DefaultChallengePageLimit
+	} else {
+		ins.FilterArgs.Offset = 0
+	}
+
+	chs, count, err := h.app.FilterChallenges(ctx, &ins.FilterArgs)
+	if err != nil {
+		return err
+	}
+	ins.Challenges = chs
+	ins.ChallengeCount = count
+	ins.MaxPage = int(math.Ceil(float64(count) / float64(h.app.Cfg.App.DefaultChallengePageLimit)))
+
+	return nil
+}
 
 func (h *Handler) NewChallengeListInstance(s live.Socket) *ChallengeListInstance {
 	m, ok := s.Assigns().(*ChallengeListInstance)
 	if !ok {
 		return &ChallengeListInstance{
 			CommonInstance: h.NewCommon(s),
+			Page:           1,
 		}
 	}
 
@@ -40,7 +86,7 @@ func (h *Handler) ChallengeList() live.Handler {
 	t, err := template.ParseFiles(
 		h.t+"base.layout.html",
 		h.t+"page.challenge_list.html",
-		h.t+"part.challenge_card.html",
+		h.t+"part.challenge_list_item.html",
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -83,7 +129,31 @@ func (h *Handler) ChallengeList() live.Handler {
 		instance := h.NewChallengeListInstance(s)
 		instance.fromContext(ctx)
 
+		err := instance.updateChallenges(ctx, h)
+		if err != nil {
+			return instance.withError(err), nil
+		}
+
 		return instance, nil
+	})
+
+	lvh.HandleParams(func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+		page := p.Int(paramChallengeListPage)
+		instance := h.NewChallengeListInstance(s)
+		instance.Page = page
+		err := instance.updateChallenges(ctx, h)
+		if err != nil {
+			return instance.withError(err), nil
+		}
+		return instance, nil
+	})
+
+	lvh.HandleEvent(eventChallengeListUpdatePage, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+		page := p.Int(paramChallengeListPage)
+		v := url.Values{}
+		v.Add(paramChallengeListPage, fmt.Sprintf("%d", page))
+		s.PatchURL(v)
+		return s.Assigns(), nil
 	})
 
 	return lvh

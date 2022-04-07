@@ -3,16 +3,55 @@
 <main>
   {{ template "back-to-home" }}
   <div class="section">
-    <div class="box">
-        <h4 class="title is-4">Открытые предсказания</h4>
-        {{ if eq .ChallengeCount 0 }}
-        <h5 class="title is-5">Пока нет предсказания</h5>
-        {{ else }}
-        {{ range $i, $challenge := .Challenges }}
-        {{ template "challenge-card" $challenge }}
-        {{ end }}
-        {{ end }}
-      </div>
+    <div class="block">
+      <h4 class="title is-4">Найдено предсказаний: {{ .ChallengeCount }}</h4>
+      <h4 class="subtitle is-5">Страница <b>{{ .Page }}</b> из <b>{{ .MaxPage }}</b></h4>
+    </div>
+    <div class="block">
+      {{ template "pagination" . }}
+    </div>
+    <div class="block">
+      {{ if eq .ChallengeCount 0 }}
+      <h5 class="title is-5">Пока нет предсказания</h5>
+      {{ else }}
+      {{ range $i, $challenge := .Challenges }}
+      {{ template "challenge-list-item" $challenge }}
+      {{ end }}
+      {{ end }}
+    </div>
+    <div class="block">
+      {{ template "pagination" . }}
+    </div>
   </div>
 </main>
+{{ end }}
+
+{{ define "pagination" }}
+<nav class="level" role="navigation" aria-label="pagination">
+  <div class="level-left">
+    <div class="level-item">
+      {{ if gt .Page 1 }}
+      <h3 class="title is-4">
+        <a live-click="challenge-list-update-page" live-value-page="{{.PrevPage}}">
+          <i class="bi-chevron-left"></i>
+        </a>
+      </h3>
+      {{ end }}
+    </div>
+  </div>
+
+  <div class="level-right">
+    <div class="level-item">
+      {{ if ne .MaxPage 1 }}
+      {{ if lt .Page .MaxPage }}
+      <h3 class="title is-4">
+        <a live-click="challenge-list-update-page" live-value-page="{{.NextPage}}">
+          <i class="bi-chevron-right"></i>
+        </a>
+      </h3>
+      {{ end }}
+      {{ end }}
+    </div>
+  </div>
+</nav>
 {{ end }}

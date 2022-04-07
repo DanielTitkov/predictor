@@ -285,6 +285,32 @@ func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, 
 	return entToDomainChallenge(c, nil), nil
 }
 
+func (r *EntgoRepository) FilterChallenges(ctx context.Context, args *domain.FilterChallengesArgs) ([]*domain.Challenge, int, error) {
+	query := r.client.Challenge.
+		Query().
+		WithPredictions()
+
+	count, err := query.Count(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	chs, err := query.
+		Limit(args.Limit).
+		Offset(args.Offset).
+		All(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var res []*domain.Challenge
+	for _, ch := range chs {
+		res = append(res, entToDomainChallenge(ch, nil))
+	}
+
+	return res, count, nil
+}
+
 func (r *EntgoRepository) GetUserChallenges(ctx context.Context, userID uuid.UUID) ([]*domain.Challenge, error) {
 	chs, err := r.client.Challenge.
 		Query().

@@ -1,5 +1,9 @@
 package domain
 
+import (
+	"github.com/google/uuid"
+)
+
 type (
 	CreateChallengeArgs struct {
 		Type        string `json:"type"`
@@ -14,5 +18,13 @@ type (
 		UserEmail        string `json:"userEmail"`
 		ChallengeContent string `json:"challengeContent"`
 		Prognosis        bool   `json:"prognosis"`
+	}
+	FilterChallengesArgs struct {
+		UserID   uuid.UUID
+		Unvoted  bool
+		Ongoing  bool
+		Finished bool
+		Limit    int
+		Offset   int
 	}
 )

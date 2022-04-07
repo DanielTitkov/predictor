@@ -1,6 +1,11 @@
 package domain
 
-import "time"
+import (
+	"errors"
+	"time"
+
+	"github.com/google/uuid"
+)
 
 func (ch *Challenge) Finished() bool {
 	return ch.EndTime.Before(time.Now())
@@ -56,4 +61,16 @@ func (ch *Challenge) StartStr() string {
 
 func (ch *Challenge) EndStr() string {
 	return ch.EndTime.Format(ChallengeTimeFormat)
+}
+
+func (a *FilterChallengesArgs) Validate() error {
+	if a.Ongoing && a.Finished {
+		return errors.New("invalid request: cannot query 'ongoing' and 'finished' at the same time")
+	}
+
+	if a.Unvoted && a.UserID == uuid.Nil {
+		return errors.New("invalid query: to query unvoted user id is required")
+	}
+
+	return nil
 }

@@ -40,6 +40,14 @@ func (a *App) GetUserChallenges(ctx context.Context, userID uuid.UUID) ([]*domai
 	return a.repo.GetUserChallenges(ctx, userID)
 }
 
+func (a *App) FilterChallenges(ctx context.Context, args *domain.FilterChallengesArgs) ([]*domain.Challenge, int, error) {
+	if err := args.Validate(); err != nil {
+		return nil, 0, err
+	}
+
+	return a.repo.FilterChallenges(ctx, args)
+}
+
 func (a *App) CreateChallengeFromArgs(ctx context.Context, args domain.CreateChallengeArgs) (*domain.Challenge, error) {
 	startTime, err := time.Parse(args.TimeLayout, args.StartTime)
 	if err != nil {
