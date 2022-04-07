@@ -1,9 +1,71 @@
 {{ define "title" }} Crowdsourced predictions {{ end }}
 {{ define "view" }}
+<style>
+  input[type='checkbox'] {
+    -webkit-appearance: none;
+    width: 35px;
+    height: 35px;
+    background: white;
+    border-radius: 50px;
+    border: 4px solid #485fc7;
+  }
+
+  input[type='checkbox']:checked {
+    background: #485fc7;
+  }
+</style>
 <main>
   {{ template "back-to-home" }}
   <div class="section">
-    <div class="block">
+    <form class="block" id="filter-challenges-form" live-change="filter-challenges">
+
+      <div class="field">
+        <div class="control">
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <input type="checkbox" name="ongoing">
+              </div>
+              <div class="level-item">
+                <p class="is-size-4 pb-1">Открытые</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <input type="checkbox" name="finished">
+              </div>
+              <div class="level-item">
+                <p class="is-size-4 pb-1">Завершённые</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <input type="checkbox" name="unvoted">
+              </div>
+              <div class="level-item">
+                <p class="is-size-4 pb-1">Без вашего голоса</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+    <div class="level">
       <h4 class="title is-4">Найдено предсказаний: {{ .ChallengeCount }}</h4>
       <h4 class="subtitle is-5">Страница <b>{{ .Page }}</b> из <b>{{ .MaxPage }}</b></h4>
     </div>
@@ -12,7 +74,7 @@
     </div>
     <div class="block">
       {{ if eq .ChallengeCount 0 }}
-      <h5 class="title is-5">Пока нет предсказания</h5>
+      <h5 class="title is-5">Пока нет предсказания по критериям</h5>
       {{ else }}
       {{ range $i, $challenge := .Challenges }}
       {{ template "challenge-list-item" $challenge }}

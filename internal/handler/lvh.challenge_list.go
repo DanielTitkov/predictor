@@ -16,8 +16,12 @@ import (
 const (
 	// events
 	eventChallengeListUpdatePage = "challenge-list-update-page"
+	eventFilterChallenges        = "filter-challenges"
 	// params
-	paramChallengeListPage = "page"
+	paramChallengeListPage     = "page"
+	paramChallengeListOngoing  = "ongoing"
+	paramChallengeListFinished = "finished"
+	paramChallengeListUnvoted  = "unvoted"
 	// params value
 )
 
@@ -154,6 +158,17 @@ func (h *Handler) ChallengeList() live.Handler {
 		v.Add(paramChallengeListPage, fmt.Sprintf("%d", page))
 		s.PatchURL(v)
 		return s.Assigns(), nil
+	})
+
+	lvh.HandleEvent(eventFilterChallenges, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+		instance := h.NewChallengeListInstance(s)
+
+		instance.FilterArgs.Ongoing = p.Checkbox(paramChallengeListOngoing)
+		instance.FilterArgs.Finished = p.Checkbox(paramChallengeListFinished)
+		instance.FilterArgs.Unvoted = p.Checkbox(paramChallengeListUnvoted)
+
+		err := instance.updateChallenges(ctx, h)
+		return instance.withError(err), nil
 	})
 
 	return lvh

@@ -290,6 +290,30 @@ func (r *EntgoRepository) FilterChallenges(ctx context.Context, args *domain.Fil
 		Query().
 		WithPredictions()
 
+	if args.Finished {
+		query.Where(challenge.And(
+			challenge.CreateTimeLT(time.Now()),
+			challenge.EndTimeLT(time.Now()),
+		))
+	}
+
+	if args.Ongoing {
+		query.Where(challenge.And(
+			challenge.CreateTimeLT(time.Now()),
+			challenge.EndTimeGT(time.Now()),
+		))
+	}
+
+	if args.Unvoted {
+		query.Where(challenge.Not(
+			challenge.HasPredictionsWith(
+				prediction.HasUserWith(
+					user.IDEQ(args.UserID),
+				),
+			),
+		))
+	}
+
 	count, err := query.Count(ctx)
 	if err != nil {
 		return nil, 0, err
