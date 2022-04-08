@@ -57,6 +57,7 @@ func (ins *ChallengeListInstance) PrevPage() int {
 
 func (ins *ChallengeListInstance) updateChallenges(ctx context.Context, h *Handler) error {
 	ins.FilterArgs.Limit = h.app.Cfg.App.DefaultChallengePageLimit
+	ins.FilterArgs.UserID = ins.UserID
 	if ins.Page > 0 {
 		ins.FilterArgs.Offset = (ins.Page - 1) * h.app.Cfg.App.DefaultChallengePageLimit
 	} else {
