@@ -39,7 +39,14 @@
         {{ if .User }}
         {{ if .Challenge.UserPrediction }}
         {{ template "challenge-details-scale" . }}
-        <h3 class="title is-3">Вы уже проголосовали: {{ .Challenge.UserPrediction.Prognosis }}</h3>
+        <h3 class="title is-3 has-text-centered">
+            Вы уже проголосовали:
+            {{ if .Challenge.UserPrediction.Prognosis }}
+            это сбудется
+            {{else}}
+            это не сбудется
+            {{end}}
+        </h3>
         {{ else }}
         <!-- else user prediction -->
         <div class="columns">

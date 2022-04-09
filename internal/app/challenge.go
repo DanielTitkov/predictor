@@ -32,8 +32,28 @@ func (a *App) GetClosingChallenges(ctx context.Context) ([]*domain.Challenge, er
 	return a.repo.GetClosingChallenges(ctx, a.Cfg.App.HomeChallengePageLimit)
 }
 
-func (a *App) GetRandomOngoingChallenges(ctx context.Context, userID uuid.UUID) ([]*domain.Challenge, error) {
-	return a.repo.GetRandomOngoingChallenges(ctx, a.Cfg.App.HomeChallengePageLimit, userID)
+func (a *App) GetRandomOngoingChallenges(ctx context.Context, userID uuid.UUID, limit int) ([]*domain.Challenge, error) {
+	if limit == 0 || limit > a.Cfg.App.HomeChallengePageLimit {
+		limit = a.Cfg.App.HomeChallengePageLimit
+	}
+
+	return a.repo.GetRandomOngoingChallenges(ctx, limit, userID)
+}
+
+func (a *App) GetRandomTrueChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error) {
+	if limit == 0 || limit > a.Cfg.App.HomeChallengePageLimit {
+		limit = a.Cfg.App.HomeChallengePageLimit
+	}
+
+	return a.repo.GetRandomTrueChallenges(ctx, limit)
+}
+
+func (a *App) GetRandomFalseChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error) {
+	if limit == 0 || limit > a.Cfg.App.HomeChallengePageLimit {
+		limit = a.Cfg.App.HomeChallengePageLimit
+	}
+
+	return a.repo.GetRandomFalseChallenges(ctx, limit)
 }
 
 func (a *App) GetUserChallenges(ctx context.Context, userID uuid.UUID) ([]*domain.Challenge, error) {

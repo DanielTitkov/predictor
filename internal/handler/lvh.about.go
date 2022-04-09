@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/DanielTitkov/predictor/internal/domain"
+	"github.com/google/uuid"
 
 	"github.com/jfyne/live"
 )
@@ -13,9 +14,17 @@ import (
 type (
 	AboutInstance struct {
 		*CommonInstance
-		Summary *domain.SystemSymmary
+		Summary                 *domain.SystemSymmary
+		TrueChallengeExample    *domain.Challenge
+		FalseChallengeExample   *domain.Challenge
+		OngoingChallengeExample *domain.Challenge
 	}
 )
+
+func (ins *AboutInstance) withError(err error) *AboutInstance {
+	ins.Error = err
+	return ins
+}
 
 func (h *Handler) NewAboutInstance(s live.Socket) *AboutInstance {
 	m, ok := s.Assigns().(*AboutInstance)
@@ -33,6 +42,7 @@ func (h *Handler) About() live.Handler {
 		h.t+"base.layout.html",
 		h.t+"page.about.html",
 		h.t+"part.system_summary.html",
+		h.t+"part.challenge_card.html",
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -77,9 +87,33 @@ func (h *Handler) About() live.Handler {
 
 		summary, err := h.app.GetSystemSummary(ctx)
 		if err != nil {
-			instance.Error = err
+			return instance.withError(err), nil
 		}
 		instance.Summary = summary
+
+		trueExample, err := h.app.GetRandomTrueChallenges(ctx, 1)
+		if err != nil {
+			return instance.withError(err), nil
+		}
+		if len(trueExample) == 1 {
+			instance.TrueChallengeExample = trueExample[0]
+		}
+
+		falseExample, err := h.app.GetRandomFalseChallenges(ctx, 1)
+		if err != nil {
+			return instance.withError(err), nil
+		}
+		if len(falseExample) == 1 {
+			instance.FalseChallengeExample = falseExample[0]
+		}
+
+		ongoingExample, err := h.app.GetRandomOngoingChallenges(ctx, uuid.Nil, 1)
+		if err != nil {
+			return instance.withError(err), nil
+		}
+		if len(ongoingExample) == 1 {
+			instance.OngoingChallengeExample = ongoingExample[0]
+		}
 
 		return instance, nil
 	})

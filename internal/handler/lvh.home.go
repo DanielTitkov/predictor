@@ -96,7 +96,7 @@ func (h *Handler) Home() live.Handler {
 		instance.RandomFinishedChallengesCount = len(randomFinishedChallenges)
 
 		// random ongoing
-		randomOngoingChallenges, err := h.app.GetRandomOngoingChallenges(ctx, instance.UserID)
+		randomOngoingChallenges, err := h.app.GetRandomOngoingChallenges(ctx, instance.UserID, h.app.Cfg.App.HomeChallengePageLimit)
 		if err != nil {
 			instance.Error = err
 			return instance, nil
