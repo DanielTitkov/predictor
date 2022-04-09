@@ -16,7 +16,7 @@ define sedi
 endef
 
 .PHONY: run
-run: entgen
+run: entgen css
 	go run cmd/$(NAME)/main.go ${DEV_CONFIG_PATH}
 
 .PHONY: up
@@ -45,6 +45,10 @@ entgen:
 .PHONY: jup
 jup: 
 	cd scripts && pipenv run jupyter notebook
+
+.PHONY: css
+css:
+	cd web && npm run build
 
 .PHONY: db
 db:

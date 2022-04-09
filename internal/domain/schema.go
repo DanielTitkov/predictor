@@ -15,6 +15,7 @@ type (
 		Picture      string
 		Password     string
 		PasswordHash string
+		Locale       string
 		Meta         map[string]interface{}
 	}
 

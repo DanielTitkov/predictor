@@ -103,8 +103,9 @@ func main() {
 	r.HandleFunc("/auth/{provider}", h.BeginOAuth)
 	r.HandleFunc("/auth/{provider}/callback", h.CompleteOAuth)
 
-	// media
+	// static
 	r.HandleFunc("/favicon.ico", faviconHandler)
+	r.HandleFunc("/static/css/styles.css", stylesHandler)
 
 	// serve
 	logger.Info("starting server", cfg.Server.GetAddress())
@@ -113,4 +114,8 @@ func main() {
 
 func faviconHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "web/favicon.ico")
+}
+
+func stylesHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "web/dist/css/styles.css")
 }

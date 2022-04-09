@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
+	"github.com/DanielTitkov/predictor/internal/domain"
 	"github.com/google/uuid"
 )
 
@@ -22,6 +23,7 @@ func (User) Fields() []ent.Field {
 		field.String("picture").Optional().Default("https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"),
 		field.Bool("admin").Default(false),
 		field.String("password_hash"),
+		field.Enum("locale").Values(domain.LocaleEn, domain.LocaleRu).Default(domain.LocaleRu),
 		field.JSON("meta", make(map[string]interface{})).Optional(),
 	}
 }

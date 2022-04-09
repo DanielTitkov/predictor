@@ -26,6 +26,14 @@ func (a *App) CreateUser(ctx context.Context, u *domain.User) (*domain.User, err
 	}
 
 	u.PasswordHash = string(hash)
+
+	switch u.Locale {
+	case domain.LocaleRu, domain.LocaleEn:
+	default:
+		a.log.Error(fmt.Sprintf("got unknown locale %s, setting to default %s", u.Locale, domain.LocaleEn), errors.New("unknown locale"))
+		u.Locale = domain.LocaleEn
+	}
+
 	user, err := a.repo.CreateUser(ctx, u)
 	if err != nil {
 		return nil, err

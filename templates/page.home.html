@@ -7,13 +7,21 @@
     <h3 class="subtitle is-3">Crowd predictions on various topics</h3>
   </div>
   <div class="block">
-    <div class="columns">
+    <div class="columns is-4">
       <div class="column">
+        <div class="box p-6">
+          <h4 class="title is-4 has-text-centered">Близки к завершению</h4>
+          {{ if eq .ClosingChallengesCount 0 }}
+          <h5 class="title is-5 has-text-centered">Сейчас нет незавершенных предсказаний</h5>
+          {{ else }}
+          {{ range $i, $challenge := .ClosingChallenges }}
+          {{ template "challenge-card" $challenge }}
+          {{ end }}
+          {{ end }}
 
-        <div class="box">
-          <h4 class="title is-4">Открытые предсказания</h4>
+          <h4 class="title is-4 has-text-centered">Открытые предсказания</h4>
           {{ if eq .RandomOngoingChallengesCount 0 }}
-          <h5 class="title is-5">Пока нет вопросов на которые вы ещё не ответили</h5>
+          <h5 class="title is-5 has-text-centered">Пока нет вопросов на которые вы ещё не ответили</h5>
           {{ else }}
           {{ range $i, $challenge := .RandomOngoingChallenges }}
           {{ template "challenge-card" $challenge }}
@@ -21,38 +29,23 @@
           {{ end }}
         </div>
 
-        <div class="box">
-          <h4 class="title is-4">Ожидают результата</h4>
+      </div>
+      <div class="column">
+        <div class="box p-6">
+          <h4 class="title is-4 has-text-centered">Завершенные предсказания</h4>
+          {{ range $i, $challenge := .RandomFinishedChallenges }}
+          {{ template "challenge-card" $challenge }}
+          {{ end }}
+
+          <h4 class="title is-4 has-text-centered">Ожидают результата</h4>
           {{ if eq .RandomPendingChallengesCount 0 }}
-          <h5 class="title is-5">Сейчас нет предсказаний без результата</h5>
+          <h5 class="title is-5 has-text-centered">Сейчас нет предсказаний без результата</h5>
           {{ else }}
           {{ range $i, $challenge := .RandomPendingChallenges }}
           {{ template "challenge-card" $challenge }}
           {{ end }}
           {{ end }}
         </div>
-
-      </div>
-      <div class="column">
-
-        <div class="box">
-          <h4 class="title is-4">Близки к завершению</h4>
-          {{ if eq .ClosingChallengesCount 0 }}
-          <h5 class="title is-5">Сейчас нет незавершенных предсказаний</h5>
-          {{ else }}
-          {{ range $i, $challenge := .ClosingChallenges }}
-          {{ template "challenge-card" $challenge }}
-          {{ end }}
-          {{ end }}
-        </div>
-
-        <div class="box">
-          <h4 class="title is-4">Завершенные предсказания</h4>
-          {{ range $i, $challenge := .RandomFinishedChallenges }}
-          {{ template "challenge-card" $challenge }}
-          {{ end }}
-        </div>
-
       </div>
     </div>
   </div>

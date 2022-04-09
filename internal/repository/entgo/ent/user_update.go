@@ -89,6 +89,20 @@ func (uu *UserUpdate) SetPasswordHash(s string) *UserUpdate {
 	return uu
 }
 
+// SetLocale sets the "locale" field.
+func (uu *UserUpdate) SetLocale(u user.Locale) *UserUpdate {
+	uu.mutation.SetLocale(u)
+	return uu
+}
+
+// SetNillableLocale sets the "locale" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLocale(u *user.Locale) *UserUpdate {
+	if u != nil {
+		uu.SetLocale(*u)
+	}
+	return uu
+}
+
 // SetMeta sets the "meta" field.
 func (uu *UserUpdate) SetMeta(m map[string]interface{}) *UserUpdate {
 	uu.mutation.SetMeta(m)
@@ -259,6 +273,11 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
 		}
 	}
+	if v, ok := uu.mutation.Locale(); ok {
+		if err := user.LocaleValidator(v); err != nil {
+			return &ValidationError{Name: "locale", err: fmt.Errorf(`ent: validator failed for field "User.locale": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -326,6 +345,13 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: user.FieldPasswordHash,
+		})
+	}
+	if value, ok := uu.mutation.Locale(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: user.FieldLocale,
 		})
 	}
 	if value, ok := uu.mutation.Meta(); ok {
@@ -526,6 +552,20 @@ func (uuo *UserUpdateOne) SetPasswordHash(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetLocale sets the "locale" field.
+func (uuo *UserUpdateOne) SetLocale(u user.Locale) *UserUpdateOne {
+	uuo.mutation.SetLocale(u)
+	return uuo
+}
+
+// SetNillableLocale sets the "locale" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLocale(u *user.Locale) *UserUpdateOne {
+	if u != nil {
+		uuo.SetLocale(*u)
+	}
+	return uuo
+}
+
 // SetMeta sets the "meta" field.
 func (uuo *UserUpdateOne) SetMeta(m map[string]interface{}) *UserUpdateOne {
 	uuo.mutation.SetMeta(m)
@@ -703,6 +743,11 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "User.email": %w`, err)}
 		}
 	}
+	if v, ok := uuo.mutation.Locale(); ok {
+		if err := user.LocaleValidator(v); err != nil {
+			return &ValidationError{Name: "locale", err: fmt.Errorf(`ent: validator failed for field "User.locale": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -787,6 +832,13 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: user.FieldPasswordHash,
+		})
+	}
+	if value, ok := uuo.mutation.Locale(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: user.FieldLocale,
 		})
 	}
 	if value, ok := uuo.mutation.Meta(); ok {

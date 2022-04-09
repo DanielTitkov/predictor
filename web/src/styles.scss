@@ -1,0 +1,56 @@
+@charset "utf-8";
+
+// Import a Google Font
+@import url("https://fonts.googleapis.com/css?family=Noto+Sans:100,400,700");
+
+// Set your brand colors
+// $purple: #8A4D76;
+// $pink: #FA7C91;
+// $brown: #757763;
+// $beige-light: #D0D1CD;
+// $beige-lighter: #EFF0EB;
+
+// Update Bulma's global variables
+$family-sans-serif: "Noto Sans", sans-serif;
+$radius-large: 55px;
+// $grey-dark: $brown;
+// $grey-light: $beige-light;
+// $primary: $purple;
+// $link: $pink;
+// $widescreen-enabled: false;
+// $fullhd-enabled: false;
+
+// Update some of Bulma's component variables
+$body-background-color: #fafafa;
+// box
+$box-radius: $radius-large;
+$box-padding: 1.5rem;
+$box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+// notification
+$ntf-padding-size: 2.5rem 2.5rem 2.5rem 2.5rem;
+$notification-radius: $radius-large;
+$notification-padding: $ntf-padding-size;
+$notification-padding-ltr: $ntf-padding-size;
+$notification-padding-rtl: $ntf-padding-size;
+// modal
+$modal-card-head-background-color: #fff;
+$modal-card-body-background-color: #fff;
+$modal-card-head-border-bottom: 0px;
+$modal-card-foot-border-top: 0px;
+$modal-card-head-padding: 30px;
+
+@import "~bulma/bulma";
+
+// custom classes
+.main-footer {
+    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#fafafa+0,837c9b+99 */
+    background: $white-ter;
+    background: -moz-linear-gradient(top, $white-ter 0%, $white-bis 99%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, $white-ter 0%, $white-bis 99%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(
+        to bottom,
+        $white-ter 0%,
+        $white-bis 99%
+    ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$white-ter', endColorstr='$white-bis',GradientType=0 ); /* IE6-9 */
+}

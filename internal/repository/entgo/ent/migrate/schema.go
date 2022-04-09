@@ -73,6 +73,7 @@ var (
 		{Name: "picture", Type: field.TypeString, Nullable: true, Default: "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"},
 		{Name: "admin", Type: field.TypeBool, Default: false},
 		{Name: "password_hash", Type: field.TypeString},
+		{Name: "locale", Type: field.TypeEnum, Enums: []string{"en", "ru"}, Default: "ru"},
 		{Name: "meta", Type: field.TypeJSON, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.

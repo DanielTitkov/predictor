@@ -767,6 +767,54 @@ func PasswordHashContainsFold(v string) predicate.User {
 	})
 }
 
+// LocaleEQ applies the EQ predicate on the "locale" field.
+func LocaleEQ(v Locale) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleNEQ applies the NEQ predicate on the "locale" field.
+func LocaleNEQ(v Locale) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLocale), v))
+	})
+}
+
+// LocaleIn applies the In predicate on the "locale" field.
+func LocaleIn(vs ...Locale) predicate.User {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.User(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldLocale), v...))
+	})
+}
+
+// LocaleNotIn applies the NotIn predicate on the "locale" field.
+func LocaleNotIn(vs ...Locale) predicate.User {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.User(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldLocale), v...))
+	})
+}
+
 // MetaIsNil applies the IsNil predicate on the "meta" field.
 func MetaIsNil() predicate.User {
 	return predicate.User(func(s *sql.Selector) {

@@ -1505,6 +1505,7 @@ type UserMutation struct {
 	picture            *string
 	admin              *bool
 	password_hash      *string
+	locale             *user.Locale
 	meta               *map[string]interface{}
 	clearedFields      map[string]struct{}
 	predictions        map[uuid.UUID]struct{}
@@ -1887,6 +1888,42 @@ func (m *UserMutation) ResetPasswordHash() {
 	m.password_hash = nil
 }
 
+// SetLocale sets the "locale" field.
+func (m *UserMutation) SetLocale(u user.Locale) {
+	m.locale = &u
+}
+
+// Locale returns the value of the "locale" field in the mutation.
+func (m *UserMutation) Locale() (r user.Locale, exists bool) {
+	v := m.locale
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocale returns the old "locale" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLocale(ctx context.Context) (v user.Locale, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLocale is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLocale requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocale: %w", err)
+	}
+	return oldValue.Locale, nil
+}
+
+// ResetLocale resets all changes to the "locale" field.
+func (m *UserMutation) ResetLocale() {
+	m.locale = nil
+}
+
 // SetMeta sets the "meta" field.
 func (m *UserMutation) SetMeta(value map[string]interface{}) {
 	m.meta = &value
@@ -2063,7 +2100,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.create_time != nil {
 		fields = append(fields, user.FieldCreateTime)
 	}
@@ -2084,6 +2121,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.password_hash != nil {
 		fields = append(fields, user.FieldPasswordHash)
+	}
+	if m.locale != nil {
+		fields = append(fields, user.FieldLocale)
 	}
 	if m.meta != nil {
 		fields = append(fields, user.FieldMeta)
@@ -2110,6 +2150,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Admin()
 	case user.FieldPasswordHash:
 		return m.PasswordHash()
+	case user.FieldLocale:
+		return m.Locale()
 	case user.FieldMeta:
 		return m.Meta()
 	}
@@ -2135,6 +2177,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldAdmin(ctx)
 	case user.FieldPasswordHash:
 		return m.OldPasswordHash(ctx)
+	case user.FieldLocale:
+		return m.OldLocale(ctx)
 	case user.FieldMeta:
 		return m.OldMeta(ctx)
 	}
@@ -2194,6 +2238,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPasswordHash(v)
+		return nil
+	case user.FieldLocale:
+		v, ok := value.(user.Locale)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocale(v)
 		return nil
 	case user.FieldMeta:
 		v, ok := value.(map[string]interface{})
@@ -2286,6 +2337,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldPasswordHash:
 		m.ResetPasswordHash()
+		return nil
+	case user.FieldLocale:
+		m.ResetLocale()
 		return nil
 	case user.FieldMeta:
 		m.ResetMeta()

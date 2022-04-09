@@ -21,19 +21,19 @@ func (a *App) GetChallengeByID(ctx context.Context, id uuid.UUID, userID uuid.UU
 }
 
 func (a *App) GetRandomFinishedChallenges(ctx context.Context) ([]*domain.Challenge, error) {
-	return a.repo.GetRandomFinishedChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit)
+	return a.repo.GetRandomFinishedChallenges(ctx, a.Cfg.App.HomeChallengePageLimit)
 }
 
 func (a *App) GetRandomPendingChallenges(ctx context.Context) ([]*domain.Challenge, error) {
-	return a.repo.GetRandomPendingChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit)
+	return a.repo.GetRandomPendingChallenges(ctx, a.Cfg.App.HomeChallengePageLimit)
 }
 
 func (a *App) GetClosingChallenges(ctx context.Context) ([]*domain.Challenge, error) {
-	return a.repo.GetClosingChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit)
+	return a.repo.GetClosingChallenges(ctx, a.Cfg.App.HomeChallengePageLimit)
 }
 
 func (a *App) GetRandomOngoingChallenges(ctx context.Context, userID uuid.UUID) ([]*domain.Challenge, error) {
-	return a.repo.GetRandomOngoingChallenges(ctx, a.Cfg.App.DefaultChallengePageLimit, userID)
+	return a.repo.GetRandomOngoingChallenges(ctx, a.Cfg.App.HomeChallengePageLimit, userID)
 }
 
 func (a *App) GetUserChallenges(ctx context.Context, userID uuid.UUID) ([]*domain.Challenge, error) {

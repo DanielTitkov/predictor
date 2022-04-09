@@ -97,6 +97,20 @@ func (uc *UserCreate) SetPasswordHash(s string) *UserCreate {
 	return uc
 }
 
+// SetLocale sets the "locale" field.
+func (uc *UserCreate) SetLocale(u user.Locale) *UserCreate {
+	uc.mutation.SetLocale(u)
+	return uc
+}
+
+// SetNillableLocale sets the "locale" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLocale(u *user.Locale) *UserCreate {
+	if u != nil {
+		uc.SetLocale(*u)
+	}
+	return uc
+}
+
 // SetMeta sets the "meta" field.
 func (uc *UserCreate) SetMeta(m map[string]interface{}) *UserCreate {
 	uc.mutation.SetMeta(m)
@@ -234,6 +248,10 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultAdmin
 		uc.mutation.SetAdmin(v)
 	}
+	if _, ok := uc.mutation.Locale(); !ok {
+		v := user.DefaultLocale
+		uc.mutation.SetLocale(v)
+	}
 	if _, ok := uc.mutation.ID(); !ok {
 		v := user.DefaultID()
 		uc.mutation.SetID(v)
@@ -269,6 +287,14 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.PasswordHash(); !ok {
 		return &ValidationError{Name: "password_hash", err: errors.New(`ent: missing required field "User.password_hash"`)}
+	}
+	if _, ok := uc.mutation.Locale(); !ok {
+		return &ValidationError{Name: "locale", err: errors.New(`ent: missing required field "User.locale"`)}
+	}
+	if v, ok := uc.mutation.Locale(); ok {
+		if err := user.LocaleValidator(v); err != nil {
+			return &ValidationError{Name: "locale", err: fmt.Errorf(`ent: validator failed for field "User.locale": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -361,6 +387,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldPasswordHash,
 		})
 		_node.PasswordHash = value
+	}
+	if value, ok := uc.mutation.Locale(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: user.FieldLocale,
+		})
+		_node.Locale = value
 	}
 	if value, ok := uc.mutation.Meta(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

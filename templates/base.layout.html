@@ -6,22 +6,65 @@
   <meta charset="utf-8">
   <title>{{ template "title" . }}</title>
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"> -->
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+    .challenge-card-true {
+      /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#7aef56+0,4df297+99 */
+      background: #7aef56;
+      /* Old browsers */
+      background: -moz-linear-gradient(-45deg, #7aef56 0%, #4df297 99%);
+      /* FF3.6-15 */
+      background: -webkit-linear-gradient(-45deg, #7aef56 0%, #4df297 99%);
+      /* Chrome10-25,Safari5.1-6 */
+      background: linear-gradient(135deg, #7aef56 0%, #4df297 99%);
+      /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#7aef56', endColorstr='#4df297', GradientType=1);
+      /* IE6-9 fallback on horizontal gradient */
+    }
+
+    .challenge-card-false {
+      /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#e88f9b+0,ea83d4+99 */
+      background: #e88f9b;
+      /* Old browsers */
+      background: -moz-linear-gradient(-45deg, #e88f9b 0%, #ea83d4 99%);
+      /* FF3.6-15 */
+      background: -webkit-linear-gradient(-45deg, #e88f9b 0%, #ea83d4 99%);
+      /* Chrome10-25,Safari5.1-6 */
+      background: linear-gradient(135deg, #e88f9b 0%, #ea83d4 99%);
+      /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e88f9b', endColorstr='#ea83d4', GradientType=1);
+      /* IE6-9 fallback on horizontal gradient */
+    }
+
+    .challenge-card-unknown {
+      /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#8abcfc+0,c7d7f9+99 */
+      background: #8abcfc;
+      /* Old browsers */
+      background: -moz-linear-gradient(-45deg, #8abcfc 0%, #c7d7f9 99%);
+      /* FF3.6-15 */
+      background: -webkit-linear-gradient(-45deg, #8abcfc 0%, #c7d7f9 99%);
+      /* Chrome10-25,Safari5.1-6 */
+      background: linear-gradient(135deg, #8abcfc 0%, #c7d7f9 99%);
+      /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#8abcfc', endColorstr='#c7d7f9', GradientType=1);
+      /* IE6-9 fallback on horizontal gradient */
+    }
+  </style>
 </head>
 
 <body>
   <!-- debug start -->
   {{ if .Env }}
   {{ if eq .Env "dev" }}
-  <div class="box">
+  <!-- <div class="box">
     <p class="heading">Debug info</p>
     <p><b>Session: </b>{{ .Session }}</p>
     <p><b>Error: </b>{{ .Error }}</p>
     <p><b>User: </b>{{ .User }}</p>
-  </div>
+  </div> -->
   {{ end }}
   {{ end }}
   <!-- debug end -->
@@ -35,20 +78,13 @@
       <script type="text/javascript" src="/live.js"></script>
     </div>
     {{ if not .User }}
-    <div class="container box has-background-white-ter">
+    <div class="container box">
       <h3 class="title is-3 has-text-centered">Войдите, чтобы оставлять прогнозы</h3>
       {{ template "login-block" }}
     </div>
     {{ end }}
   </section>
-  <footer class="footer">
-    <div class="content has-text-centered">
-      <p>
-        The source code is licensed
-        <a href="https://www.gnu.org/licenses/agpl-3.0.en.html">GNU Affero General Public License</a>.
-      </p>
-    </div>
-  </footer>
+  {{ template "footer" }}
   {{ if .ShowLoginModal }}
   {{ template "login-modal" . }}
   {{ end }}
@@ -76,6 +112,17 @@
 </script>
 
 </html>
+
+{{ define "footer" }}
+<footer class="footer main-footer">
+  <div class="content has-text-centered">
+    <p>
+      The source code is licensed
+      <a href="https://www.gnu.org/licenses/agpl-3.0.en.html">GNU Affero General Public License</a>.
+    </p>
+  </div>
+</footer>
+{{ end }}
 
 {{ define "login-block" }}
 <div class="block has-text-centered">
@@ -118,47 +165,60 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">Войти</p>
+      <p class="modal-card-title has-text-centered">Войти</p>
       <button live-click="close-auth-modals" class="delete" aria-label="close"></button>
     </header>
     <section class="modal-card-body has-text-centered">
       {{ template "login-block" }}
     </section>
+    <footer class="modal-card-foot">
+    </footer>
   </div>
 </div>
 {{ end }}
 
 {{ define "navigation" }}
 <!-- Main container -->
-<nav class="level p-4 is-size-4">
-  <!-- Left side -->
-  <div class="level-left">
-    <div class="level-item">
-      <p class="level-item mr-5"><a href="/"><b class="has-text-dark">Predictor</b></a></p>
-    </div>
-    <div class="level-item">
-      <p class="level-item mr-5"><a href="/challenges">Предсказания</a></p>
-    </div>
-    <div class="level-item">
-      <p class="level-item mr-5"><a href="/about">О проекте</a></p>
-    </div>
-  </div>
+<nav class="level is-mobile is-centered p-5 is-size-2">
+  <div class="level-item">
 
-  <!-- Right side -->
-  <div class="level-right">
-    {{ if .User }}
-    <div class="level-item mr-5">
-      <div class="media-left">
-        <figure class="image is-48x48">
-          <img class="is-rounded" src="{{ .User.Picture }}" alt="userpic">
-        </figure>
-      </div>
-      <a href="/profile">Профиль</a>
+
+    <div class="mx-5">
+      <a href="/">
+        <i class="bi bi-house-fill"></i>
+      </a>
     </div>
-    <p class="level-item"><a live-click="open-logout-modal">Выход</a></p>
-    {{ else }}
-    <p class="level-item"><a live-click="open-login-modal">Вход</a></p>
+    <div class="mx-5">
+      <a href="/challenges">
+        <i class="bi bi-list-ul"></i>
+      </a>
+    </div>
+    <div class="mx-5">
+      <a href="/about">
+        <i class="bi bi-question"></i>
+      </a>
+    </div>
+
+    {{ if .User }}
+    <div class="mx-5">
+      <!-- user profile -->
+      <a href="/profile">
+        <i class="bi bi-person-fill"></i>
+      </a>
+    </div>
     {{ end }}
+    <div class="mx-5">
+      <!-- enter or exit -->
+      {{ if .User }}
+      <a live-click="open-logout-modal">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+      {{ else }}
+      <a live-click="open-login-modal">
+        <i class="bi bi-box-arrow-in-right"></i>
+      </a>
+      {{ end }}
+    </div>
   </div>
 </nav>
 {{ end }}
@@ -185,4 +245,19 @@
 <h3 class="title is-3 mb-6">
   <a href="/"><i class="bi-arrow-left"></i> Назад</a>
 </h3>
+{{ end }}
+
+
+{{ define "challenge-card-style" }}
+
+{{ if .HasOutcome }}
+{{ if .HasOutcomeAndTrue }}
+challenge-card-true
+{{ else }}
+challenge-card-false
+{{ end }}
+{{ else }}
+challenge-card-unknown
+{{ end }}
+
 {{ end }}
