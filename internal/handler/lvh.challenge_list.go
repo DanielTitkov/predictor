@@ -2,11 +2,9 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"html/template"
 	"log"
 	"math"
-	"net/url"
 
 	"github.com/DanielTitkov/predictor/internal/domain"
 
@@ -142,7 +140,7 @@ func (h *Handler) ChallengeList() live.Handler {
 		return instance, nil
 	})
 
-	lvh.HandleParams(func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+	lvh.HandleEvent(eventChallengeListUpdatePage, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
 		page := p.Int(paramChallengeListPage)
 		instance := h.NewChallengeListInstance(s)
 		instance.Page = page
@@ -151,14 +149,6 @@ func (h *Handler) ChallengeList() live.Handler {
 			return instance.withError(err), nil
 		}
 		return instance, nil
-	})
-
-	lvh.HandleEvent(eventChallengeListUpdatePage, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
-		page := p.Int(paramChallengeListPage)
-		v := url.Values{}
-		v.Add(paramChallengeListPage, fmt.Sprintf("%d", page))
-		s.PatchURL(v)
-		return s.Assigns(), nil
 	})
 
 	lvh.HandleEvent(eventFilterChallenges, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {

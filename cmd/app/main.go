@@ -113,7 +113,7 @@ func main() {
 }
 
 func faviconHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "web/favicon.ico")
+	http.ServeFile(w, r, "web/media/favicon.ico")
 }
 
 func stylesHandler(w http.ResponseWriter, r *http.Request) {

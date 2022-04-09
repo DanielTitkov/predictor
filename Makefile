@@ -20,11 +20,11 @@ run: entgen css
 	go run cmd/$(NAME)/main.go ${DEV_CONFIG_PATH}
 
 .PHONY: up
-up:
+up: 
 	docker-compose -f ${DOCKER_COMPOSE_FILE} up --build --remove-orphans --always-recreate-deps --renew-anon-volumes
 
 .PHONY: test
-test:
+test: entgen
 	go test ./... -cover
 
 .PHONY: build
