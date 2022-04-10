@@ -3,36 +3,77 @@
 <main>
   {{ template "back-to-home" }}
   <div class="section">
-    <div class="level">
-      <div class="level-left">
-        <div class="level-item">
-          <div class="block">
+    <div class="columns">
+      <div class="column is-4">
+        <div class="box notification has-background-white">
+          <div class="block has-text-centered">
             <figure class="image is-128x128">
               <img class="is-rounded" src="{{ .User.Picture }}" alt="userpic">
             </figure>
           </div>
-        </div>
-        <div class="level-item">
-          <div class="block">
-            <p class="heading">Данные профиля</p>
-            <div class="has-text-left">
-              <p>
-                <b>Имя: </b>
-                <span>{{ .User.Name }}</span>
-              </p>
-              <p>
-                <b>Email: </b>
-                <span>{{ .User.Email }}</span>
-              </p>
-              <p>
-                <b>Язык: </b>
-                <span>{{ .User.Locale }}</span>
-              </p>
-            </div>
+          <div class="block has-text-left">
+            <p>
+              <b>Имя: </b>
+              <span>{{ .User.Name }}</span>
+            </p>
+            <p>
+              <b>Email: </b>
+              <span>{{ .User.Email }}</span>
+            </p>
+            <p>
+              <b>Язык: </b>
+              <span>{{ .User.Locale }}</span>
+            </p>
           </div>
         </div>
+      </div>
+      <div class="column is-4">
+        <div id="my-chart">
+          <ul class="charts-css legend">
+          </ul>
+          <table class="charts-css bar show-labels">
+            <caption> 2016 Summer Olympics Medal Table </caption>
+            <thead>
+              <tr>
+                <th scope="col"> Правильные </th>
+                <th scope="col"> Ошибочные </th>
+                <th scope="col"> Неизвестные </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row"> Правильные </th>
+                <td style='--size: {{ template "user-summary-chart-sum-correct" .UserSummary }}'> {{ .UserSummary.CorrectPredictions }} </td>
+              </tr>
+              <tr>
+                <th scope="row"> Ошибочные </th>
+                <td style='--size: {{ template "user-summary-chart-sum-incorrect" .UserSummary }}'> {{ .UserSummary.IncorrectPredictions }} </td>
+              </tr>
+              <tr>
+                <th scope="row"> Неизвестные </th>
+                <td style='--size: {{ template "user-summary-chart-sum-unknown" .UserSummary }}'> {{ .UserSummary.UnknownPredictions }} </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="column is-4">
+        <h3 class="title is-3 has-text-centered">Ачивки</h3>
+
       </div>
     </div>
   </div>
 </main>
+{{ end }}
+
+{{ define "user-summary-chart-sum-correct" }}
+calc( {{ .CorrectPredictions }} / ({{ .CorrectPredictions }} + {{ .IncorrectPredictions }} + {{ .UnknownPredictions }} ))
+{{ end }}
+
+{{ define "user-summary-chart-sum-incorrect" }}
+calc( {{ .IncorrectPredictions }} / ({{ .CorrectPredictions }} + {{ .IncorrectPredictions }} + {{ .UnknownPredictions }} ))
+{{ end }}
+
+{{ define "user-summary-chart-sum-unknown" }}
+calc( {{ .UnknownPredictions }} / ({{ .CorrectPredictions }} + {{ .IncorrectPredictions }} + {{ .UnknownPredictions }} ))
 {{ end }}

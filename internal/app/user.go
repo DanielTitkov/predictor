@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/google/uuid"
+
 	"github.com/markbates/goth"
 	"github.com/sethvargo/go-password/password"
 
@@ -157,4 +159,8 @@ func (a *App) loadUserPresets() error {
 	}
 
 	return nil
+}
+
+func (a *App) GetUserSummary(ctx context.Context, userID uuid.UUID) (*domain.UserSummary, error) {
+	return a.repo.GetUserSummary(ctx, userID)
 }

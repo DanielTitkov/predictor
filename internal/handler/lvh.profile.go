@@ -14,9 +14,15 @@ import (
 type (
 	ProfileInstance struct {
 		*CommonInstance
-		Summary *domain.SystemSymmary
+		Summary     *domain.SystemSymmary
+		UserSummary *domain.UserSummary
 	}
 )
+
+func (ins *ProfileInstance) withError(err error) *ProfileInstance {
+	ins.Error = err
+	return ins
+}
 
 func (h *Handler) NewProfileInstance(s live.Socket) *ProfileInstance {
 	m, ok := s.Assigns().(*ProfileInstance)
@@ -79,6 +85,12 @@ func (h *Handler) Profile() live.Handler {
 			s.Redirect(h.url404())
 			return nil, nil
 		}
+
+		userSummary, err := h.app.GetUserSummary(ctx, instance.UserID)
+		if err != nil {
+			return instance.withError(err), nil
+		}
+		instance.UserSummary = userSummary
 
 		return instance, nil
 	})

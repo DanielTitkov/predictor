@@ -19,6 +19,13 @@ type (
 		Meta         map[string]interface{}
 	}
 
+	UserSummary struct {
+		UserID               uuid.UUID
+		CorrectPredictions   int
+		IncorrectPredictions int
+		UnknownPredictions   int
+	}
+
 	UserSession struct {
 		ID           int    // probably uuid not needed here, sessions are temporary anyways
 		SID          string // code to identify the session
