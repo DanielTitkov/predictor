@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/jfyne/live"
 
@@ -67,6 +68,11 @@ func (h *Handler) NewCommon(s live.Socket) *CommonInstance {
 		ShowLoginModal:  false,
 		ShowLogoutModal: false,
 	}
+}
+
+func (h *Handler) url404() *url.URL {
+	u, _ := url.Parse("/404")
+	return u
 }
 
 func (c *CommonInstance) CloseAuthModals() {

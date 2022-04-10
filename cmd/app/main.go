@@ -91,6 +91,7 @@ func main() {
 	r.Handle("/challenges", live.NewHttpHandler(store, h.ChallengeList()))
 	r.Handle("/about", live.NewHttpHandler(store, h.About()))
 	r.Handle("/profile", live.NewHttpHandler(store, h.Profile()))
+	r.Handle("/404", live.NewHttpHandler(store, h.NotFound()))
 	r.Handle("/", live.NewHttpHandler(store, h.Home()))
 	// r.Handle("/tasks", live.NewHttpHandler(store, h.Tasks()))
 

@@ -5,23 +5,24 @@ import (
 	"html/template"
 	"log"
 
-	"github.com/DanielTitkov/predictor/internal/domain"
-	"github.com/google/uuid"
-
 	"github.com/jfyne/live"
 )
 
 type (
-	ProfileInstance struct {
+	NotFoundInstance struct {
 		*CommonInstance
-		Summary *domain.SystemSymmary
 	}
 )
 
-func (h *Handler) NewProfileInstance(s live.Socket) *ProfileInstance {
-	m, ok := s.Assigns().(*ProfileInstance)
+func (ins *NotFoundInstance) withError(err error) *NotFoundInstance {
+	ins.Error = err
+	return ins
+}
+
+func (h *Handler) NewNotFoundInstance(s live.Socket) *NotFoundInstance {
+	m, ok := s.Assigns().(*NotFoundInstance)
 	if !ok {
-		return &ProfileInstance{
+		return &NotFoundInstance{
 			CommonInstance: h.NewCommon(s),
 		}
 	}
@@ -29,10 +30,10 @@ func (h *Handler) NewProfileInstance(s live.Socket) *ProfileInstance {
 	return m
 }
 
-func (h *Handler) Profile() live.Handler {
+func (h *Handler) NotFound() live.Handler {
 	t, err := template.ParseFiles(
 		h.t+"base.layout.html",
-		h.t+"page.profile.html",
+		h.t+"page.404.html",
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -42,7 +43,7 @@ func (h *Handler) Profile() live.Handler {
 	// COMMON BLOCK START
 	// this logic must be present in all handlers
 	{
-		constructor := h.NewProfileInstance // NB: make sure constructor is correct
+		constructor := h.NewNotFoundInstance // NB: make sure constructor is correct
 		// SAFE TO COPY
 		lvh.HandleEvent(eventCloseAuthModals, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
 			instance := constructor(s)
@@ -72,14 +73,8 @@ func (h *Handler) Profile() live.Handler {
 	// COMMON BLOCK END
 
 	lvh.HandleMount(func(ctx context.Context, s live.Socket) (interface{}, error) {
-		instance := h.NewProfileInstance(s)
+		instance := h.NewNotFoundInstance(s)
 		instance.fromContext(ctx)
-
-		if instance.User == nil || instance.UserID == uuid.Nil {
-			s.Redirect(h.url404())
-			return nil, nil
-		}
-
 		return instance, nil
 	})
 
