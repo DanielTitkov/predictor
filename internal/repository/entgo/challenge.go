@@ -407,22 +407,45 @@ func (r *EntgoRepository) FilterChallenges(ctx context.Context, args *domain.Fil
 	return res, count, nil
 }
 
-func (r *EntgoRepository) GetUserChallenges(ctx context.Context, userID uuid.UUID) ([]*domain.Challenge, error) {
-	chs, err := r.client.Challenge.
+func (r *EntgoRepository) FilterUserChallenges(ctx context.Context, args *domain.FilterChallengesArgs) ([]*domain.Challenge, int, error) {
+	query := r.client.Challenge.
 		Query().
 		Where(challenge.HasPredictionsWith(
 			prediction.HasUserWith(
-				user.IDEQ(userID),
+				user.IDEQ(args.UserID),
 			),
 		)).
 		WithPredictions(func(q *ent.PredictionQuery) {
 			q.Where(prediction.HasUserWith(
-				user.IDEQ(userID),
+				user.IDEQ(args.UserID),
 			))
-		}).
+		})
+
+	if args.Finished {
+		query.Where(challenge.And(
+			challenge.OutcomeNotNil(),
+			challenge.CreateTimeLT(time.Now()),
+			challenge.EndTimeLT(time.Now()),
+		))
+	}
+
+	if args.Ongoing {
+		query.Where(challenge.And(
+			challenge.OutcomeIsNil(),
+		))
+	}
+
+	count, err := query.Count(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	chs, err := query.
+		Limit(args.Limit).
+		Offset(args.Offset).
 		All(ctx)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	var res []*domain.Challenge
@@ -434,12 +457,12 @@ func (r *EntgoRepository) GetUserChallenges(ctx context.Context, userID uuid.UUI
 					entToDomainPrediction(ch.Edges.Predictions[0])),
 				)
 			} else {
-				return nil, fmt.Errorf("expected exactly 1 prediction, but got %d", len(ch.Edges.Predictions))
+				return nil, 0, fmt.Errorf("expected exactly 1 prediction, but got %d", len(ch.Edges.Predictions))
 			}
 		}
 	}
 
-	return res, nil
+	return res, count, nil
 }
 
 func entToDomainChallenge(ch *ent.Challenge, userPrediction *domain.Prediction) *domain.Challenge {

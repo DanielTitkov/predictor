@@ -50,6 +50,8 @@ $modal-card-body-background-color: #fff;
 $modal-card-head-border-bottom: 0px;
 $modal-card-foot-border-top: 0px;
 $modal-card-head-padding: 30px;
+// tags
+$tag-radius: $radius-large;
 
 @import "~bulma/bulma";
 
@@ -140,4 +142,20 @@ input[type="checkbox"]:disabled {
     background: -webkit-linear-gradient(-45deg, $green-dark 25%, $green 99%);
     background: linear-gradient(135deg, $green-dark 25%, $green 99%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$green-dark', endColorstr='$green', GradientType=1);
+}
+
+.prognosis-tag-true {
+    background: $yellow;
+    background: -moz-linear-gradient(45deg, $yellow 5%, $green 90%);
+    background: -webkit-linear-gradient(45deg, $yellow 5%, $green 90%);
+    background: linear-gradient(45deg, $yellow 5%, $green 90%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$yellow', endColorstr='$green', GradientType=1);
+}
+
+.prognosis-tag-false {
+    background: $pink;
+    background: -moz-linear-gradient(45deg, $pink 5%, $red 90%);
+    background: -webkit-linear-gradient(45deg, $pink 5%, $red 90%);
+    background: linear-gradient(45deg, $pink 5%, $red 90%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$pink', endColorstr='$red', GradientType=1);
 }

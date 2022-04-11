@@ -59,7 +59,7 @@
       <h4 class="subtitle is-5">Страница <b>{{ .Page }}</b> из <b>{{ .MaxPage }}</b></h4>
     </div>
     <div class="block">
-      {{ template "pagination" . }}
+      {{ template "challenge-list-pagination" . }}
     </div>
     <div class="block">
       {{ if eq .ChallengeCount 0 }}
@@ -71,38 +71,8 @@
       {{ end }}
     </div>
     <div class="block">
-      {{ template "pagination" . }}
+      {{ template "challenge-list-pagination" . }}
     </div>
   </div>
 </main>
-{{ end }}
-
-{{ define "pagination" }}
-<nav class="level" role="navigation" aria-label="pagination">
-  <div class="level-left">
-    <div class="level-item">
-      {{ if gt .Page 1 }}
-      <h3 class="title is-4">
-        <a live-click="challenge-list-update-page" live-value-page="{{.PrevPage}}">
-          <i class="bi-chevron-left"></i>
-        </a>
-      </h3>
-      {{ end }}
-    </div>
-  </div>
-
-  <div class="level-right">
-    <div class="level-item">
-      {{ if ne .MaxPage 1 }}
-      {{ if lt .Page .MaxPage }}
-      <h3 class="title is-4">
-        <a live-click="challenge-list-update-page" live-value-page="{{.NextPage}}">
-          <i class="bi-chevron-right"></i>
-        </a>
-      </h3>
-      {{ end }}
-      {{ end }}
-    </div>
-  </div>
-</nav>
 {{ end }}

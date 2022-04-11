@@ -63,7 +63,17 @@ func (ch *Challenge) EndStr() string {
 	return ch.EndTime.Format(ChallengeTimeFormat)
 }
 
-func (a *FilterChallengesArgs) Validate() error {
+func (a *FilterChallengesArgs) Validate(requireUser bool) error {
+	if requireUser {
+		if a.UserID == uuid.Nil {
+			return errors.New("user id required")
+		}
+
+		if a.Unvoted {
+			return errors.New("unvoted is not supported with require user query")
+		}
+	}
+
 	if a.Ongoing && a.Finished {
 		return errors.New("invalid request: cannot query 'ongoing' and 'finished' at the same time")
 	}

@@ -56,12 +56,16 @@ func (a *App) GetRandomFalseChallenges(ctx context.Context, limit int) ([]*domai
 	return a.repo.GetRandomFalseChallenges(ctx, limit)
 }
 
-func (a *App) GetUserChallenges(ctx context.Context, userID uuid.UUID) ([]*domain.Challenge, error) {
-	return a.repo.GetUserChallenges(ctx, userID)
+func (a *App) FilterUserChallenges(ctx context.Context, args *domain.FilterChallengesArgs) ([]*domain.Challenge, int, error) {
+	if err := args.Validate(true); err != nil {
+		return nil, 0, err
+	}
+
+	return a.repo.FilterUserChallenges(ctx, args)
 }
 
 func (a *App) FilterChallenges(ctx context.Context, args *domain.FilterChallengesArgs) ([]*domain.Challenge, int, error) {
-	if err := args.Validate(); err != nil {
+	if err := args.Validate(false); err != nil {
 		return nil, 0, err
 	}
 

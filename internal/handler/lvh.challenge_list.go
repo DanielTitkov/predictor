@@ -90,6 +90,7 @@ func (h *Handler) ChallengeList() live.Handler {
 		h.t+"base.layout.html",
 		h.t+"page.challenge_list.html",
 		h.t+"part.challenge_list_item.html",
+		h.t+"part.challenge_list_pagination.html",
 	)
 	if err != nil {
 		log.Fatal(err)

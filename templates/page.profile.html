@@ -69,5 +69,80 @@
       </div>
     </div>
   </div>
+  <div class="section">
+    <h1 class="title is-3 has-text-centered">Ваши предсказания</h1>
+    <div class="tabs is-large is-centered">
+      <ul>
+        <li class="{{ if .FilterArgs.Finished }}is-active{{end}}"><a live-click="select-finished">Завершённые</a></li>
+        <li class="{{ if .FilterArgs.Ongoing }}is-active{{end}}"><a live-click="select-ongoing">Открытые</a></li>
+      </ul>
+    </div>
+    <div class="level">
+      <h4 class="title is-4">Найдено предсказаний: {{ .ChallengeCount }}</h4>
+      <h4 class="subtitle is-5">Страница <b>{{ .Page }}</b> из <b>{{ .MaxPage }}</b></h4>
+    </div>
+    <div class="block">
+      {{ template "challenge-list-pagination" . }}
+    </div>
+    <div class="block">
+      {{ if eq .ChallengeCount 0 }}
+      <h5 class="title is-5">Пока нет предсказания по критериям</h5>
+      {{ else }}
+      {{ range $i, $challenge := .Challenges }}
+      <div class="columns">
+        <div class="column is-8 is-align-self-center">
+          {{ template "challenge-list-item" $challenge }}
+        </div>
+        <div class="column is-align-self-center">
+          <div class="columns is-mobile">
+            <div class="column is-narrow is-size-1 is-align-self-center has-text-centered-tablet">
+              <p class="is-family-monospace">
+                {{ if $challenge.HasOutcome }}
+                {{ if eq $challenge.UserPrediction.Prognosis $challenge.HasOutcomeAndTrue }}
+                &equals;
+                {{ else }}
+                &NotEqual;
+                {{ end }}
+                {{ else }}
+                ?
+                {{ end }}
+              </p>
+            </div>
+            <div class="column is-narrow is-align-self-center has-text-centered-tablet">
+              {{ template "prognosis-tag" $challenge.UserPrediction.Prognosis }}
+            </div>
+            <div class="column is-narrow is-align-self-center has-text-right is-size-1">
+              {{ if $challenge.HasOutcome }}
+              {{ if eq $challenge.UserPrediction.Prognosis $challenge.HasOutcomeAndTrue }}
+              🤩
+              {{ else }}
+              🙄
+              {{ end }}
+              {{ else }}
+              🥺
+              {{ end }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="is-hidden-tablet"> 
+      {{ end }}
+      {{ end }}
+    </div>
+    <div class="block">
+      {{ template "challenge-list-pagination" . }}
+    </div>
+  </div>
 </main>
+{{ end }}
+
+{{ define "prognosis-tag" }}
+<span class="tag px-5 py-6 {{ if . }}prognosis-tag-true{{ else }}prognosis-tag-false{{ end }} is-large">
+  Прогноз:&nbsp;
+  {{ if . }}
+  <i class="bi-check-circle-fill" style="font-size: 2rem;"></i>
+  {{ else }}
+  <i class="bi-x-circle-fill" style="font-size: 2rem;"></i>
+  {{ end }}
+</span>
 {{ end }}
