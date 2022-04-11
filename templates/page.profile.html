@@ -5,75 +5,69 @@
   <div class="section">
     <div class="columns">
       <div class="column is-4">
+        <div class="block has-text-centered">
+          <figure class="image is-128x128">
+            <img class="is-rounded" src="{{ .User.Picture }}" alt="userpic">
+          </figure>
+        </div>
+        <div class="block has-text-left">
+          <p>
+            <b>Имя: </b>
+            <span>{{ .User.Name }}</span>
+          </p>
+          <p>
+            <b>Email: </b>
+            <span>{{ .User.Email }}</span>
+          </p>
+          <p>
+            <b>Язык: </b>
+            <span>{{ .User.Locale }}</span>
+          </p>
+        </div>
+      </div>
+      <div class="column">
         <div class="box notification has-background-white">
-          <div class="block has-text-centered">
-            <figure class="image is-128x128">
-              <img class="is-rounded" src="{{ .User.Picture }}" alt="userpic">
-            </figure>
-          </div>
-          <div class="block has-text-left">
-            <p>
-              <b>Имя: </b>
-              <span>{{ .User.Name }}</span>
-            </p>
-            <p>
-              <b>Email: </b>
-              <span>{{ .User.Email }}</span>
-            </p>
-            <p>
-              <b>Язык: </b>
-              <span>{{ .User.Locale }}</span>
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="column is-4">
-        <div id="my-chart">
-          <ul class="charts-css legend">
-          </ul>
-          <table class="charts-css bar show-labels">
-            <caption> 2016 Summer Olympics Medal Table </caption>
-            <thead>
-              <tr>
-                <th scope="col"> Правильные </th>
-                <th scope="col"> Ошибочные </th>
-                <th scope="col"> Неизвестные </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row"> Правильные </th>
-                <td style='--size: {{ template "user-summary-chart-sum-correct" .UserSummary }}'> {{ .UserSummary.CorrectPredictions }} </td>
-              </tr>
-              <tr>
-                <th scope="row"> Ошибочные </th>
-                <td style='--size: {{ template "user-summary-chart-sum-incorrect" .UserSummary }}'> {{ .UserSummary.IncorrectPredictions }} </td>
-              </tr>
-              <tr>
-                <th scope="row"> Неизвестные </th>
-                <td style='--size: {{ template "user-summary-chart-sum-unknown" .UserSummary }}'> {{ .UserSummary.UnknownPredictions }} </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="column is-4">
-        <h3 class="title is-3 has-text-centered">Ачивки</h3>
 
+          <h3 class="title is-3 has-text-centered">Статистика</h3>
+          <progress class="progress is-large user-summary-meter" value="{{ .UserSummary.PercCorrect }}" max="100">{{
+            .UserSummary.PercCorrect }}%</progress>
+          <hr>
+          <div class="columns is-mobile is-size-4">
+            <div class="column has-text-weight-semibold">
+              Верно
+            </div>
+            <div class="column is-3 has-text-right">
+              {{ .UserSummary.PercCorrect }}%
+            </div>
+            <div class="column is-3 has-text-right">
+              ({{ .UserSummary.CorrectPredictions }})
+            </div>
+          </div>
+          <div class="columns is-mobile is-size-4">
+            <div class="column has-text-weight-semibold">
+              Неверно
+            </div>
+            <div class="column is-3 has-text-right">
+              {{ .UserSummary.PercIncorrect }}%
+            </div>
+            <div class="column is-3 has-text-right">
+              ({{ .UserSummary.IncorrectPredictions }})
+            </div>
+          </div>
+          <hr>
+          <div class="columns is-mobile is-size-5">
+            <div class="column has-text-weight-semibold">
+              Ожидают
+            </div>
+            <div class="column is-3 has-text-right">
+            </div>
+            <div class="column is-3 has-text-right">
+              {{ .UserSummary.UnknownPredictions }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </main>
-{{ end }}
-
-{{ define "user-summary-chart-sum-correct" }}
-calc( {{ .CorrectPredictions }} / ({{ .CorrectPredictions }} + {{ .IncorrectPredictions }} + {{ .UnknownPredictions }} ))
-{{ end }}
-
-{{ define "user-summary-chart-sum-incorrect" }}
-calc( {{ .IncorrectPredictions }} / ({{ .CorrectPredictions }} + {{ .IncorrectPredictions }} + {{ .UnknownPredictions }} ))
-{{ end }}
-
-{{ define "user-summary-chart-sum-unknown" }}
-calc( {{ .UnknownPredictions }} / ({{ .CorrectPredictions }} + {{ .IncorrectPredictions }} + {{ .UnknownPredictions }} ))
 {{ end }}

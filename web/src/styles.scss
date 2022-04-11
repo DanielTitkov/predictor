@@ -12,7 +12,7 @@ $orange: #ffd6a5;
 $yellow: #fdffb6;
 $green: #caffbf;
 $green-dark: #93ff7d;
-$green-darker: #44FF1E;
+$green-darker: #44ff1e;
 $blue: #9bf6ff;
 $azur: #a0c4ff;
 $azur-dark: #639fff;
@@ -112,4 +112,32 @@ input[type="checkbox"]:checked {
 input[type="checkbox"]:disabled {
     border: 4px solid #b5b5b5;
     background: white;
+}
+
+.user-summary-meter {
+    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/$red+0,ea83d4+99 */
+    color: $green-dark;
+    color: -moz-linear-gradient(-45deg, $green-dark 25%, $green 99%);
+    color: -webkit-linear-gradient(-45deg, $green-dark 25%, $green 99%);
+    color: linear-gradient(135deg, $green-dark 25%, $green 99%);
+    background: $red;
+    background: -moz-linear-gradient(-45deg, $red 25%, $red-dark 99%);
+    background: -webkit-linear-gradient(-45deg, $red 25%, $red-dark 99%);
+    background: linear-gradient(135deg, $red 25%, $red-dark 99%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$red', endColorstr='$red-dark', GradientType=1);
+}
+
+.user-summary-meter::-moz-progress-bar {
+    background: $green-dark;
+    background: -moz-linear-gradient(-45deg, $green-dark 25%, $green 99%);
+    background: -webkit-linear-gradient(-45deg, $green-dark 25%, $green 99%);
+    background: linear-gradient(135deg, $green-dark 25%, $green 99%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$green-dark', endColorstr='$green', GradientType=1);
+}
+.user-summary-meter::-webkit-progress-value {
+    background: $green-dark;
+    background: -moz-linear-gradient(-45deg, $green-dark 25%, $green 99%);
+    background: -webkit-linear-gradient(-45deg, $green-dark 25%, $green 99%);
+    background: linear-gradient(135deg, $green-dark 25%, $green 99%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$green-dark', endColorstr='$green', GradientType=1);
 }
