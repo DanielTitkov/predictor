@@ -129,6 +129,13 @@ func Outcome(v bool) predicate.Challenge {
 	})
 }
 
+// Published applies equality check predicate on the "published" field. It's identical to PublishedEQ.
+func Published(v bool) predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPublished), v))
+	})
+}
+
 // StartTime applies equality check predicate on the "start_time" field. It's identical to StartTimeEQ.
 func StartTime(v time.Time) predicate.Challenge {
 	return predicate.Challenge(func(s *sql.Selector) {
@@ -556,6 +563,20 @@ func OutcomeIsNil() predicate.Challenge {
 func OutcomeNotNil() predicate.Challenge {
 	return predicate.Challenge(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldOutcome)))
+	})
+}
+
+// PublishedEQ applies the EQ predicate on the "published" field.
+func PublishedEQ(v bool) predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPublished), v))
+	})
+}
+
+// PublishedNEQ applies the NEQ predicate on the "published" field.
+func PublishedNEQ(v bool) predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPublished), v))
 	})
 }
 

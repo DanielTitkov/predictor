@@ -119,6 +119,7 @@ func (a *App) loadChallengePresets() error {
 		for _, args := range presets {
 			ctx := context.Background()
 
+			args.Published = true // all preset challenges go to publish
 			challenge, err := a.CreateChallengeFromArgs(ctx, args)
 			if err != nil {
 				return err

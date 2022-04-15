@@ -11,6 +11,7 @@ type (
 		Description string `json:"description"`
 		StartTime   string `json:"startTime"`
 		EndTime     string `json:"endTime"`
+		Published   bool   `json:"published"`
 		TimeLayout  string `json:"timeLayout"`
 		Outcome     *bool  `json:"outcome"`
 	}
@@ -20,11 +21,13 @@ type (
 		Prognosis        bool   `json:"prognosis"`
 	}
 	FilterChallengesArgs struct {
-		UserID   uuid.UUID
-		Unvoted  bool
-		Ongoing  bool
-		Finished bool
-		Limit    int
-		Offset   int
+		UserID      uuid.UUID
+		Unvoted     bool
+		Ongoing     bool
+		Pending     bool
+		Unpublished bool
+		Finished    bool
+		Limit       int
+		Offset      int
 	}
 )

@@ -49,10 +49,12 @@ type (
 
 	Challenge struct {
 		ID             uuid.UUID
+		AuthorID       uuid.UUID
 		Type           string
 		Content        string
 		Description    string
 		Outcome        *bool
+		Published      bool
 		StartTime      time.Time
 		EndTime        time.Time
 		Predictions    []*Prediction

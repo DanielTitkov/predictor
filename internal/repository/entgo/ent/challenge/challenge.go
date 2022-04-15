@@ -24,6 +24,8 @@ const (
 	FieldDescription = "description"
 	// FieldOutcome holds the string denoting the outcome field in the database.
 	FieldOutcome = "outcome"
+	// FieldPublished holds the string denoting the published field in the database.
+	FieldPublished = "published"
 	// FieldStartTime holds the string denoting the start_time field in the database.
 	FieldStartTime = "start_time"
 	// FieldEndTime holds the string denoting the end_time field in the database.
@@ -51,6 +53,7 @@ var Columns = []string{
 	FieldContent,
 	FieldDescription,
 	FieldOutcome,
+	FieldPublished,
 	FieldStartTime,
 	FieldEndTime,
 	FieldType,
@@ -77,6 +80,8 @@ var (
 	ContentValidator func(string) error
 	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	DescriptionValidator func(string) error
+	// DefaultPublished holds the default value on creation for the "published" field.
+	DefaultPublished bool
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

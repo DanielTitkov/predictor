@@ -9,6 +9,7 @@ app:
   defaultChallengePageLimit: 5
   systemSummaryInterval: 10 # minutes
   systemSummaryTimeout: 100 # milliseconds
+  defaultTimeLayout: "2006-01-02"
 auth:
   exp: 2592000 # sec
   secret: secret-key

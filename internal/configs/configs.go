@@ -14,6 +14,7 @@ type Config struct {
 	Data     DataConfig
 	External ExternalConfig
 	App      AppConfig
+	Debug    DebugConfig
 }
 
 func ReadConfigs(path string) (Config, error) {

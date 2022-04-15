@@ -78,6 +78,10 @@ func init() {
 	challengeDescDescription := challengeFields[2].Descriptor()
 	// challenge.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	challenge.DescriptionValidator = challengeDescDescription.Validators[0].(func(string) error)
+	// challengeDescPublished is the schema descriptor for published field.
+	challengeDescPublished := challengeFields[4].Descriptor()
+	// challenge.DefaultPublished holds the default value on creation for the published field.
+	challenge.DefaultPublished = challengeDescPublished.Default.(bool)
 	// challengeDescID is the schema descriptor for id field.
 	challengeDescID := challengeFields[0].Descriptor()
 	// challenge.DefaultID holds the default value on creation for the id field.

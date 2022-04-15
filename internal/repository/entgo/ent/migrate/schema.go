@@ -31,6 +31,7 @@ var (
 		{Name: "content", Type: field.TypeString, Unique: true, Size: 140},
 		{Name: "description", Type: field.TypeString, Nullable: true, Size: 280},
 		{Name: "outcome", Type: field.TypeBool, Nullable: true},
+		{Name: "published", Type: field.TypeBool, Default: true},
 		{Name: "start_time", Type: field.TypeTime},
 		{Name: "end_time", Type: field.TypeTime},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"bool"}, Default: "bool"},

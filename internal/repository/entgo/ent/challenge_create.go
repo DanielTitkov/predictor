@@ -84,6 +84,20 @@ func (cc *ChallengeCreate) SetNillableOutcome(b *bool) *ChallengeCreate {
 	return cc
 }
 
+// SetPublished sets the "published" field.
+func (cc *ChallengeCreate) SetPublished(b bool) *ChallengeCreate {
+	cc.mutation.SetPublished(b)
+	return cc
+}
+
+// SetNillablePublished sets the "published" field if the given value is not nil.
+func (cc *ChallengeCreate) SetNillablePublished(b *bool) *ChallengeCreate {
+	if b != nil {
+		cc.SetPublished(*b)
+	}
+	return cc
+}
+
 // SetStartTime sets the "start_time" field.
 func (cc *ChallengeCreate) SetStartTime(t time.Time) *ChallengeCreate {
 	cc.mutation.SetStartTime(t)
@@ -218,6 +232,10 @@ func (cc *ChallengeCreate) defaults() {
 		v := challenge.DefaultUpdateTime()
 		cc.mutation.SetUpdateTime(v)
 	}
+	if _, ok := cc.mutation.Published(); !ok {
+		v := challenge.DefaultPublished
+		cc.mutation.SetPublished(v)
+	}
 	if _, ok := cc.mutation.GetType(); !ok {
 		v := challenge.DefaultType
 		cc.mutation.SetType(v)
@@ -248,6 +266,9 @@ func (cc *ChallengeCreate) check() error {
 		if err := challenge.DescriptionValidator(v); err != nil {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Challenge.description": %w`, err)}
 		}
+	}
+	if _, ok := cc.mutation.Published(); !ok {
+		return &ValidationError{Name: "published", err: errors.New(`ent: missing required field "Challenge.published"`)}
 	}
 	if _, ok := cc.mutation.StartTime(); !ok {
 		return &ValidationError{Name: "start_time", err: errors.New(`ent: missing required field "Challenge.start_time"`)}
@@ -338,6 +359,14 @@ func (cc *ChallengeCreate) createSpec() (*Challenge, *sqlgraph.CreateSpec) {
 			Column: challenge.FieldOutcome,
 		})
 		_node.Outcome = &value
+	}
+	if value, ok := cc.mutation.Published(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: challenge.FieldPublished,
+		})
+		_node.Published = value
 	}
 	if value, ok := cc.mutation.StartTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

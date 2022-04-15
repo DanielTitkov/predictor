@@ -21,6 +21,7 @@ func (Challenge) Fields() []ent.Field {
 		field.String("content").NotEmpty().MaxLen(140).Unique(),
 		field.String("description").Optional().MaxLen(280),
 		field.Bool("outcome").Optional().Nillable(),
+		field.Bool("published").Default(true),
 		field.Time("start_time"),
 		field.Time("end_time"),
 		field.Enum("type").Values(

@@ -27,6 +27,8 @@ type Challenge struct {
 	Description string `json:"description,omitempty"`
 	// Outcome holds the value of the "outcome" field.
 	Outcome *bool `json:"outcome,omitempty"`
+	// Published holds the value of the "published" field.
+	Published bool `json:"published,omitempty"`
 	// StartTime holds the value of the "start_time" field.
 	StartTime time.Time `json:"start_time,omitempty"`
 	// EndTime holds the value of the "end_time" field.
@@ -61,7 +63,7 @@ func (*Challenge) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case challenge.FieldOutcome:
+		case challenge.FieldOutcome, challenge.FieldPublished:
 			values[i] = new(sql.NullBool)
 		case challenge.FieldContent, challenge.FieldDescription, challenge.FieldType:
 			values[i] = new(sql.NullString)
@@ -120,6 +122,12 @@ func (c *Challenge) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.Outcome = new(bool)
 				*c.Outcome = value.Bool
+			}
+		case challenge.FieldPublished:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field published", values[i])
+			} else if value.Valid {
+				c.Published = value.Bool
 			}
 		case challenge.FieldStartTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -184,6 +192,8 @@ func (c *Challenge) String() string {
 		builder.WriteString(", outcome=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", published=")
+	builder.WriteString(fmt.Sprintf("%v", c.Published))
 	builder.WriteString(", start_time=")
 	builder.WriteString(c.StartTime.Format(time.ANSIC))
 	builder.WriteString(", end_time=")

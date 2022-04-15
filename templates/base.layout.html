@@ -163,6 +163,17 @@
     </div>
     {{ end }}
 
+    {{ if .User }}
+    {{ if .User.Admin }}
+    <div class="mx-5">
+      <!-- Admin panel -->
+      <a href="/admin" title="Admin panel">
+        <i class="bi bi-radioactive"></i>
+      </a>
+    </div>
+    {{ end }}
+    {{ end }}
+
     <div class="mx-5">
       <!-- enter or exit -->
       {{ if .User }}

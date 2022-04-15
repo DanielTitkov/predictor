@@ -689,6 +689,7 @@ type ChallengeMutation struct {
 	content            *string
 	description        *string
 	outcome            *bool
+	published          *bool
 	start_time         *time.Time
 	end_time           *time.Time
 	_type              *challenge.Type
@@ -1011,6 +1012,42 @@ func (m *ChallengeMutation) ResetOutcome() {
 	delete(m.clearedFields, challenge.FieldOutcome)
 }
 
+// SetPublished sets the "published" field.
+func (m *ChallengeMutation) SetPublished(b bool) {
+	m.published = &b
+}
+
+// Published returns the value of the "published" field in the mutation.
+func (m *ChallengeMutation) Published() (r bool, exists bool) {
+	v := m.published
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPublished returns the old "published" field's value of the Challenge entity.
+// If the Challenge object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ChallengeMutation) OldPublished(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPublished is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPublished requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPublished: %w", err)
+	}
+	return oldValue.Published, nil
+}
+
+// ResetPublished resets all changes to the "published" field.
+func (m *ChallengeMutation) ResetPublished() {
+	m.published = nil
+}
+
 // SetStartTime sets the "start_time" field.
 func (m *ChallengeMutation) SetStartTime(t time.Time) {
 	m.start_time = &t
@@ -1192,7 +1229,7 @@ func (m *ChallengeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ChallengeMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.create_time != nil {
 		fields = append(fields, challenge.FieldCreateTime)
 	}
@@ -1207,6 +1244,9 @@ func (m *ChallengeMutation) Fields() []string {
 	}
 	if m.outcome != nil {
 		fields = append(fields, challenge.FieldOutcome)
+	}
+	if m.published != nil {
+		fields = append(fields, challenge.FieldPublished)
 	}
 	if m.start_time != nil {
 		fields = append(fields, challenge.FieldStartTime)
@@ -1235,6 +1275,8 @@ func (m *ChallengeMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case challenge.FieldOutcome:
 		return m.Outcome()
+	case challenge.FieldPublished:
+		return m.Published()
 	case challenge.FieldStartTime:
 		return m.StartTime()
 	case challenge.FieldEndTime:
@@ -1260,6 +1302,8 @@ func (m *ChallengeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldDescription(ctx)
 	case challenge.FieldOutcome:
 		return m.OldOutcome(ctx)
+	case challenge.FieldPublished:
+		return m.OldPublished(ctx)
 	case challenge.FieldStartTime:
 		return m.OldStartTime(ctx)
 	case challenge.FieldEndTime:
@@ -1309,6 +1353,13 @@ func (m *ChallengeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetOutcome(v)
+		return nil
+	case challenge.FieldPublished:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPublished(v)
 		return nil
 	case challenge.FieldStartTime:
 		v, ok := value.(time.Time)
@@ -1409,6 +1460,9 @@ func (m *ChallengeMutation) ResetField(name string) error {
 		return nil
 	case challenge.FieldOutcome:
 		m.ResetOutcome()
+		return nil
+	case challenge.FieldPublished:
+		m.ResetPublished()
 		return nil
 	case challenge.FieldStartTime:
 		m.ResetStartTime()

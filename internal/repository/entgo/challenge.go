@@ -28,6 +28,7 @@ func (r *EntgoRepository) GetOngoingChallengeCount(ctx context.Context) (int, er
 			challenge.And(
 				challenge.CreateTimeLT(time.Now()),
 				challenge.EndTimeGT(time.Now()),
+				challenge.PublishedEQ(true),
 			),
 		).
 		Count(ctx)
@@ -40,6 +41,7 @@ func (r *EntgoRepository) GetFinishedChallengeCount(ctx context.Context) (int, e
 			challenge.And(
 				challenge.CreateTimeLT(time.Now()),
 				challenge.EndTimeLT(time.Now()),
+				challenge.PublishedEQ(true),
 			),
 		).
 		Count(ctx)
@@ -101,6 +103,7 @@ func (r *EntgoRepository) GetRandomFinishedChallenges(ctx context.Context, limit
 			challenge.And(
 				challenge.CreateTimeLT(time.Now()),
 				challenge.EndTimeLT(time.Now()),
+				challenge.PublishedEQ(true),
 			),
 		).
 		WithPredictions().
@@ -137,6 +140,7 @@ func (r *EntgoRepository) GetRandomFalseChallenges(ctx context.Context, limit in
 				challenge.CreateTimeLT(time.Now()),
 				challenge.EndTimeLT(time.Now()),
 				challenge.Outcome(false),
+				challenge.PublishedEQ(true),
 			),
 		).
 		WithPredictions().
@@ -173,6 +177,7 @@ func (r *EntgoRepository) GetRandomTrueChallenges(ctx context.Context, limit int
 				challenge.CreateTimeLT(time.Now()),
 				challenge.EndTimeLT(time.Now()),
 				challenge.Outcome(true),
+				challenge.PublishedEQ(true),
 			),
 		).
 		WithPredictions().
@@ -210,6 +215,7 @@ func (r *EntgoRepository) GetClosingChallenges(ctx context.Context, limit int) (
 				challenge.CreateTimeLT(time.Now()),
 				challenge.EndTimeGT(time.Now()),
 				challenge.OutcomeIsNil(),
+				challenge.PublishedEQ(true),
 			),
 		).
 		WithPredictions().
@@ -236,6 +242,7 @@ func (r *EntgoRepository) GetRandomPendingChallenges(ctx context.Context, limit 
 				challenge.CreateTimeLT(time.Now()),
 				challenge.EndTimeLT(time.Now()),
 				challenge.OutcomeIsNil(),
+				challenge.PublishedEQ(true),
 			),
 		).
 		WithPredictions().
@@ -271,6 +278,7 @@ func (r *EntgoRepository) GetRandomOngoingChallenges(ctx context.Context, limit 
 			challenge.And(
 				challenge.CreateTimeLT(time.Now()),
 				challenge.EndTimeGT(time.Now()),
+				challenge.PublishedEQ(true),
 				challenge.Not(
 					challenge.HasPredictionsWith(
 						prediction.HasUserWith(
@@ -332,6 +340,7 @@ func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, 
 			SetContent(ch.Content).
 			SetStartTime(ch.StartTime).
 			SetEndTime(ch.EndTime).
+			SetPublished(ch.Published).
 			SetNillableOutcome(ch.Outcome).
 			SetDescription(ch.Description)
 
@@ -346,6 +355,7 @@ func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, 
 	chUpdateQuery := c.Update().
 		SetStartTime(ch.StartTime).
 		SetEndTime(ch.EndTime).
+		SetPublished(ch.Published).
 		SetNillableOutcome(ch.Outcome).
 		SetDescription(ch.Description)
 
@@ -367,6 +377,21 @@ func (r *EntgoRepository) FilterChallenges(ctx context.Context, args *domain.Fil
 			challenge.CreateTimeLT(time.Now()),
 			challenge.EndTimeLT(time.Now()),
 		))
+	}
+
+	if args.Pending {
+		query.Where(challenge.And(
+			challenge.CreateTimeLT(time.Now()),
+			challenge.EndTimeLT(time.Now()),
+			challenge.OutcomeIsNil(),
+		))
+	}
+
+	if args.Unpublished {
+		query.Where(challenge.PublishedEQ(false))
+	} else {
+		// in any other case we show only published challenges
+		query.Where(challenge.PublishedEQ(true))
 	}
 
 	if args.Ongoing {
@@ -429,6 +454,21 @@ func (r *EntgoRepository) FilterUserChallenges(ctx context.Context, args *domain
 		))
 	}
 
+	if args.Pending {
+		query.Where(challenge.And(
+			challenge.CreateTimeLT(time.Now()),
+			challenge.EndTimeLT(time.Now()),
+			challenge.OutcomeIsNil(),
+		))
+	}
+
+	if args.Unpublished {
+		query.Where(challenge.PublishedEQ(false))
+	} else {
+		// in any other case we show only published challenges
+		query.Where(challenge.PublishedEQ(true))
+	}
+
 	if args.Ongoing {
 		query.Where(challenge.And(
 			challenge.OutcomeIsNil(),
@@ -480,6 +520,7 @@ func entToDomainChallenge(ch *ent.Challenge, userPrediction *domain.Prediction) 
 		Description:    ch.Description,
 		StartTime:      ch.StartTime,
 		EndTime:        ch.EndTime,
+		Published:      ch.Published,
 		Predictions:    predictions,
 		UserPrediction: userPrediction,
 	}

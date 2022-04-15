@@ -44,7 +44,9 @@ func main() {
 	var dbOptions []ent.Option
 
 	if cfg.Env == "dev" {
-		dbOptions = append(dbOptions, ent.Debug())
+		if cfg.Debug.LogDBQueries {
+			dbOptions = append(dbOptions, ent.Debug())
+		}
 	}
 	db, err := ent.Open(cfg.DB.Driver, cfg.DB.URI, dbOptions...)
 	if err != nil {
@@ -92,6 +94,7 @@ func main() {
 	r.Handle("/challenges", live.NewHttpHandler(store, h.ChallengeList()))
 	r.Handle("/about", live.NewHttpHandler(store, h.About()))
 	r.Handle("/profile", live.NewHttpHandler(store, h.Profile()))
+	r.Handle("/admin", live.NewHttpHandler(store, h.Admin()))
 	r.Handle("/404", live.NewHttpHandler(store, h.NotFound()))
 	r.Handle("/", live.NewHttpHandler(store, h.Home()))
 

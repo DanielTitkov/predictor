@@ -82,6 +82,20 @@ func (cu *ChallengeUpdate) ClearOutcome() *ChallengeUpdate {
 	return cu
 }
 
+// SetPublished sets the "published" field.
+func (cu *ChallengeUpdate) SetPublished(b bool) *ChallengeUpdate {
+	cu.mutation.SetPublished(b)
+	return cu
+}
+
+// SetNillablePublished sets the "published" field if the given value is not nil.
+func (cu *ChallengeUpdate) SetNillablePublished(b *bool) *ChallengeUpdate {
+	if b != nil {
+		cu.SetPublished(*b)
+	}
+	return cu
+}
+
 // SetStartTime sets the "start_time" field.
 func (cu *ChallengeUpdate) SetStartTime(t time.Time) *ChallengeUpdate {
 	cu.mutation.SetStartTime(t)
@@ -277,6 +291,13 @@ func (cu *ChallengeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: challenge.FieldOutcome,
 		})
 	}
+	if value, ok := cu.mutation.Published(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: challenge.FieldPublished,
+		})
+	}
 	if value, ok := cu.mutation.StartTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -413,6 +434,20 @@ func (cuo *ChallengeUpdateOne) SetNillableOutcome(b *bool) *ChallengeUpdateOne {
 // ClearOutcome clears the value of the "outcome" field.
 func (cuo *ChallengeUpdateOne) ClearOutcome() *ChallengeUpdateOne {
 	cuo.mutation.ClearOutcome()
+	return cuo
+}
+
+// SetPublished sets the "published" field.
+func (cuo *ChallengeUpdateOne) SetPublished(b bool) *ChallengeUpdateOne {
+	cuo.mutation.SetPublished(b)
+	return cuo
+}
+
+// SetNillablePublished sets the "published" field if the given value is not nil.
+func (cuo *ChallengeUpdateOne) SetNillablePublished(b *bool) *ChallengeUpdateOne {
+	if b != nil {
+		cuo.SetPublished(*b)
+	}
 	return cuo
 }
 
@@ -633,6 +668,13 @@ func (cuo *ChallengeUpdateOne) sqlSave(ctx context.Context) (_node *Challenge, e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Column: challenge.FieldOutcome,
+		})
+	}
+	if value, ok := cuo.mutation.Published(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: challenge.FieldPublished,
 		})
 	}
 	if value, ok := cuo.mutation.StartTime(); ok {
