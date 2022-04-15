@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Badge is the predicate function for badge builders.
+type Badge func(*sql.Selector)
+
 // Challenge is the predicate function for challenge builders.
 type Challenge func(*sql.Selector)
 

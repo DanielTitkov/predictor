@@ -1,0 +1,49 @@
+{{ define "badge-selector" }}
+{{ template "badge-starter" }}
+{{ template "badge-5-correct" }}
+{{ template "badge-5-predictions" }}
+{{ template "badge-15-predictions" }}
+{{ template "badge-10-correct" }}
+{{ template "badge-100-predictions" }}
+{{ template "badge-50-correct" }}
+{{ end }}
+
+{{ define "badge-starter" }}
+<div class="badge-starter">
+	<div class="top">
+		<div class="ring"></div>
+		<div class="ring"></div>
+		<div class="ring"></div>
+	</div>
+	<div class="text">start</div>
+	<div class="bottom">
+		<div class="ring"></div>
+		<div class="ring"></div>
+		<div class="ring"></div>
+	</div>
+</div>
+{{ end }}
+
+{{ define "badge-5-predictions" }}
+starter
+{{ end }}
+
+{{ define "badge-5-correct" }}
+starter
+{{ end }}
+
+{{ define "badge-15-predictions" }}
+starter
+{{ end }}
+
+{{ define "badge-10-correct" }}
+starter
+{{ end }}
+
+{{ define "badge-100-predictions" }}
+starter
+{{ end }}
+
+{{ define "badge-50-correct" }}
+starter
+{{ end }}

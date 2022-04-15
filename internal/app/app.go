@@ -46,6 +46,9 @@ type (
 		UpdateUserSessionLastActivityBySID(context.Context, string) error
 		GetUserBySession(context.Context, *domain.UserSession) (*domain.User, error)
 
+		// badge
+		CreateOrUpdateBadgeByType(context.Context, *domain.Badge) (*domain.Badge, error)
+
 		// prediction
 		CreatePrediction(context.Context, *domain.Prediction) (*domain.Prediction, error)
 		GetPredictionByUserAndChallenge(ctx context.Context, userID, challengeID uuid.UUID) (*domain.Prediction, error)

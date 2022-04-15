@@ -8,6 +8,21 @@ import (
 )
 
 var (
+	// BadgesColumns holds the columns for the "badges" table.
+	BadgesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "type", Type: field.TypeString, Unique: true},
+		{Name: "active", Type: field.TypeBool, Default: true},
+		{Name: "meta", Type: field.TypeJSON, Nullable: true},
+	}
+	// BadgesTable holds the schema information for the "badges" table.
+	BadgesTable = &schema.Table{
+		Name:       "badges",
+		Columns:    BadgesColumns,
+		PrimaryKey: []*schema.Column{BadgesColumns[0]},
+	}
 	// ChallengesColumns holds the columns for the "challenges" table.
 	ChallengesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -116,12 +131,39 @@ var (
 			},
 		},
 	}
+	// UserBadgesColumns holds the columns for the "user_badges" table.
+	UserBadgesColumns = []*schema.Column{
+		{Name: "user_id", Type: field.TypeUUID},
+		{Name: "badge_id", Type: field.TypeInt},
+	}
+	// UserBadgesTable holds the schema information for the "user_badges" table.
+	UserBadgesTable = &schema.Table{
+		Name:       "user_badges",
+		Columns:    UserBadgesColumns,
+		PrimaryKey: []*schema.Column{UserBadgesColumns[0], UserBadgesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_badges_user_id",
+				Columns:    []*schema.Column{UserBadgesColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "user_badges_badge_id",
+				Columns:    []*schema.Column{UserBadgesColumns[1]},
+				RefColumns: []*schema.Column{BadgesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		BadgesTable,
 		ChallengesTable,
 		PredictionsTable,
 		UsersTable,
 		UserSessionsTable,
+		UserBadgesTable,
 	}
 )
 
@@ -129,4 +171,6 @@ func init() {
 	PredictionsTable.ForeignKeys[0].RefTable = ChallengesTable
 	PredictionsTable.ForeignKeys[1].RefTable = UsersTable
 	UserSessionsTable.ForeignKeys[0].RefTable = UsersTable
+	UserBadgesTable.ForeignKeys[0].RefTable = UsersTable
+	UserBadgesTable.ForeignKeys[1].RefTable = BadgesTable
 }

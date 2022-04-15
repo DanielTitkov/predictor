@@ -9,6 +9,19 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent"
 )
 
+// The BadgeFunc type is an adapter to allow the use of ordinary
+// function as Badge mutator.
+type BadgeFunc func(context.Context, *ent.BadgeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BadgeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.BadgeMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BadgeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ChallengeFunc type is an adapter to allow the use of ordinary
 // function as Challenge mutator.
 type ChallengeFunc func(context.Context, *ent.ChallengeMutation) (ent.Value, error)

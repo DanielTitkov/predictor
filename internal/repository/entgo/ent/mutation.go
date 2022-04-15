@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/badge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/predicate"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
@@ -28,11 +29,654 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeBadge       = "Badge"
 	TypeChallenge   = "Challenge"
 	TypePrediction  = "Prediction"
 	TypeUser        = "User"
 	TypeUserSession = "UserSession"
 )
+
+// BadgeMutation represents an operation that mutates the Badge nodes in the graph.
+type BadgeMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	create_time   *time.Time
+	update_time   *time.Time
+	_type         *string
+	active        *bool
+	meta          *map[string]interface{}
+	clearedFields map[string]struct{}
+	users         map[uuid.UUID]struct{}
+	removedusers  map[uuid.UUID]struct{}
+	clearedusers  bool
+	done          bool
+	oldValue      func(context.Context) (*Badge, error)
+	predicates    []predicate.Badge
+}
+
+var _ ent.Mutation = (*BadgeMutation)(nil)
+
+// badgeOption allows management of the mutation configuration using functional options.
+type badgeOption func(*BadgeMutation)
+
+// newBadgeMutation creates new mutation for the Badge entity.
+func newBadgeMutation(c config, op Op, opts ...badgeOption) *BadgeMutation {
+	m := &BadgeMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeBadge,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withBadgeID sets the ID field of the mutation.
+func withBadgeID(id int) badgeOption {
+	return func(m *BadgeMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Badge
+		)
+		m.oldValue = func(ctx context.Context) (*Badge, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Badge.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withBadge sets the old Badge of the mutation.
+func withBadge(node *Badge) badgeOption {
+	return func(m *BadgeMutation) {
+		m.oldValue = func(context.Context) (*Badge, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m BadgeMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m BadgeMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *BadgeMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *BadgeMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Badge.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *BadgeMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *BadgeMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the Badge entity.
+// If the Badge object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BadgeMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *BadgeMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (m *BadgeMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
+}
+
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *BadgeMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateTime returns the old "update_time" field's value of the Badge entity.
+// If the Badge object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BadgeMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
+	}
+	return oldValue.UpdateTime, nil
+}
+
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *BadgeMutation) ResetUpdateTime() {
+	m.update_time = nil
+}
+
+// SetType sets the "type" field.
+func (m *BadgeMutation) SetType(s string) {
+	m._type = &s
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *BadgeMutation) GetType() (r string, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the Badge entity.
+// If the Badge object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BadgeMutation) OldType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *BadgeMutation) ResetType() {
+	m._type = nil
+}
+
+// SetActive sets the "active" field.
+func (m *BadgeMutation) SetActive(b bool) {
+	m.active = &b
+}
+
+// Active returns the value of the "active" field in the mutation.
+func (m *BadgeMutation) Active() (r bool, exists bool) {
+	v := m.active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActive returns the old "active" field's value of the Badge entity.
+// If the Badge object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BadgeMutation) OldActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActive: %w", err)
+	}
+	return oldValue.Active, nil
+}
+
+// ResetActive resets all changes to the "active" field.
+func (m *BadgeMutation) ResetActive() {
+	m.active = nil
+}
+
+// SetMeta sets the "meta" field.
+func (m *BadgeMutation) SetMeta(value map[string]interface{}) {
+	m.meta = &value
+}
+
+// Meta returns the value of the "meta" field in the mutation.
+func (m *BadgeMutation) Meta() (r map[string]interface{}, exists bool) {
+	v := m.meta
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMeta returns the old "meta" field's value of the Badge entity.
+// If the Badge object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BadgeMutation) OldMeta(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMeta is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMeta requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMeta: %w", err)
+	}
+	return oldValue.Meta, nil
+}
+
+// ClearMeta clears the value of the "meta" field.
+func (m *BadgeMutation) ClearMeta() {
+	m.meta = nil
+	m.clearedFields[badge.FieldMeta] = struct{}{}
+}
+
+// MetaCleared returns if the "meta" field was cleared in this mutation.
+func (m *BadgeMutation) MetaCleared() bool {
+	_, ok := m.clearedFields[badge.FieldMeta]
+	return ok
+}
+
+// ResetMeta resets all changes to the "meta" field.
+func (m *BadgeMutation) ResetMeta() {
+	m.meta = nil
+	delete(m.clearedFields, badge.FieldMeta)
+}
+
+// AddUserIDs adds the "users" edge to the User entity by ids.
+func (m *BadgeMutation) AddUserIDs(ids ...uuid.UUID) {
+	if m.users == nil {
+		m.users = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.users[ids[i]] = struct{}{}
+	}
+}
+
+// ClearUsers clears the "users" edge to the User entity.
+func (m *BadgeMutation) ClearUsers() {
+	m.clearedusers = true
+}
+
+// UsersCleared reports if the "users" edge to the User entity was cleared.
+func (m *BadgeMutation) UsersCleared() bool {
+	return m.clearedusers
+}
+
+// RemoveUserIDs removes the "users" edge to the User entity by IDs.
+func (m *BadgeMutation) RemoveUserIDs(ids ...uuid.UUID) {
+	if m.removedusers == nil {
+		m.removedusers = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.users, ids[i])
+		m.removedusers[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedUsers returns the removed IDs of the "users" edge to the User entity.
+func (m *BadgeMutation) RemovedUsersIDs() (ids []uuid.UUID) {
+	for id := range m.removedusers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// UsersIDs returns the "users" edge IDs in the mutation.
+func (m *BadgeMutation) UsersIDs() (ids []uuid.UUID) {
+	for id := range m.users {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetUsers resets all changes to the "users" edge.
+func (m *BadgeMutation) ResetUsers() {
+	m.users = nil
+	m.clearedusers = false
+	m.removedusers = nil
+}
+
+// Where appends a list predicates to the BadgeMutation builder.
+func (m *BadgeMutation) Where(ps ...predicate.Badge) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *BadgeMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Badge).
+func (m *BadgeMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *BadgeMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.create_time != nil {
+		fields = append(fields, badge.FieldCreateTime)
+	}
+	if m.update_time != nil {
+		fields = append(fields, badge.FieldUpdateTime)
+	}
+	if m._type != nil {
+		fields = append(fields, badge.FieldType)
+	}
+	if m.active != nil {
+		fields = append(fields, badge.FieldActive)
+	}
+	if m.meta != nil {
+		fields = append(fields, badge.FieldMeta)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *BadgeMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case badge.FieldCreateTime:
+		return m.CreateTime()
+	case badge.FieldUpdateTime:
+		return m.UpdateTime()
+	case badge.FieldType:
+		return m.GetType()
+	case badge.FieldActive:
+		return m.Active()
+	case badge.FieldMeta:
+		return m.Meta()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *BadgeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case badge.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case badge.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
+	case badge.FieldType:
+		return m.OldType(ctx)
+	case badge.FieldActive:
+		return m.OldActive(ctx)
+	case badge.FieldMeta:
+		return m.OldMeta(ctx)
+	}
+	return nil, fmt.Errorf("unknown Badge field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BadgeMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case badge.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case badge.FieldUpdateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateTime(v)
+		return nil
+	case badge.FieldType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	case badge.FieldActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActive(v)
+		return nil
+	case badge.FieldMeta:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMeta(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Badge field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *BadgeMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *BadgeMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BadgeMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Badge numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *BadgeMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(badge.FieldMeta) {
+		fields = append(fields, badge.FieldMeta)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *BadgeMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *BadgeMutation) ClearField(name string) error {
+	switch name {
+	case badge.FieldMeta:
+		m.ClearMeta()
+		return nil
+	}
+	return fmt.Errorf("unknown Badge nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *BadgeMutation) ResetField(name string) error {
+	switch name {
+	case badge.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case badge.FieldUpdateTime:
+		m.ResetUpdateTime()
+		return nil
+	case badge.FieldType:
+		m.ResetType()
+		return nil
+	case badge.FieldActive:
+		m.ResetActive()
+		return nil
+	case badge.FieldMeta:
+		m.ResetMeta()
+		return nil
+	}
+	return fmt.Errorf("unknown Badge field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *BadgeMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.users != nil {
+		edges = append(edges, badge.EdgeUsers)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *BadgeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case badge.EdgeUsers:
+		ids := make([]ent.Value, 0, len(m.users))
+		for id := range m.users {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *BadgeMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedusers != nil {
+		edges = append(edges, badge.EdgeUsers)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *BadgeMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case badge.EdgeUsers:
+		ids := make([]ent.Value, 0, len(m.removedusers))
+		for id := range m.removedusers {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *BadgeMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedusers {
+		edges = append(edges, badge.EdgeUsers)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *BadgeMutation) EdgeCleared(name string) bool {
+	switch name {
+	case badge.EdgeUsers:
+		return m.clearedusers
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *BadgeMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Badge unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *BadgeMutation) ResetEdge(name string) error {
+	switch name {
+	case badge.EdgeUsers:
+		m.ResetUsers()
+		return nil
+	}
+	return fmt.Errorf("unknown Badge edge %s", name)
+}
 
 // ChallengeMutation represents an operation that mutates the Challenge nodes in the graph.
 type ChallengeMutation struct {
@@ -1514,6 +2158,9 @@ type UserMutation struct {
 	sessions           map[int]struct{}
 	removedsessions    map[int]struct{}
 	clearedsessions    bool
+	badges             map[int]struct{}
+	removedbadges      map[int]struct{}
+	clearedbadges      bool
 	done               bool
 	oldValue           func(context.Context) (*User, error)
 	predicates         []predicate.User
@@ -2081,6 +2728,60 @@ func (m *UserMutation) ResetSessions() {
 	m.removedsessions = nil
 }
 
+// AddBadgeIDs adds the "badges" edge to the Badge entity by ids.
+func (m *UserMutation) AddBadgeIDs(ids ...int) {
+	if m.badges == nil {
+		m.badges = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.badges[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBadges clears the "badges" edge to the Badge entity.
+func (m *UserMutation) ClearBadges() {
+	m.clearedbadges = true
+}
+
+// BadgesCleared reports if the "badges" edge to the Badge entity was cleared.
+func (m *UserMutation) BadgesCleared() bool {
+	return m.clearedbadges
+}
+
+// RemoveBadgeIDs removes the "badges" edge to the Badge entity by IDs.
+func (m *UserMutation) RemoveBadgeIDs(ids ...int) {
+	if m.removedbadges == nil {
+		m.removedbadges = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.badges, ids[i])
+		m.removedbadges[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBadges returns the removed IDs of the "badges" edge to the Badge entity.
+func (m *UserMutation) RemovedBadgesIDs() (ids []int) {
+	for id := range m.removedbadges {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BadgesIDs returns the "badges" edge IDs in the mutation.
+func (m *UserMutation) BadgesIDs() (ids []int) {
+	for id := range m.badges {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBadges resets all changes to the "badges" edge.
+func (m *UserMutation) ResetBadges() {
+	m.badges = nil
+	m.clearedbadges = false
+	m.removedbadges = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -2350,12 +3051,15 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.predictions != nil {
 		edges = append(edges, user.EdgePredictions)
 	}
 	if m.sessions != nil {
 		edges = append(edges, user.EdgeSessions)
+	}
+	if m.badges != nil {
+		edges = append(edges, user.EdgeBadges)
 	}
 	return edges
 }
@@ -2376,18 +3080,27 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeBadges:
+		ids := make([]ent.Value, 0, len(m.badges))
+		for id := range m.badges {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedpredictions != nil {
 		edges = append(edges, user.EdgePredictions)
 	}
 	if m.removedsessions != nil {
 		edges = append(edges, user.EdgeSessions)
+	}
+	if m.removedbadges != nil {
+		edges = append(edges, user.EdgeBadges)
 	}
 	return edges
 }
@@ -2408,18 +3121,27 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeBadges:
+		ids := make([]ent.Value, 0, len(m.removedbadges))
+		for id := range m.removedbadges {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedpredictions {
 		edges = append(edges, user.EdgePredictions)
 	}
 	if m.clearedsessions {
 		edges = append(edges, user.EdgeSessions)
+	}
+	if m.clearedbadges {
+		edges = append(edges, user.EdgeBadges)
 	}
 	return edges
 }
@@ -2432,6 +3154,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedpredictions
 	case user.EdgeSessions:
 		return m.clearedsessions
+	case user.EdgeBadges:
+		return m.clearedbadges
 	}
 	return false
 }
@@ -2453,6 +3177,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeSessions:
 		m.ResetSessions()
+		return nil
+	case user.EdgeBadges:
+		m.ResetBadges()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

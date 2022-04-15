@@ -36,6 +36,8 @@ const (
 	EdgePredictions = "predictions"
 	// EdgeSessions holds the string denoting the sessions edge name in mutations.
 	EdgeSessions = "sessions"
+	// EdgeBadges holds the string denoting the badges edge name in mutations.
+	EdgeBadges = "badges"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// PredictionsTable is the table that holds the predictions relation/edge.
@@ -52,6 +54,11 @@ const (
 	SessionsInverseTable = "user_sessions"
 	// SessionsColumn is the table column denoting the sessions relation/edge.
 	SessionsColumn = "user_sessions"
+	// BadgesTable is the table that holds the badges relation/edge. The primary key declared below.
+	BadgesTable = "user_badges"
+	// BadgesInverseTable is the table name for the Badge entity.
+	// It exists in this package in order to avoid circular dependency with the "badge" package.
+	BadgesInverseTable = "badges"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -67,6 +74,12 @@ var Columns = []string{
 	FieldLocale,
 	FieldMeta,
 }
+
+var (
+	// BadgesPrimaryKey and BadgesColumn2 are the table columns denoting the
+	// primary key for the badges relation (M2M).
+	BadgesPrimaryKey = []string{"user_id", "badge_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {

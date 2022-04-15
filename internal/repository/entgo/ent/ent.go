@@ -8,6 +8,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/badge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
@@ -32,6 +33,7 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
+		badge.Table:       badge.ValidColumn,
 		challenge.Table:   challenge.ValidColumn,
 		prediction.Table:  prediction.ValidColumn,
 		user.Table:        user.ValidColumn,

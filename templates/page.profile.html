@@ -2,6 +2,7 @@
 {{ define "view" }}
 <main>
   {{ template "back-to-home" }}
+  {{ if .User }}
   <div class="section">
     <div class="columns">
       <div class="column is-4">
@@ -69,6 +70,10 @@
       </div>
     </div>
   </div>
+  <!-- <div class="section">
+    <h1 class="title is-3 has-text-centered">Ачивки</h1>
+    {{ template "badge-selector" }}
+  </div> -->
   <div class="section">
     <h1 class="title is-3 has-text-centered">Ваши предсказания</h1>
     <div class="tabs is-large is-centered">
@@ -125,7 +130,7 @@
           </div>
         </div>
       </div>
-      <hr class="is-hidden-tablet"> 
+      <hr class="is-hidden-tablet">
       {{ end }}
       {{ end }}
     </div>
@@ -133,6 +138,7 @@
       {{ template "challenge-list-pagination" . }}
     </div>
   </div>
+  {{ end }}
 </main>
 {{ end }}
 

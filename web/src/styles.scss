@@ -159,3 +159,112 @@ input[type="checkbox"]:disabled {
     background: linear-gradient(45deg, $pink 5%, $red 90%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$pink', endColorstr='$red', GradientType=1);
 }
+
+/* Badges */
+
+// badge-starter
+$badgeStarterCircleWidth: 170px;
+$badgeStarterColor: $azur-darker;
+
+.badge-starter {
+	width: ($badgeStarterCircleWidth)*2;
+	.top,
+	.bottom {
+		height: 60px;
+		overflow: hidden;
+		position: relative;
+		width: $badgeStarterCircleWidth;
+		margin: 0 auto;
+		.ring {
+			border-radius: 100%;
+			position: absolute;
+			width: $badgeStarterCircleWidth;
+			height: $badgeStarterCircleWidth;
+			border: 3px solid $badgeStarterColor;
+			border-width: 8px;
+			&:nth-child(2) {
+				border-width: 4px;
+				width: ($badgeStarterCircleWidth)-16;
+			}
+			&:nth-child(3) {
+				border-width: 2px;
+				width: ($badgeStarterCircleWidth)-31;
+				&:after {
+					content: '';
+					width: 18px;
+					position: absolute;
+					border-top: 1px solid $badgeStarterColor;
+					left: 50%;
+					margin-left: -9px;
+				}
+				&:before {
+					content: '';
+					width: 32px;
+					position: absolute;
+					border-top: 1px solid $badgeStarterColor;
+					margin-left: -16px;
+					left: 50%;
+				}
+			}
+		}
+	}
+	.top {
+		.ring {
+			&:nth-child(1) {
+				top: 0;
+				left: 0;
+			}
+			&:nth-child(2) {
+				top: 10px;
+				left: 8px;
+			}
+			&:nth-child(3) {
+				top: 20px;
+				left: 16px;
+				&:after {
+					top: 17px;
+				}
+				&:before {
+					top: 22px;
+				}
+			}
+		}
+	}
+	.bottom {
+		.ring {
+			&:nth-child(1) {
+				bottom: 0;
+				left: 0;
+			}
+			&:nth-child(2) {
+				bottom: 10px;
+				left: 8px;
+			}
+			&:nth-child(3) {
+				bottom: 20px;
+				left: 16px;
+				&:after {
+					bottom: 17px;
+				}
+				&:before {
+					bottom: 22px;
+				}
+			}
+		}
+	}
+	.text {
+		text-align: center;
+		text-transform: uppercase;
+		font-family: 'Raleway', sans-serif;
+		font-size: 42px;
+		font-weight: 900;
+		color: $badgeStarterColor;
+		height: 55px;
+		vertical-align: middle;
+		display: table-cell;
+		width: ($badgeStarterCircleWidth)*2;
+		position: relative;
+		left: 7px;
+		letter-spacing: 14px;
+	}
+}

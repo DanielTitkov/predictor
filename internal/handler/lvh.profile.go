@@ -98,6 +98,7 @@ func (h *Handler) Profile() live.Handler {
 		h.t+"page.profile.html",
 		h.t+"part.challenge_list_item.html",
 		h.t+"part.challenge_list_pagination.html",
+		h.t+"part.badge.html",
 	)
 	if err != nil {
 		log.Fatal(err)

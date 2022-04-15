@@ -10,6 +10,7 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/migrate"
 	"github.com/google/uuid"
 
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/badge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
@@ -25,6 +26,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Badge is the client for interacting with the Badge builders.
+	Badge *BadgeClient
 	// Challenge is the client for interacting with the Challenge builders.
 	Challenge *ChallengeClient
 	// Prediction is the client for interacting with the Prediction builders.
@@ -46,6 +49,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Badge = NewBadgeClient(c.config)
 	c.Challenge = NewChallengeClient(c.config)
 	c.Prediction = NewPredictionClient(c.config)
 	c.User = NewUserClient(c.config)
@@ -83,6 +87,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:         ctx,
 		config:      cfg,
+		Badge:       NewBadgeClient(cfg),
 		Challenge:   NewChallengeClient(cfg),
 		Prediction:  NewPredictionClient(cfg),
 		User:        NewUserClient(cfg),
@@ -106,6 +111,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:         ctx,
 		config:      cfg,
+		Badge:       NewBadgeClient(cfg),
 		Challenge:   NewChallengeClient(cfg),
 		Prediction:  NewPredictionClient(cfg),
 		User:        NewUserClient(cfg),
@@ -116,7 +122,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Challenge.
+//		Badge.
 //		Query().
 //		Count(ctx)
 //
@@ -139,10 +145,117 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Badge.Use(hooks...)
 	c.Challenge.Use(hooks...)
 	c.Prediction.Use(hooks...)
 	c.User.Use(hooks...)
 	c.UserSession.Use(hooks...)
+}
+
+// BadgeClient is a client for the Badge schema.
+type BadgeClient struct {
+	config
+}
+
+// NewBadgeClient returns a client for the Badge from the given config.
+func NewBadgeClient(c config) *BadgeClient {
+	return &BadgeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `badge.Hooks(f(g(h())))`.
+func (c *BadgeClient) Use(hooks ...Hook) {
+	c.hooks.Badge = append(c.hooks.Badge, hooks...)
+}
+
+// Create returns a create builder for Badge.
+func (c *BadgeClient) Create() *BadgeCreate {
+	mutation := newBadgeMutation(c.config, OpCreate)
+	return &BadgeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Badge entities.
+func (c *BadgeClient) CreateBulk(builders ...*BadgeCreate) *BadgeCreateBulk {
+	return &BadgeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Badge.
+func (c *BadgeClient) Update() *BadgeUpdate {
+	mutation := newBadgeMutation(c.config, OpUpdate)
+	return &BadgeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BadgeClient) UpdateOne(b *Badge) *BadgeUpdateOne {
+	mutation := newBadgeMutation(c.config, OpUpdateOne, withBadge(b))
+	return &BadgeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BadgeClient) UpdateOneID(id int) *BadgeUpdateOne {
+	mutation := newBadgeMutation(c.config, OpUpdateOne, withBadgeID(id))
+	return &BadgeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Badge.
+func (c *BadgeClient) Delete() *BadgeDelete {
+	mutation := newBadgeMutation(c.config, OpDelete)
+	return &BadgeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *BadgeClient) DeleteOne(b *Badge) *BadgeDeleteOne {
+	return c.DeleteOneID(b.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *BadgeClient) DeleteOneID(id int) *BadgeDeleteOne {
+	builder := c.Delete().Where(badge.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BadgeDeleteOne{builder}
+}
+
+// Query returns a query builder for Badge.
+func (c *BadgeClient) Query() *BadgeQuery {
+	return &BadgeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Badge entity by its id.
+func (c *BadgeClient) Get(ctx context.Context, id int) (*Badge, error) {
+	return c.Query().Where(badge.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BadgeClient) GetX(ctx context.Context, id int) *Badge {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUsers queries the users edge of a Badge.
+func (c *BadgeClient) QueryUsers(b *Badge) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(badge.Table, badge.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, badge.UsersTable, badge.UsersPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BadgeClient) Hooks() []Hook {
+	return c.hooks.Badge
 }
 
 // ChallengeClient is a client for the Challenge schema.
@@ -483,6 +596,22 @@ func (c *UserClient) QuerySessions(u *User) *UserSessionQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(usersession.Table, usersession.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.SessionsTable, user.SessionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBadges queries the badges edge of a User.
+func (c *UserClient) QueryBadges(u *User) *BadgeQuery {
+	query := &BadgeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(badge.Table, badge.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, user.BadgesTable, user.BadgesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

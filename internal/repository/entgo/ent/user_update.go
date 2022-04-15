@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/badge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/predicate"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
@@ -145,6 +146,21 @@ func (uu *UserUpdate) AddSessions(u ...*UserSession) *UserUpdate {
 	return uu.AddSessionIDs(ids...)
 }
 
+// AddBadgeIDs adds the "badges" edge to the Badge entity by IDs.
+func (uu *UserUpdate) AddBadgeIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddBadgeIDs(ids...)
+	return uu
+}
+
+// AddBadges adds the "badges" edges to the Badge entity.
+func (uu *UserUpdate) AddBadges(b ...*Badge) *UserUpdate {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uu.AddBadgeIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -190,6 +206,27 @@ func (uu *UserUpdate) RemoveSessions(u ...*UserSession) *UserUpdate {
 		ids[i] = u[i].ID
 	}
 	return uu.RemoveSessionIDs(ids...)
+}
+
+// ClearBadges clears all "badges" edges to the Badge entity.
+func (uu *UserUpdate) ClearBadges() *UserUpdate {
+	uu.mutation.ClearBadges()
+	return uu
+}
+
+// RemoveBadgeIDs removes the "badges" edge to Badge entities by IDs.
+func (uu *UserUpdate) RemoveBadgeIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveBadgeIDs(ids...)
+	return uu
+}
+
+// RemoveBadges removes "badges" edges to Badge entities.
+func (uu *UserUpdate) RemoveBadges(b ...*Badge) *UserUpdate {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uu.RemoveBadgeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -475,6 +512,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.BadgesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.BadgesTable,
+			Columns: user.BadgesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: badge.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedBadgesIDs(); len(nodes) > 0 && !uu.mutation.BadgesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.BadgesTable,
+			Columns: user.BadgesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: badge.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.BadgesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.BadgesTable,
+			Columns: user.BadgesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: badge.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -608,6 +699,21 @@ func (uuo *UserUpdateOne) AddSessions(u ...*UserSession) *UserUpdateOne {
 	return uuo.AddSessionIDs(ids...)
 }
 
+// AddBadgeIDs adds the "badges" edge to the Badge entity by IDs.
+func (uuo *UserUpdateOne) AddBadgeIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddBadgeIDs(ids...)
+	return uuo
+}
+
+// AddBadges adds the "badges" edges to the Badge entity.
+func (uuo *UserUpdateOne) AddBadges(b ...*Badge) *UserUpdateOne {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uuo.AddBadgeIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -653,6 +759,27 @@ func (uuo *UserUpdateOne) RemoveSessions(u ...*UserSession) *UserUpdateOne {
 		ids[i] = u[i].ID
 	}
 	return uuo.RemoveSessionIDs(ids...)
+}
+
+// ClearBadges clears all "badges" edges to the Badge entity.
+func (uuo *UserUpdateOne) ClearBadges() *UserUpdateOne {
+	uuo.mutation.ClearBadges()
+	return uuo
+}
+
+// RemoveBadgeIDs removes the "badges" edge to Badge entities by IDs.
+func (uuo *UserUpdateOne) RemoveBadgeIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveBadgeIDs(ids...)
+	return uuo
+}
+
+// RemoveBadges removes "badges" edges to Badge entities.
+func (uuo *UserUpdateOne) RemoveBadges(b ...*Badge) *UserUpdateOne {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uuo.RemoveBadgeIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -954,6 +1081,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: usersession.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.BadgesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.BadgesTable,
+			Columns: user.BadgesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: badge.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedBadgesIDs(); len(nodes) > 0 && !uuo.mutation.BadgesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.BadgesTable,
+			Columns: user.BadgesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: badge.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.BadgesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.BadgesTable,
+			Columns: user.BadgesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: badge.FieldID,
 				},
 			},
 		}

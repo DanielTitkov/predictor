@@ -34,6 +34,7 @@ func (User) Edges() []ent.Edge {
 		// has
 		edge.To("predictions", Prediction.Type),
 		edge.To("sessions", UserSession.Type),
+		edge.To("badges", Badge.Type),
 	}
 }
 

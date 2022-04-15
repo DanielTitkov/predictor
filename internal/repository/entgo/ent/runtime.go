@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/badge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/schema"
@@ -17,6 +18,29 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	badgeMixin := schema.Badge{}.Mixin()
+	badgeMixinFields0 := badgeMixin[0].Fields()
+	_ = badgeMixinFields0
+	badgeFields := schema.Badge{}.Fields()
+	_ = badgeFields
+	// badgeDescCreateTime is the schema descriptor for create_time field.
+	badgeDescCreateTime := badgeMixinFields0[0].Descriptor()
+	// badge.DefaultCreateTime holds the default value on creation for the create_time field.
+	badge.DefaultCreateTime = badgeDescCreateTime.Default.(func() time.Time)
+	// badgeDescUpdateTime is the schema descriptor for update_time field.
+	badgeDescUpdateTime := badgeMixinFields0[1].Descriptor()
+	// badge.DefaultUpdateTime holds the default value on creation for the update_time field.
+	badge.DefaultUpdateTime = badgeDescUpdateTime.Default.(func() time.Time)
+	// badge.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	badge.UpdateDefaultUpdateTime = badgeDescUpdateTime.UpdateDefault.(func() time.Time)
+	// badgeDescType is the schema descriptor for type field.
+	badgeDescType := badgeFields[0].Descriptor()
+	// badge.TypeValidator is a validator for the "type" field. It is called by the builders before save.
+	badge.TypeValidator = badgeDescType.Validators[0].(func(string) error)
+	// badgeDescActive is the schema descriptor for active field.
+	badgeDescActive := badgeFields[1].Descriptor()
+	// badge.DefaultActive holds the default value on creation for the active field.
+	badge.DefaultActive = badgeDescActive.Default.(bool)
 	challengeMixin := schema.Challenge{}.Mixin()
 	challengeMixinFields0 := challengeMixin[0].Fields()
 	_ = challengeMixinFields0

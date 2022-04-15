@@ -39,6 +39,14 @@ type (
 		Active       bool
 	}
 
+	Badge struct {
+		ID     int // probably not needed
+		UserID uuid.UUID
+		Type   string
+		Active bool
+		Meta   map[string]interface{}
+	}
+
 	Challenge struct {
 		ID             uuid.UUID
 		Type           string

@@ -24,6 +24,7 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
+	Badge       []ent.Hook
 	Challenge   []ent.Hook
 	Prediction  []ent.Hook
 	User        []ent.Hook

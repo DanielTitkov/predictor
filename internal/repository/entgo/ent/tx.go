@@ -12,6 +12,8 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Badge is the client for interacting with the Badge builders.
+	Badge *BadgeClient
 	// Challenge is the client for interacting with the Challenge builders.
 	Challenge *ChallengeClient
 	// Prediction is the client for interacting with the Prediction builders.
@@ -155,6 +157,7 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Badge = NewBadgeClient(tx.config)
 	tx.Challenge = NewChallengeClient(tx.config)
 	tx.Prediction = NewPredictionClient(tx.config)
 	tx.User = NewUserClient(tx.config)
@@ -168,7 +171,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Challenge.QueryXXX(), the query will be executed
+// applies a query, for example: Badge.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

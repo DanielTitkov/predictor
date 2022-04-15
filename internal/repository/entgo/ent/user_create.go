@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/badge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/usersession"
@@ -159,6 +160,21 @@ func (uc *UserCreate) AddSessions(u ...*UserSession) *UserCreate {
 		ids[i] = u[i].ID
 	}
 	return uc.AddSessionIDs(ids...)
+}
+
+// AddBadgeIDs adds the "badges" edge to the Badge entity by IDs.
+func (uc *UserCreate) AddBadgeIDs(ids ...int) *UserCreate {
+	uc.mutation.AddBadgeIDs(ids...)
+	return uc
+}
+
+// AddBadges adds the "badges" edges to the Badge entity.
+func (uc *UserCreate) AddBadges(b ...*Badge) *UserCreate {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uc.AddBadgeIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -434,6 +450,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: usersession.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.BadgesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.BadgesTable,
+			Columns: user.BadgesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: badge.FieldID,
 				},
 			},
 		}
