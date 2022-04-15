@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"net/url"
 
 	"github.com/jfyne/live"
@@ -73,6 +74,10 @@ func (h *Handler) NewCommon(s live.Socket) *CommonInstance {
 func (h *Handler) url404() *url.URL {
 	u, _ := url.Parse("/404")
 	return u
+}
+
+func (h *Handler) NotFoundRedirect(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, h.url404().String(), http.StatusTemporaryRedirect)
 }
 
 func (c *CommonInstance) CloseAuthModals() {

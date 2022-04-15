@@ -86,6 +86,7 @@ func main() {
 	h := handler.NewHandler(a, logger, "templates/")
 	r := mux.NewRouter()
 	r.Use(h.Middleware)
+	r.NotFoundHandler = http.HandlerFunc(h.NotFoundRedirect)
 	// main handler
 	r.Handle("/challenge/{challengeID}", live.NewHttpHandler(store, h.ChallengeDetails()))
 	r.Handle("/challenges", live.NewHttpHandler(store, h.ChallengeList()))
@@ -93,7 +94,6 @@ func main() {
 	r.Handle("/profile", live.NewHttpHandler(store, h.Profile()))
 	r.Handle("/404", live.NewHttpHandler(store, h.NotFound()))
 	r.Handle("/", live.NewHttpHandler(store, h.Home()))
-	// r.Handle("/tasks", live.NewHttpHandler(store, h.Tasks()))
 
 	// live scripts
 	r.Handle("/live.js", live.Javascript{})
