@@ -72,7 +72,7 @@ func (a *App) FilterChallenges(ctx context.Context, args *domain.FilterChallenge
 	return a.repo.FilterChallenges(ctx, args)
 }
 
-func (a *App) CreateChallengeFromArgs(ctx context.Context, args domain.CreateChallengeArgs) (*domain.Challenge, error) {
+func (a *App) CreateChallengeFromArgs(ctx context.Context, args domain.CreateChallengeArgs, strict bool) (*domain.Challenge, error) {
 	startTime, err := time.Parse(args.TimeLayout, args.StartTime)
 	if err != nil {
 		return nil, err
@@ -90,9 +90,15 @@ func (a *App) CreateChallengeFromArgs(ctx context.Context, args domain.CreateCha
 		StartTime:   startTime,
 		EndTime:     endTime,
 		Outcome:     args.Outcome,
+		AuthorID:    args.AuthorID,
+		Published:   args.Published,
 	}
 
-	challenge, err = a.repo.CreateOrUpdateChallengeByContent(ctx, challenge)
+	if strict {
+		challenge, err = a.repo.CreateChallenge(ctx, challenge)
+	} else {
+		challenge, err = a.repo.CreateOrUpdateChallengeByContent(ctx, challenge)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +126,7 @@ func (a *App) loadChallengePresets() error {
 			ctx := context.Background()
 
 			args.Published = true // all preset challenges go to publish
-			challenge, err := a.CreateChallengeFromArgs(ctx, args)
+			challenge, err := a.CreateChallengeFromArgs(ctx, args, false)
 			if err != nil {
 				return err
 			}

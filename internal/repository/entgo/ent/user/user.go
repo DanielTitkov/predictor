@@ -38,6 +38,8 @@ const (
 	EdgeSessions = "sessions"
 	// EdgeBadges holds the string denoting the badges edge name in mutations.
 	EdgeBadges = "badges"
+	// EdgeChallenges holds the string denoting the challenges edge name in mutations.
+	EdgeChallenges = "challenges"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// PredictionsTable is the table that holds the predictions relation/edge.
@@ -59,6 +61,13 @@ const (
 	// BadgesInverseTable is the table name for the Badge entity.
 	// It exists in this package in order to avoid circular dependency with the "badge" package.
 	BadgesInverseTable = "badges"
+	// ChallengesTable is the table that holds the challenges relation/edge.
+	ChallengesTable = "challenges"
+	// ChallengesInverseTable is the table name for the Challenge entity.
+	// It exists in this package in order to avoid circular dependency with the "challenge" package.
+	ChallengesInverseTable = "challenges"
+	// ChallengesColumn is the table column denoting the challenges relation/edge.
+	ChallengesColumn = "user_challenges"
 )
 
 // Columns holds all SQL columns for user fields.

@@ -49,9 +49,11 @@ type UserEdges struct {
 	Sessions []*UserSession `json:"sessions,omitempty"`
 	// Badges holds the value of the badges edge.
 	Badges []*Badge `json:"badges,omitempty"`
+	// Challenges holds the value of the challenges edge.
+	Challenges []*Challenge `json:"challenges,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // PredictionsOrErr returns the Predictions value or an error if the edge
@@ -79,6 +81,15 @@ func (e UserEdges) BadgesOrErr() ([]*Badge, error) {
 		return e.Badges, nil
 	}
 	return nil, &NotLoadedError{edge: "badges"}
+}
+
+// ChallengesOrErr returns the Challenges value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ChallengesOrErr() ([]*Challenge, error) {
+	if e.loadedTypes[3] {
+		return e.Challenges, nil
+	}
+	return nil, &NotLoadedError{edge: "challenges"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -191,6 +202,11 @@ func (u *User) QuerySessions() *UserSessionQuery {
 // QueryBadges queries the "badges" edge of the User entity.
 func (u *User) QueryBadges() *BadgeQuery {
 	return (&UserClient{config: u.config}).QueryBadges(u)
+}
+
+// QueryChallenges queries the "challenges" edge of the User entity.
+func (u *User) QueryChallenges() *ChallengeQuery {
+	return (&UserClient{config: u.config}).QueryChallenges(u)
 }
 
 // Update returns a builder for updating this User.

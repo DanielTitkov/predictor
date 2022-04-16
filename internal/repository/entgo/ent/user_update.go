@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/badge"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/predicate"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
@@ -161,6 +162,21 @@ func (uu *UserUpdate) AddBadges(b ...*Badge) *UserUpdate {
 	return uu.AddBadgeIDs(ids...)
 }
 
+// AddChallengeIDs adds the "challenges" edge to the Challenge entity by IDs.
+func (uu *UserUpdate) AddChallengeIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.AddChallengeIDs(ids...)
+	return uu
+}
+
+// AddChallenges adds the "challenges" edges to the Challenge entity.
+func (uu *UserUpdate) AddChallenges(c ...*Challenge) *UserUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uu.AddChallengeIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -227,6 +243,27 @@ func (uu *UserUpdate) RemoveBadges(b ...*Badge) *UserUpdate {
 		ids[i] = b[i].ID
 	}
 	return uu.RemoveBadgeIDs(ids...)
+}
+
+// ClearChallenges clears all "challenges" edges to the Challenge entity.
+func (uu *UserUpdate) ClearChallenges() *UserUpdate {
+	uu.mutation.ClearChallenges()
+	return uu
+}
+
+// RemoveChallengeIDs removes the "challenges" edge to Challenge entities by IDs.
+func (uu *UserUpdate) RemoveChallengeIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.RemoveChallengeIDs(ids...)
+	return uu
+}
+
+// RemoveChallenges removes "challenges" edges to Challenge entities.
+func (uu *UserUpdate) RemoveChallenges(c ...*Challenge) *UserUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uu.RemoveChallengeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -566,6 +603,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.ChallengesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ChallengesTable,
+			Columns: []string{user.ChallengesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: challenge.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedChallengesIDs(); len(nodes) > 0 && !uu.mutation.ChallengesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ChallengesTable,
+			Columns: []string{user.ChallengesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: challenge.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.ChallengesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ChallengesTable,
+			Columns: []string{user.ChallengesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: challenge.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -714,6 +805,21 @@ func (uuo *UserUpdateOne) AddBadges(b ...*Badge) *UserUpdateOne {
 	return uuo.AddBadgeIDs(ids...)
 }
 
+// AddChallengeIDs adds the "challenges" edge to the Challenge entity by IDs.
+func (uuo *UserUpdateOne) AddChallengeIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.AddChallengeIDs(ids...)
+	return uuo
+}
+
+// AddChallenges adds the "challenges" edges to the Challenge entity.
+func (uuo *UserUpdateOne) AddChallenges(c ...*Challenge) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uuo.AddChallengeIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -780,6 +886,27 @@ func (uuo *UserUpdateOne) RemoveBadges(b ...*Badge) *UserUpdateOne {
 		ids[i] = b[i].ID
 	}
 	return uuo.RemoveBadgeIDs(ids...)
+}
+
+// ClearChallenges clears all "challenges" edges to the Challenge entity.
+func (uuo *UserUpdateOne) ClearChallenges() *UserUpdateOne {
+	uuo.mutation.ClearChallenges()
+	return uuo
+}
+
+// RemoveChallengeIDs removes the "challenges" edge to Challenge entities by IDs.
+func (uuo *UserUpdateOne) RemoveChallengeIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.RemoveChallengeIDs(ids...)
+	return uuo
+}
+
+// RemoveChallenges removes "challenges" edges to Challenge entities.
+func (uuo *UserUpdateOne) RemoveChallenges(c ...*Challenge) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uuo.RemoveChallengeIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1135,6 +1262,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: badge.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.ChallengesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ChallengesTable,
+			Columns: []string{user.ChallengesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: challenge.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedChallengesIDs(); len(nodes) > 0 && !uuo.mutation.ChallengesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ChallengesTable,
+			Columns: []string{user.ChallengesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: challenge.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.ChallengesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ChallengesTable,
+			Columns: []string{user.ChallengesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: challenge.FieldID,
 				},
 			},
 		}

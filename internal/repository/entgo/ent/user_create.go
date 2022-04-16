@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/badge"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/usersession"
@@ -175,6 +176,21 @@ func (uc *UserCreate) AddBadges(b ...*Badge) *UserCreate {
 		ids[i] = b[i].ID
 	}
 	return uc.AddBadgeIDs(ids...)
+}
+
+// AddChallengeIDs adds the "challenges" edge to the Challenge entity by IDs.
+func (uc *UserCreate) AddChallengeIDs(ids ...uuid.UUID) *UserCreate {
+	uc.mutation.AddChallengeIDs(ids...)
+	return uc
+}
+
+// AddChallenges adds the "challenges" edges to the Challenge entity.
+func (uc *UserCreate) AddChallenges(c ...*Challenge) *UserCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uc.AddChallengeIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -469,6 +485,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: badge.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.ChallengesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ChallengesTable,
+			Columns: []string{user.ChallengesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: challenge.FieldID,
 				},
 			},
 		}

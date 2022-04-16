@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"html/template"
 	"log"
 	"math"
@@ -18,8 +20,15 @@ const (
 	eventAdminSelectPending     = "select-pending"
 	eventAdminSelectUnpublished = "select-unpublished"
 	eventAdminCreateNew         = "create-new"
+	eventAdminCreateNewSubmit   = "create-new-submit"
+	eventAdminCreateNewValidate = "create-new-validate"
 	// params
-	paramAdminPage = "page"
+	paramAdminPage                 = "page"
+	paramAdminCreateNewContent     = "content"
+	paramAdminCreateNewDescription = "description"
+	paramAdminCreateNewStartTime   = "start-time"
+	paramAdminCreateNewEndTime     = "end-time"
+	paramAdminCreateNewPublished   = "published"
 )
 
 type (
@@ -28,9 +37,12 @@ type (
 		Challenges          []*domain.Challenge
 		ChallengeCount      int
 		FilterArgs          domain.FilterChallengesArgs
+		CreateArgs          domain.CreateChallengeArgs
 		Page                int
 		MaxPage             int
 		CreateChallengeForm bool
+		CreatedChallenge    *domain.Challenge
+		FormError           error
 		TimeLayout          string
 	}
 )
@@ -63,7 +75,7 @@ func (ins *AdminInstance) updateChallenges(ctx context.Context, h *Handler) erro
 		ins.FilterArgs.Offset = 0
 	}
 
-	chs, count, err := h.app.FilterUserChallenges(ctx, &ins.FilterArgs)
+	chs, count, err := h.app.FilterChallenges(ctx, &ins.FilterArgs)
 	if err != nil {
 		return err
 	}
@@ -85,6 +97,8 @@ func (h *Handler) NewAdminInstance(s live.Socket) *AdminInstance {
 				Unpublished: false,
 			},
 			CreateChallengeForm: false,
+			FormError:           errors.New("provide challenge details"),
+			CreatedChallenge:    nil,
 			TimeLayout:          h.app.Cfg.App.DefaultTimeLayout,
 		}
 	}
@@ -173,6 +187,8 @@ func (h *Handler) Admin() live.Handler {
 		instance.FilterArgs.Pending = true
 		instance.FilterArgs.Unpublished = false
 		instance.CreateChallengeForm = false
+		instance.CreatedChallenge = nil
+		instance.FormError = nil
 
 		err := instance.updateChallenges(ctx, h)
 		return instance.withError(err), nil
@@ -188,6 +204,8 @@ func (h *Handler) Admin() live.Handler {
 		instance.FilterArgs.Pending = false
 		instance.FilterArgs.Unpublished = true
 		instance.CreateChallengeForm = false
+		instance.CreatedChallenge = nil
+		instance.FormError = nil
 
 		err := instance.updateChallenges(ctx, h)
 		return instance.withError(err), nil
@@ -199,9 +217,55 @@ func (h *Handler) Admin() live.Handler {
 		instance.FilterArgs.Pending = false
 		instance.FilterArgs.Unpublished = false
 		instance.CreateChallengeForm = true
+		instance.FormError = errors.New("provide challenge details")
+
+		return instance, nil
+	})
+
+	lvh.HandleEvent(eventAdminCreateNewSubmit, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+		instance := h.NewAdminInstance(s)
+
+		instance.CreateArgs = argsFromParams(p, h.app.Cfg.App.DefaultTimeLayout, instance.UserID)
+		instance.FormError = instance.CreateArgs.Validate()
+		if instance.FormError != nil {
+			return instance, nil
+		}
+
+		fmt.Printf("ARGS \n%+v\n", instance.CreateArgs)
+
+		challenge, err := h.app.CreateChallengeFromArgs(ctx, instance.CreateArgs, true)
+		if err != nil {
+			return instance.withError(err), nil
+		}
+
+		instance.CreatedChallenge = challenge
+		instance.CreateArgs = domain.CreateChallengeArgs{}
+
+		return instance, nil
+	})
+
+	lvh.HandleEvent(eventAdminCreateNewValidate, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+		instance := h.NewAdminInstance(s)
+
+		instance.CreateArgs = argsFromParams(p, h.app.Cfg.App.DefaultTimeLayout, instance.UserID)
+		instance.FormError = instance.CreateArgs.Validate()
 
 		return instance, nil
 	})
 
 	return lvh
+}
+
+func argsFromParams(p live.Params, layout string, userID uuid.UUID) domain.CreateChallengeArgs {
+	return domain.CreateChallengeArgs{
+		Type:        domain.ChallengeTypeBool,
+		Outcome:     nil,
+		Content:     p.String(paramAdminCreateNewContent),
+		Description: p.String(paramAdminCreateNewDescription),
+		StartTime:   p.String(paramAdminCreateNewStartTime),
+		EndTime:     p.String(paramAdminCreateNewEndTime),
+		Published:   p.Checkbox(paramAdminCreateNewPublished),
+		TimeLayout:  layout,
+		AuthorID:    userID,
+	}
 }

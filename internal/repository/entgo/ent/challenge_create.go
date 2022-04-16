@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -151,6 +152,25 @@ func (cc *ChallengeCreate) AddPredictions(p ...*Prediction) *ChallengeCreate {
 		ids[i] = p[i].ID
 	}
 	return cc.AddPredictionIDs(ids...)
+}
+
+// SetAuthorID sets the "author" edge to the User entity by ID.
+func (cc *ChallengeCreate) SetAuthorID(id uuid.UUID) *ChallengeCreate {
+	cc.mutation.SetAuthorID(id)
+	return cc
+}
+
+// SetNillableAuthorID sets the "author" edge to the User entity by ID if the given value is not nil.
+func (cc *ChallengeCreate) SetNillableAuthorID(id *uuid.UUID) *ChallengeCreate {
+	if id != nil {
+		cc = cc.SetAuthorID(*id)
+	}
+	return cc
+}
+
+// SetAuthor sets the "author" edge to the User entity.
+func (cc *ChallengeCreate) SetAuthor(u *User) *ChallengeCreate {
+	return cc.SetAuthorID(u.ID)
 }
 
 // Mutation returns the ChallengeMutation object of the builder.
@@ -409,6 +429,26 @@ func (cc *ChallengeCreate) createSpec() (*Challenge, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.AuthorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   challenge.AuthorTable,
+			Columns: []string{challenge.AuthorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_challenges = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -35,12 +35,21 @@ var (
 		{Name: "start_time", Type: field.TypeTime},
 		{Name: "end_time", Type: field.TypeTime},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"bool"}, Default: "bool"},
+		{Name: "user_challenges", Type: field.TypeUUID, Nullable: true},
 	}
 	// ChallengesTable holds the schema information for the "challenges" table.
 	ChallengesTable = &schema.Table{
 		Name:       "challenges",
 		Columns:    ChallengesColumns,
 		PrimaryKey: []*schema.Column{ChallengesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "challenges_users_challenges",
+				Columns:    []*schema.Column{ChallengesColumns[10]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// PredictionsColumns holds the columns for the "predictions" table.
 	PredictionsColumns = []*schema.Column{
@@ -169,6 +178,7 @@ var (
 )
 
 func init() {
+	ChallengesTable.ForeignKeys[0].RefTable = UsersTable
 	PredictionsTable.ForeignKeys[0].RefTable = ChallengesTable
 	PredictionsTable.ForeignKeys[1].RefTable = UsersTable
 	UserSessionsTable.ForeignKeys[0].RefTable = UsersTable

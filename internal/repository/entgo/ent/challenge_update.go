@@ -14,6 +14,7 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/predicate"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -123,6 +124,25 @@ func (cu *ChallengeUpdate) AddPredictions(p ...*Prediction) *ChallengeUpdate {
 	return cu.AddPredictionIDs(ids...)
 }
 
+// SetAuthorID sets the "author" edge to the User entity by ID.
+func (cu *ChallengeUpdate) SetAuthorID(id uuid.UUID) *ChallengeUpdate {
+	cu.mutation.SetAuthorID(id)
+	return cu
+}
+
+// SetNillableAuthorID sets the "author" edge to the User entity by ID if the given value is not nil.
+func (cu *ChallengeUpdate) SetNillableAuthorID(id *uuid.UUID) *ChallengeUpdate {
+	if id != nil {
+		cu = cu.SetAuthorID(*id)
+	}
+	return cu
+}
+
+// SetAuthor sets the "author" edge to the User entity.
+func (cu *ChallengeUpdate) SetAuthor(u *User) *ChallengeUpdate {
+	return cu.SetAuthorID(u.ID)
+}
+
 // Mutation returns the ChallengeMutation object of the builder.
 func (cu *ChallengeUpdate) Mutation() *ChallengeMutation {
 	return cu.mutation
@@ -147,6 +167,12 @@ func (cu *ChallengeUpdate) RemovePredictions(p ...*Prediction) *ChallengeUpdate 
 		ids[i] = p[i].ID
 	}
 	return cu.RemovePredictionIDs(ids...)
+}
+
+// ClearAuthor clears the "author" edge to the User entity.
+func (cu *ChallengeUpdate) ClearAuthor() *ChallengeUpdate {
+	cu.mutation.ClearAuthor()
+	return cu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -366,6 +392,41 @@ func (cu *ChallengeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.AuthorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   challenge.AuthorTable,
+			Columns: []string{challenge.AuthorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.AuthorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   challenge.AuthorTable,
+			Columns: []string{challenge.AuthorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{challenge.Label}
@@ -478,6 +539,25 @@ func (cuo *ChallengeUpdateOne) AddPredictions(p ...*Prediction) *ChallengeUpdate
 	return cuo.AddPredictionIDs(ids...)
 }
 
+// SetAuthorID sets the "author" edge to the User entity by ID.
+func (cuo *ChallengeUpdateOne) SetAuthorID(id uuid.UUID) *ChallengeUpdateOne {
+	cuo.mutation.SetAuthorID(id)
+	return cuo
+}
+
+// SetNillableAuthorID sets the "author" edge to the User entity by ID if the given value is not nil.
+func (cuo *ChallengeUpdateOne) SetNillableAuthorID(id *uuid.UUID) *ChallengeUpdateOne {
+	if id != nil {
+		cuo = cuo.SetAuthorID(*id)
+	}
+	return cuo
+}
+
+// SetAuthor sets the "author" edge to the User entity.
+func (cuo *ChallengeUpdateOne) SetAuthor(u *User) *ChallengeUpdateOne {
+	return cuo.SetAuthorID(u.ID)
+}
+
 // Mutation returns the ChallengeMutation object of the builder.
 func (cuo *ChallengeUpdateOne) Mutation() *ChallengeMutation {
 	return cuo.mutation
@@ -502,6 +582,12 @@ func (cuo *ChallengeUpdateOne) RemovePredictions(p ...*Prediction) *ChallengeUpd
 		ids[i] = p[i].ID
 	}
 	return cuo.RemovePredictionIDs(ids...)
+}
+
+// ClearAuthor clears the "author" edge to the User entity.
+func (cuo *ChallengeUpdateOne) ClearAuthor() *ChallengeUpdateOne {
+	cuo.mutation.ClearAuthor()
+	return cuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -737,6 +823,41 @@ func (cuo *ChallengeUpdateOne) sqlSave(ctx context.Context) (_node *Challenge, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: prediction.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.AuthorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   challenge.AuthorTable,
+			Columns: []string{challenge.AuthorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.AuthorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   challenge.AuthorTable,
+			Columns: []string{challenge.AuthorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: user.FieldID,
 				},
 			},
 		}

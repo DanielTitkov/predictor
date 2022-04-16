@@ -359,6 +359,22 @@ func (c *ChallengeClient) QueryPredictions(ch *Challenge) *PredictionQuery {
 	return query
 }
 
+// QueryAuthor queries the author edge of a Challenge.
+func (c *ChallengeClient) QueryAuthor(ch *Challenge) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ch.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(challenge.Table, challenge.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, challenge.AuthorTable, challenge.AuthorColumn),
+		)
+		fromV = sqlgraph.Neighbors(ch.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ChallengeClient) Hooks() []Hook {
 	return c.hooks.Challenge
@@ -612,6 +628,22 @@ func (c *UserClient) QueryBadges(u *User) *BadgeQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(badge.Table, badge.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, user.BadgesTable, user.BadgesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryChallenges queries the challenges edge of a User.
+func (c *UserClient) QueryChallenges(u *User) *ChallengeQuery {
+	query := &ChallengeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(challenge.Table, challenge.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ChallengesTable, user.ChallengesColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

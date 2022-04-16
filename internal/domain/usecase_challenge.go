@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -61,6 +62,52 @@ func (ch *Challenge) StartStr() string {
 
 func (ch *Challenge) EndStr() string {
 	return ch.EndTime.Format(ChallengeTimeFormat)
+}
+
+func (a *CreateChallengeArgs) Validate() error {
+	if a.Outcome != nil {
+		return errors.New("not allowed to create with outcome")
+	}
+
+	if len(a.Content) > 140 {
+		return errors.New("content must be less than 140 characters")
+	}
+
+	if len(a.Content) < 10 {
+		return errors.New("content must be more than 10 characters")
+	}
+
+	if len(a.Description) < 10 {
+		return errors.New("description must be more than 10 characters")
+	}
+
+	if len(a.Description) > 280 {
+		return errors.New("description must be less than 280 characters")
+	}
+
+	startTime, err := time.Parse(a.TimeLayout, a.StartTime)
+	if err != nil {
+		return fmt.Errorf("failed to parse start time: %s", err)
+	}
+
+	endTime, err := time.Parse(a.TimeLayout, a.EndTime)
+	if err != nil {
+		return fmt.Errorf("failed to parse end time: %s", err)
+	}
+
+	if !startTime.Before(endTime) {
+		return errors.New("start time must be before end time")
+	}
+
+	if endTime.Before(time.Now()) {
+		return errors.New("end time must be in the future")
+	}
+
+	if startTime.Before(time.Now()) {
+		return errors.New("start time must be in the future")
+	}
+
+	return nil
 }
 
 func (a *FilterChallengesArgs) Validate(requireUser bool) error {

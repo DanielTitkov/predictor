@@ -697,6 +697,8 @@ type ChallengeMutation struct {
 	predictions        map[uuid.UUID]struct{}
 	removedpredictions map[uuid.UUID]struct{}
 	clearedpredictions bool
+	author             *uuid.UUID
+	clearedauthor      bool
 	done               bool
 	oldValue           func(context.Context) (*Challenge, error)
 	predicates         []predicate.Challenge
@@ -1210,6 +1212,45 @@ func (m *ChallengeMutation) ResetPredictions() {
 	m.removedpredictions = nil
 }
 
+// SetAuthorID sets the "author" edge to the User entity by id.
+func (m *ChallengeMutation) SetAuthorID(id uuid.UUID) {
+	m.author = &id
+}
+
+// ClearAuthor clears the "author" edge to the User entity.
+func (m *ChallengeMutation) ClearAuthor() {
+	m.clearedauthor = true
+}
+
+// AuthorCleared reports if the "author" edge to the User entity was cleared.
+func (m *ChallengeMutation) AuthorCleared() bool {
+	return m.clearedauthor
+}
+
+// AuthorID returns the "author" edge ID in the mutation.
+func (m *ChallengeMutation) AuthorID() (id uuid.UUID, exists bool) {
+	if m.author != nil {
+		return *m.author, true
+	}
+	return
+}
+
+// AuthorIDs returns the "author" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AuthorID instead. It exists only for internal usage by the builders.
+func (m *ChallengeMutation) AuthorIDs() (ids []uuid.UUID) {
+	if id := m.author; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAuthor resets all changes to the "author" edge.
+func (m *ChallengeMutation) ResetAuthor() {
+	m.author = nil
+	m.clearedauthor = false
+}
+
 // Where appends a list predicates to the ChallengeMutation builder.
 func (m *ChallengeMutation) Where(ps ...predicate.Challenge) {
 	m.predicates = append(m.predicates, ps...)
@@ -1479,9 +1520,12 @@ func (m *ChallengeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ChallengeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.predictions != nil {
 		edges = append(edges, challenge.EdgePredictions)
+	}
+	if m.author != nil {
+		edges = append(edges, challenge.EdgeAuthor)
 	}
 	return edges
 }
@@ -1496,13 +1540,17 @@ func (m *ChallengeMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case challenge.EdgeAuthor:
+		if id := m.author; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ChallengeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedpredictions != nil {
 		edges = append(edges, challenge.EdgePredictions)
 	}
@@ -1525,9 +1573,12 @@ func (m *ChallengeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ChallengeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedpredictions {
 		edges = append(edges, challenge.EdgePredictions)
+	}
+	if m.clearedauthor {
+		edges = append(edges, challenge.EdgeAuthor)
 	}
 	return edges
 }
@@ -1538,6 +1589,8 @@ func (m *ChallengeMutation) EdgeCleared(name string) bool {
 	switch name {
 	case challenge.EdgePredictions:
 		return m.clearedpredictions
+	case challenge.EdgeAuthor:
+		return m.clearedauthor
 	}
 	return false
 }
@@ -1546,6 +1599,9 @@ func (m *ChallengeMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *ChallengeMutation) ClearEdge(name string) error {
 	switch name {
+	case challenge.EdgeAuthor:
+		m.ClearAuthor()
+		return nil
 	}
 	return fmt.Errorf("unknown Challenge unique edge %s", name)
 }
@@ -1556,6 +1612,9 @@ func (m *ChallengeMutation) ResetEdge(name string) error {
 	switch name {
 	case challenge.EdgePredictions:
 		m.ResetPredictions()
+		return nil
+	case challenge.EdgeAuthor:
+		m.ResetAuthor()
 		return nil
 	}
 	return fmt.Errorf("unknown Challenge edge %s", name)
@@ -2215,6 +2274,9 @@ type UserMutation struct {
 	badges             map[int]struct{}
 	removedbadges      map[int]struct{}
 	clearedbadges      bool
+	challenges         map[uuid.UUID]struct{}
+	removedchallenges  map[uuid.UUID]struct{}
+	clearedchallenges  bool
 	done               bool
 	oldValue           func(context.Context) (*User, error)
 	predicates         []predicate.User
@@ -2836,6 +2898,60 @@ func (m *UserMutation) ResetBadges() {
 	m.removedbadges = nil
 }
 
+// AddChallengeIDs adds the "challenges" edge to the Challenge entity by ids.
+func (m *UserMutation) AddChallengeIDs(ids ...uuid.UUID) {
+	if m.challenges == nil {
+		m.challenges = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.challenges[ids[i]] = struct{}{}
+	}
+}
+
+// ClearChallenges clears the "challenges" edge to the Challenge entity.
+func (m *UserMutation) ClearChallenges() {
+	m.clearedchallenges = true
+}
+
+// ChallengesCleared reports if the "challenges" edge to the Challenge entity was cleared.
+func (m *UserMutation) ChallengesCleared() bool {
+	return m.clearedchallenges
+}
+
+// RemoveChallengeIDs removes the "challenges" edge to the Challenge entity by IDs.
+func (m *UserMutation) RemoveChallengeIDs(ids ...uuid.UUID) {
+	if m.removedchallenges == nil {
+		m.removedchallenges = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.challenges, ids[i])
+		m.removedchallenges[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedChallenges returns the removed IDs of the "challenges" edge to the Challenge entity.
+func (m *UserMutation) RemovedChallengesIDs() (ids []uuid.UUID) {
+	for id := range m.removedchallenges {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ChallengesIDs returns the "challenges" edge IDs in the mutation.
+func (m *UserMutation) ChallengesIDs() (ids []uuid.UUID) {
+	for id := range m.challenges {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetChallenges resets all changes to the "challenges" edge.
+func (m *UserMutation) ResetChallenges() {
+	m.challenges = nil
+	m.clearedchallenges = false
+	m.removedchallenges = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -3105,7 +3221,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.predictions != nil {
 		edges = append(edges, user.EdgePredictions)
 	}
@@ -3114,6 +3230,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.badges != nil {
 		edges = append(edges, user.EdgeBadges)
+	}
+	if m.challenges != nil {
+		edges = append(edges, user.EdgeChallenges)
 	}
 	return edges
 }
@@ -3140,13 +3259,19 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeChallenges:
+		ids := make([]ent.Value, 0, len(m.challenges))
+		for id := range m.challenges {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedpredictions != nil {
 		edges = append(edges, user.EdgePredictions)
 	}
@@ -3155,6 +3280,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedbadges != nil {
 		edges = append(edges, user.EdgeBadges)
+	}
+	if m.removedchallenges != nil {
+		edges = append(edges, user.EdgeChallenges)
 	}
 	return edges
 }
@@ -3181,13 +3309,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeChallenges:
+		ids := make([]ent.Value, 0, len(m.removedchallenges))
+		for id := range m.removedchallenges {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedpredictions {
 		edges = append(edges, user.EdgePredictions)
 	}
@@ -3196,6 +3330,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	}
 	if m.clearedbadges {
 		edges = append(edges, user.EdgeBadges)
+	}
+	if m.clearedchallenges {
+		edges = append(edges, user.EdgeChallenges)
 	}
 	return edges
 }
@@ -3210,6 +3347,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedsessions
 	case user.EdgeBadges:
 		return m.clearedbadges
+	case user.EdgeChallenges:
+		return m.clearedchallenges
 	}
 	return false
 }
@@ -3234,6 +3373,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeBadges:
 		m.ResetBadges()
+		return nil
+	case user.EdgeChallenges:
+		m.ResetChallenges()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

@@ -34,6 +34,8 @@ const (
 	FieldType = "type"
 	// EdgePredictions holds the string denoting the predictions edge name in mutations.
 	EdgePredictions = "predictions"
+	// EdgeAuthor holds the string denoting the author edge name in mutations.
+	EdgeAuthor = "author"
 	// Table holds the table name of the challenge in the database.
 	Table = "challenges"
 	// PredictionsTable is the table that holds the predictions relation/edge.
@@ -43,6 +45,13 @@ const (
 	PredictionsInverseTable = "predictions"
 	// PredictionsColumn is the table column denoting the predictions relation/edge.
 	PredictionsColumn = "challenge_predictions"
+	// AuthorTable is the table that holds the author relation/edge.
+	AuthorTable = "challenges"
+	// AuthorInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	AuthorInverseTable = "users"
+	// AuthorColumn is the table column denoting the author relation/edge.
+	AuthorColumn = "user_challenges"
 )
 
 // Columns holds all SQL columns for challenge fields.
@@ -59,10 +68,21 @@ var Columns = []string{
 	FieldType,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "challenges"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"user_challenges",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

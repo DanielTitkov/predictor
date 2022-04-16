@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -37,16 +38,19 @@ type Challenge struct {
 	Type challenge.Type `json:"type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ChallengeQuery when eager-loading is set.
-	Edges ChallengeEdges `json:"edges"`
+	Edges           ChallengeEdges `json:"edges"`
+	user_challenges *uuid.UUID
 }
 
 // ChallengeEdges holds the relations/edges for other nodes in the graph.
 type ChallengeEdges struct {
 	// Predictions holds the value of the predictions edge.
 	Predictions []*Prediction `json:"predictions,omitempty"`
+	// Author holds the value of the author edge.
+	Author *User `json:"author,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // PredictionsOrErr returns the Predictions value or an error if the edge
@@ -56,6 +60,20 @@ func (e ChallengeEdges) PredictionsOrErr() ([]*Prediction, error) {
 		return e.Predictions, nil
 	}
 	return nil, &NotLoadedError{edge: "predictions"}
+}
+
+// AuthorOrErr returns the Author value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ChallengeEdges) AuthorOrErr() (*User, error) {
+	if e.loadedTypes[1] {
+		if e.Author == nil {
+			// The edge author was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.Author, nil
+	}
+	return nil, &NotLoadedError{edge: "author"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -71,6 +89,8 @@ func (*Challenge) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullTime)
 		case challenge.FieldID:
 			values[i] = new(uuid.UUID)
+		case challenge.ForeignKeys[0]: // user_challenges
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Challenge", columns[i])
 		}
@@ -147,6 +167,13 @@ func (c *Challenge) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.Type = challenge.Type(value.String)
 			}
+		case challenge.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field user_challenges", values[i])
+			} else if value.Valid {
+				c.user_challenges = new(uuid.UUID)
+				*c.user_challenges = *value.S.(*uuid.UUID)
+			}
 		}
 	}
 	return nil
@@ -155,6 +182,11 @@ func (c *Challenge) assignValues(columns []string, values []interface{}) error {
 // QueryPredictions queries the "predictions" edge of the Challenge entity.
 func (c *Challenge) QueryPredictions() *PredictionQuery {
 	return (&ChallengeClient{config: c.config}).QueryPredictions(c)
+}
+
+// QueryAuthor queries the "author" edge of the Challenge entity.
+func (c *Challenge) QueryAuthor() *UserQuery {
+	return (&ChallengeClient{config: c.config}).QueryAuthor(c)
 }
 
 // Update returns a builder for updating this Challenge.

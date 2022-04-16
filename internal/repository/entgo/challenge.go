@@ -324,6 +324,27 @@ func (r *EntgoRepository) GetPopularFinishedChallenges(ctx context.Context, limi
 	return nil, nil
 }
 
+func (r *EntgoRepository) CreateChallenge(ctx context.Context, ch *domain.Challenge) (*domain.Challenge, error) {
+	query := r.client.Challenge.
+		Create().
+		SetContent(ch.Content).
+		SetStartTime(ch.StartTime).
+		SetEndTime(ch.EndTime).
+		SetPublished(ch.Published).
+		SetNillableOutcome(ch.Outcome).
+		SetDescription(ch.Description)
+
+	if ch.AuthorID != uuid.Nil {
+		query.SetAuthorID(ch.AuthorID)
+	}
+
+	c, err := query.Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return entToDomainChallenge(c, nil), nil
+}
+
 func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, ch *domain.Challenge) (*domain.Challenge, error) {
 	// query challenge by content
 	c, err := r.client.Challenge.
@@ -344,10 +365,19 @@ func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, 
 			SetNillableOutcome(ch.Outcome).
 			SetDescription(ch.Description)
 
+		if ch.AuthorID != uuid.Nil {
+			chQuery.SetAuthorID(ch.AuthorID)
+		}
+
 		c, err = chQuery.Save(ctx)
 		if err != nil {
 			return nil, err
 		}
+		return entToDomainChallenge(c, nil), nil
+	}
+
+	if c.Outcome != nil {
+		// it's not allowed to update challenges with set outcome
 		return entToDomainChallenge(c, nil), nil
 	}
 

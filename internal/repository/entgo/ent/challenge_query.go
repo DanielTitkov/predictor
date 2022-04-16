@@ -15,6 +15,7 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/predicate"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/google/uuid"
 )
 
@@ -29,6 +30,8 @@ type ChallengeQuery struct {
 	predicates []predicate.Challenge
 	// eager-loading edges.
 	withPredictions *PredictionQuery
+	withAuthor      *UserQuery
+	withFKs         bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -80,6 +83,28 @@ func (cq *ChallengeQuery) QueryPredictions() *PredictionQuery {
 			sqlgraph.From(challenge.Table, challenge.FieldID, selector),
 			sqlgraph.To(prediction.Table, prediction.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, challenge.PredictionsTable, challenge.PredictionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAuthor chains the current query on the "author" edge.
+func (cq *ChallengeQuery) QueryAuthor() *UserQuery {
+	query := &UserQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(challenge.Table, challenge.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, challenge.AuthorTable, challenge.AuthorColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,6 +294,7 @@ func (cq *ChallengeQuery) Clone() *ChallengeQuery {
 		order:           append([]OrderFunc{}, cq.order...),
 		predicates:      append([]predicate.Challenge{}, cq.predicates...),
 		withPredictions: cq.withPredictions.Clone(),
+		withAuthor:      cq.withAuthor.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -284,6 +310,17 @@ func (cq *ChallengeQuery) WithPredictions(opts ...func(*PredictionQuery)) *Chall
 		opt(query)
 	}
 	cq.withPredictions = query
+	return cq
+}
+
+// WithAuthor tells the query-builder to eager-load the nodes that are connected to
+// the "author" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ChallengeQuery) WithAuthor(opts ...func(*UserQuery)) *ChallengeQuery {
+	query := &UserQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withAuthor = query
 	return cq
 }
 
@@ -351,11 +388,19 @@ func (cq *ChallengeQuery) prepareQuery(ctx context.Context) error {
 func (cq *ChallengeQuery) sqlAll(ctx context.Context) ([]*Challenge, error) {
 	var (
 		nodes       = []*Challenge{}
+		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			cq.withPredictions != nil,
+			cq.withAuthor != nil,
 		}
 	)
+	if cq.withAuthor != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, challenge.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &Challenge{config: cq.config}
 		nodes = append(nodes, node)
@@ -402,6 +447,35 @@ func (cq *ChallengeQuery) sqlAll(ctx context.Context) ([]*Challenge, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "challenge_predictions" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Predictions = append(node.Edges.Predictions, n)
+		}
+	}
+
+	if query := cq.withAuthor; query != nil {
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Challenge)
+		for i := range nodes {
+			if nodes[i].user_challenges == nil {
+				continue
+			}
+			fk := *nodes[i].user_challenges
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(user.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "user_challenges" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Author = n
+			}
 		}
 	}
 

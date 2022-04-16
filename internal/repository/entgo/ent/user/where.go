@@ -913,6 +913,34 @@ func HasBadgesWith(preds ...predicate.Badge) predicate.User {
 	})
 }
 
+// HasChallenges applies the HasEdge predicate on the "challenges" edge.
+func HasChallenges() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChallengesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChallengesTable, ChallengesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasChallengesWith applies the HasEdge predicate on the "challenges" edge with a given conditions (other predicates).
+func HasChallengesWith(preds ...predicate.Challenge) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChallengesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChallengesTable, ChallengesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
