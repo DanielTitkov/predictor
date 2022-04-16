@@ -90,6 +90,7 @@ func main() {
 	r.Use(h.Middleware)
 	r.NotFoundHandler = http.HandlerFunc(h.NotFoundRedirect)
 	// main handler
+	r.Handle("/challenge/{challengeID}/edit", live.NewHttpHandler(store, h.ChallengeUpdate()))
 	r.Handle("/challenge/{challengeID}", live.NewHttpHandler(store, h.ChallengeDetails()))
 	r.Handle("/challenges", live.NewHttpHandler(store, h.ChallengeList()))
 	r.Handle("/about", live.NewHttpHandler(store, h.About()))
