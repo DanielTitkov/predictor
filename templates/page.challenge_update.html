@@ -2,6 +2,114 @@
 {{ define "view" }}
 {{ template "back-to-home" }}
 <div class="section">
-    update
+  <div class="block">
+    <p class="title is-3 has-text-centered">Edit challenge details</p>
+    <form id="edit-challenge-form" live-submit="edit-submit" live-change="edit-validate">
+      {{ if .FormError }}
+      <div class="block">
+        <p class="title is-5 has-text-danger">
+          {{ .FormError.Error }}
+        </p>
+      </div>
+      {{ end }}
+      <div class="columns">
+        <div class="column is-6">
+          <div class="field">
+            <label class="label">Challenge ID</label>
+            <div class="control">
+              <input value="{{ .Challenge.ID }}" class="input" name="id" disabled type="text"
+                placeholder="00000000-0000-0000-0000-000000000000">
+            </div>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="field">
+            <label class="label">Author ID</label>
+            <div class="control">
+              <input value="{{ .Challenge.AuthorID }}" class="input" name="author-id" disabled type="text"
+                placeholder="00000000-0000-0000-0000-000000000000">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Content</label>
+        <div class="control">
+          <input value="{{ .Challenge.Content }}" class="input" name="content" live-debounce="blur" type="text"
+            placeholder="Content">
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Description</label>
+        <div class="control">
+          <input value="{{ .Challenge.Description }}" class="input" name="description" live-debounce="blur" type="text"
+            placeholder="Description">
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column is-6">
+          <div class="field">
+            <label class="label">Start time</label>
+            <div class="control">
+              <input value="{{ .Challenge.StartStr }}" class="input" name="start-time" live-debounce="blur" type="text"
+                placeholder="{{ .TimeLayout }}">
+            </div>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="field">
+            <label class="label">End time</label>
+            <div class="control">
+              <input value="{{ .Challenge.EndStr }}" class="input" name="end-time" live-debounce="blur" type="text"
+                placeholder="{{ .TimeLayout }}">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="control">
+          <label class="checkbox">
+            <input {{ if .Challenge.Published }}checked{{end}} name="published" live-debounce="blur" type="checkbox">
+            Published
+          </label>
+        </div>
+      </div>
+      <div class="field is-grouped is-grouped-right">
+        <div class="control">
+          <button class="button is-link is-large is-rounded" {{ if .FormError }}disabled{{ end }}>
+            Update challenge
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <hr>
+  <div class="block">
+    <p class="title is-3 has-text-centered">Edit outcome</p>
+    <form id="outcome-form" live-submit="outcome-submit" live-change="outcome-validate">
+      <!-- {{ if .FormError }}
+      <div class="block">
+        <p class="title is-5 has-text-danger">
+          {{ .FormError.Error }}
+        </p>
+      </div>
+      {{ end }} -->
+      <div class="field">
+        <div class="control">
+          <label class="checkbox">
+            <input name="outcome" live-debounce="blur" type="checkbox">
+            Outcome
+          </label>
+        </div>
+      </div>
+      <div class="field is-grouped is-grouped-right">
+        <div class="control">
+          <button class="button is-link is-large is-rounded" {{ if .FormError }}disabled{{ end }}>
+            Update outcome
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 {{end}}

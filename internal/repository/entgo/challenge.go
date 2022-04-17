@@ -65,6 +65,7 @@ func (r *EntgoRepository) GetChallengeByID(ctx context.Context, id uuid.UUID, us
 		Query().
 		Where(challenge.IDEQ(id)).
 		WithPredictions().
+		WithAuthor().
 		Only(ctx)
 	if err != nil {
 		return nil, err
@@ -543,6 +544,11 @@ func entToDomainChallenge(ch *ent.Challenge, userPrediction *domain.Prediction) 
 		}
 	}
 
+	var authorID uuid.UUID
+	if ch.Edges.Author != nil {
+		authorID = ch.Edges.Author.ID
+	}
+
 	return &domain.Challenge{
 		ID:             ch.ID,
 		Content:        ch.Content,
@@ -552,6 +558,7 @@ func entToDomainChallenge(ch *ent.Challenge, userPrediction *domain.Prediction) 
 		EndTime:        ch.EndTime,
 		Published:      ch.Published,
 		Predictions:    predictions,
+		AuthorID:       authorID,
 		UserPrediction: userPrediction,
 	}
 }

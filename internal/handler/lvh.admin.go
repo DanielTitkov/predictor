@@ -225,7 +225,7 @@ func (h *Handler) Admin() live.Handler {
 	lvh.HandleEvent(eventAdminCreateNewSubmit, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
 		instance := h.NewAdminInstance(s)
 
-		instance.CreateArgs = argsFromParams(p, h.app.Cfg.App.DefaultTimeLayout, instance.UserID)
+		instance.CreateArgs = adminCreateArgsFromParams(p, h.app.Cfg.App.DefaultTimeLayout, instance.UserID)
 		instance.FormError = instance.CreateArgs.Validate()
 		if instance.FormError != nil {
 			return instance, nil
@@ -247,7 +247,7 @@ func (h *Handler) Admin() live.Handler {
 	lvh.HandleEvent(eventAdminCreateNewValidate, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
 		instance := h.NewAdminInstance(s)
 
-		instance.CreateArgs = argsFromParams(p, h.app.Cfg.App.DefaultTimeLayout, instance.UserID)
+		instance.CreateArgs = adminCreateArgsFromParams(p, h.app.Cfg.App.DefaultTimeLayout, instance.UserID)
 		instance.FormError = instance.CreateArgs.Validate()
 
 		return instance, nil
@@ -256,7 +256,7 @@ func (h *Handler) Admin() live.Handler {
 	return lvh
 }
 
-func argsFromParams(p live.Params, layout string, userID uuid.UUID) domain.CreateChallengeArgs {
+func adminCreateArgsFromParams(p live.Params, layout string, userID uuid.UUID) domain.CreateChallengeArgs {
 	return domain.CreateChallengeArgs{
 		Type:        domain.ChallengeTypeBool,
 		Outcome:     nil,

@@ -3,8 +3,10 @@ package handler
 import (
 	"context"
 	"errors"
+	"fmt"
 	"html/template"
 	"log"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -15,17 +17,26 @@ import (
 )
 
 const (
-// events
-// params
+	// events
+	eventEditChallengeValidate = "edit-validate"
+	eventEditChallengeSubmit   = "edit-submit"
+	// params
+	paramEditChallengeContent     = "content"
+	paramEditChallengeDescription = "description"
+	paramEditChallengeStartTime   = "start-time"
+	paramEditChallengeEndTime     = "end-time"
+	paramEditChallengePublished   = "published"
+
 // params values
 )
 
 type (
 	ChallengeUpdateInstance struct {
 		*CommonInstance
-		Challenge       *domain.Challenge
-		ShowModal       bool
-		ModalPrediction bool
+		Challenge     *domain.Challenge
+		ChallengeArgs domain.CreateChallengeArgs
+		FormError     error
+		TimeLayout    string
 	}
 )
 
@@ -34,12 +45,34 @@ func (ins *ChallengeUpdateInstance) withError(err error) *ChallengeUpdateInstanc
 	return ins
 }
 
+func (ins *ChallengeUpdateInstance) updateChallengeFromArgs() error {
+	ins.Challenge.Content = ins.ChallengeArgs.Content
+	ins.Challenge.Description = ins.ChallengeArgs.Description
+	ins.Challenge.Published = ins.ChallengeArgs.Published
+
+	startTime, err := time.Parse(ins.ChallengeArgs.TimeLayout, ins.ChallengeArgs.StartTime)
+	if err != nil {
+		return fmt.Errorf("failed to parse start time: %s", err)
+	}
+
+	endTime, err := time.Parse(ins.ChallengeArgs.TimeLayout, ins.ChallengeArgs.EndTime)
+	if err != nil {
+		return fmt.Errorf("failed to parse end time: %s", err)
+	}
+
+	ins.Challenge.StartTime = startTime
+	ins.Challenge.EndTime = endTime
+
+	return nil
+}
+
 func (h *Handler) NewChallengeUpdateInstance(s live.Socket) *ChallengeUpdateInstance {
 	m, ok := s.Assigns().(*ChallengeUpdateInstance)
 	if !ok {
 		return &ChallengeUpdateInstance{
 			CommonInstance: h.NewCommon(s),
-			ShowModal:      false,
+			FormError:      nil,
+			TimeLayout:     h.app.Cfg.App.DefaultTimeLayout,
 		}
 	}
 
@@ -117,5 +150,32 @@ func (h *Handler) ChallengeUpdate() live.Handler {
 		return instance, nil
 	})
 
+	lvh.HandleEvent(eventEditChallengeValidate, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+		instance := h.NewChallengeUpdateInstance(s)
+
+		instance.ChallengeArgs = editChallengeArgsFromParams(p, h.app.Cfg.App.DefaultTimeLayout, instance.UserID)
+		instance.FormError = instance.ChallengeArgs.Validate()
+		err := instance.updateChallengeFromArgs()
+		if err != nil {
+			instance.FormError = err
+		}
+
+		return instance, nil
+	})
+
 	return lvh
+}
+
+func editChallengeArgsFromParams(p live.Params, layout string, userID uuid.UUID) domain.CreateChallengeArgs {
+	return domain.CreateChallengeArgs{
+		Type:        domain.ChallengeTypeBool,
+		Outcome:     nil,
+		Content:     p.String(paramEditChallengeContent),
+		Description: p.String(paramEditChallengeDescription),
+		StartTime:   p.String(paramEditChallengeStartTime),
+		EndTime:     p.String(paramEditChallengeEndTime),
+		Published:   p.Checkbox(paramEditChallengePublished),
+		TimeLayout:  layout,
+		AuthorID:    userID,
+	}
 }
