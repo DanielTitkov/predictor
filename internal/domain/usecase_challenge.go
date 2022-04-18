@@ -12,6 +12,10 @@ func (ch *Challenge) Finished() bool {
 	return ch.EndTime.Before(time.Now())
 }
 
+func (ch *Challenge) Started() bool {
+	return ch.StartTime.Before(time.Now())
+}
+
 func (ch *Challenge) Votes() int {
 	return len(ch.Predictions)
 }
@@ -46,6 +50,31 @@ func (ch *Challenge) PercFalse() int {
 
 func (ch *Challenge) HasOutcome() bool {
 	return ch.Outcome != nil
+}
+
+func (ch *Challenge) AllowOutcomeEdit() bool {
+	if ch.HasOutcome() {
+		return false
+	}
+
+	if !ch.Finished() {
+		return false
+	}
+
+	return true
+}
+
+func (ch *Challenge) AllowDetailsEdit() bool {
+	if ch.Started() {
+		return false
+	}
+
+	// TODO: maybe allow to edit
+	if ch.Published {
+		return false
+	}
+
+	return true
 }
 
 func (ch *Challenge) HasOutcomeAndTrue() bool {

@@ -4,7 +4,9 @@
 <div class="section">
   <div class="block">
     <p class="title is-3 has-text-centered">Edit challenge details</p>
-    <form id="edit-challenge-form" live-submit="edit-submit" live-change="edit-validate">
+    {{ if .Challenge.AllowDetailsEdit }}
+    <!-- live-change="edit-validate" -->
+    <form id="edit-challenge-form" live-submit="edit-submit" >
       {{ if .FormError }}
       <div class="block">
         <p class="title is-5 has-text-danger">
@@ -35,14 +37,13 @@
       <div class="field">
         <label class="label">Content</label>
         <div class="control">
-          <input value="{{ .Challenge.Content }}" class="input" name="content" live-debounce="blur" type="text"
-            placeholder="Content">
+          <input value="{{ .ChallengeArgs.Content }}" class="input" name="content" type="text" placeholder="Content">
         </div>
       </div>
       <div class="field">
         <label class="label">Description</label>
         <div class="control">
-          <input value="{{ .Challenge.Description }}" class="input" name="description" live-debounce="blur" type="text"
+          <input value="{{ .ChallengeArgs.Description }}" class="input" name="description" type="text"
             placeholder="Description">
         </div>
       </div>
@@ -51,7 +52,7 @@
           <div class="field">
             <label class="label">Start time</label>
             <div class="control">
-              <input value="{{ .Challenge.StartStr }}" class="input" name="start-time" live-debounce="blur" type="text"
+              <input value="{{ .ChallengeArgs.StartTime }}" class="input" name="start-time" type="text"
                 placeholder="{{ .TimeLayout }}">
             </div>
           </div>
@@ -60,7 +61,7 @@
           <div class="field">
             <label class="label">End time</label>
             <div class="control">
-              <input value="{{ .Challenge.EndStr }}" class="input" name="end-time" live-debounce="blur" type="text"
+              <input value="{{ .ChallengeArgs.EndTime }}" class="input" name="end-time" type="text"
                 placeholder="{{ .TimeLayout }}">
             </div>
           </div>
@@ -69,23 +70,27 @@
       <div class="field">
         <div class="control">
           <label class="checkbox">
-            <input {{ if .Challenge.Published }}checked{{end}} name="published" live-debounce="blur" type="checkbox">
+            <input {{ if .ChallengeArgs.Published }}checked{{end}} name="published" type="checkbox">
             Published
           </label>
         </div>
       </div>
       <div class="field is-grouped is-grouped-right">
         <div class="control">
-          <button class="button is-link is-large is-rounded" {{ if .FormError }}disabled{{ end }}>
+          <button class="button is-link is-large is-rounded">
             Update challenge
           </button>
         </div>
       </div>
     </form>
+    {{ else }}
+    <p class="title is-5 has-text-centered">Not allowed for this challenge</p>
+    {{ end }}
   </div>
   <hr>
   <div class="block">
     <p class="title is-3 has-text-centered">Edit outcome</p>
+    {{ if .Challenge.AllowOutcomeEdit }}
     <form id="outcome-form" live-submit="outcome-submit" live-change="outcome-validate">
       <!-- {{ if .FormError }}
       <div class="block">
@@ -104,12 +109,15 @@
       </div>
       <div class="field is-grouped is-grouped-right">
         <div class="control">
-          <button class="button is-link is-large is-rounded" {{ if .FormError }}disabled{{ end }}>
+          <button class="button is-link is-large is-rounded">
             Update outcome
           </button>
         </div>
       </div>
     </form>
+    {{ else }}
+    <p class="title is-5 has-text-centered">Not allowed for this challenge</p>
+    {{ end }}
   </div>
 </div>
 {{end}}
