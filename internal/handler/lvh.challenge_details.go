@@ -87,6 +87,12 @@ func (h *Handler) ChallengeDetails() live.Handler {
 			instance.CloseError()
 			return instance, nil
 		})
+
+		lvh.HandleEvent(eventCloseMessage, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.CloseMessage()
+			return instance, nil
+		})
 		// SAFE TO COPY END
 	}
 	// COMMON BLOCK END

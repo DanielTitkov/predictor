@@ -21,6 +21,7 @@ const (
 	eventOpenLogoutModal = "open-logout-modal"
 	eventOpenLoginModal  = "open-login-modal"
 	eventCloseError      = "close-error-notification"
+	eventCloseMessage    = "close-message-notification"
 	// context
 	userCtxKeyValue = "user"
 )
@@ -36,6 +37,7 @@ type (
 		Env             string
 		Session         string
 		Error           error
+		Message         *string
 		User            *domain.User
 		UserID          uuid.UUID
 		ShowLoginModal  bool
@@ -66,6 +68,7 @@ func (h *Handler) NewCommon(s live.Socket) *CommonInstance {
 		Env:             h.app.Cfg.Env,
 		Session:         fmt.Sprint(s.Session()),
 		Error:           nil,
+		Message:         nil,
 		ShowLoginModal:  false,
 		ShowLogoutModal: false,
 	}
@@ -95,6 +98,10 @@ func (c *CommonInstance) OpenLogoutModal() {
 
 func (c *CommonInstance) CloseError() {
 	c.Error = nil
+}
+
+func (c *CommonInstance) CloseMessage() {
+	c.Message = nil
 }
 
 func UserFromCtx(ctx context.Context) (*domain.User, uuid.UUID) {

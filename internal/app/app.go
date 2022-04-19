@@ -21,6 +21,7 @@ type (
 	Repository interface {
 		// challenge
 		CreateChallenge(context.Context, *domain.Challenge) (*domain.Challenge, error)
+		UpdateChallengeByID(context.Context, *domain.Challenge) (*domain.Challenge, error)
 		CreateOrUpdateChallengeByContent(context.Context, *domain.Challenge) (*domain.Challenge, error)
 		GetChallengeByContent(context.Context, string) (*domain.Challenge, error)
 		GetChallengeByID(ctx context.Context, id uuid.UUID, userID uuid.UUID) (*domain.Challenge, error)

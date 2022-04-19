@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"net/url"
 
 	"github.com/google/uuid"
 
@@ -42,6 +43,11 @@ type (
 
 func (ins *ChallengeUpdateInstance) withError(err error) *ChallengeUpdateInstance {
 	ins.Error = err
+	return ins
+}
+
+func (ins *ChallengeUpdateInstance) withMessage(msg string) *ChallengeUpdateInstance {
+	ins.Message = &msg
 	return ins
 }
 
@@ -107,6 +113,12 @@ func (h *Handler) ChallengeUpdate() live.Handler {
 			instance.CloseError()
 			return instance, nil
 		})
+
+		lvh.HandleEvent(eventCloseMessage, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+			instance := constructor(s)
+			instance.CloseMessage()
+			return instance, nil
+		})
 		// SAFE TO COPY END
 	}
 	// COMMON BLOCK END
@@ -142,18 +154,17 @@ func (h *Handler) ChallengeUpdate() live.Handler {
 		return instance, nil
 	})
 
-	lvh.HandleEvent(eventEditChallengeValidate, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
-		fmt.Println("VALIDATE", p) // FIXME
-		instance := h.NewChallengeUpdateInstance(s)
+	// lvh.HandleEvent(eventEditChallengeValidate, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+	// 	fmt.Println("VALIDATE", p) // FIXME
+	// 	instance := h.NewChallengeUpdateInstance(s)
 
-		instance.ChallengeArgs = editChallengeArgsFromParams(p, h.app.Cfg.App.DefaultTimeLayout)
-		instance.FormError = instance.ChallengeArgs.Validate()
+	// 	instance.ChallengeArgs = editChallengeArgsFromParams(p, h.app.Cfg.App.DefaultTimeLayout)
+	// 	instance.FormError = instance.ChallengeArgs.Validate()
 
-		return instance, nil
-	})
+	// 	return instance, nil
+	// })
 
 	lvh.HandleEvent(eventEditChallengeSubmit, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
-		fmt.Println("VALIDATE", p) // FIXME
 		instance := h.NewChallengeUpdateInstance(s)
 
 		instance.ChallengeArgs = editChallengeArgsFromParams(p, h.app.Cfg.App.DefaultTimeLayout)
@@ -162,9 +173,14 @@ func (h *Handler) ChallengeUpdate() live.Handler {
 			return instance, nil
 		}
 
-		fmt.Println("SUBMITTING!")
+		_, err := h.app.UpdateChallengeByID(ctx, instance.Challenge.ID, &instance.ChallengeArgs)
+		if err != nil {
+			return instance.withError(err), nil
+		}
 
-		return instance, nil
+		u, _ := url.Parse(fmt.Sprintf("/challenge/%s", instance.Challenge.ID))
+		s.Redirect(u)
+		return nil, nil
 	})
 
 	return lvh
@@ -172,8 +188,6 @@ func (h *Handler) ChallengeUpdate() live.Handler {
 
 func editChallengeArgsFromParams(p live.Params, layout string) domain.CreateChallengeArgs {
 	return domain.CreateChallengeArgs{
-		Type:        domain.ChallengeTypeBool,
-		Outcome:     nil,
 		Content:     p.String(paramEditChallengeContent),
 		Description: p.String(paramEditChallengeDescription),
 		StartTime:   p.String(paramEditChallengeStartTime),

@@ -346,6 +346,29 @@ func (r *EntgoRepository) CreateChallenge(ctx context.Context, ch *domain.Challe
 	return entToDomainChallenge(c, nil), nil
 }
 
+func (r *EntgoRepository) UpdateChallengeByID(ctx context.Context, ch *domain.Challenge) (*domain.Challenge, error) {
+	c, err := r.client.Challenge.
+		Query().
+		Where(challenge.IDEQ(ch.ID)).
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	c, err = c.Update().
+		SetContent(ch.Content).
+		SetDescription(ch.Description).
+		SetStartTime(ch.StartTime).
+		SetEndTime(ch.EndTime).
+		SetPublished(ch.Published).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return entToDomainChallenge(c, nil), nil
+}
+
 func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, ch *domain.Challenge) (*domain.Challenge, error) {
 	// query challenge by content
 	c, err := r.client.Challenge.

@@ -72,6 +72,24 @@ func (a *App) FilterChallenges(ctx context.Context, args *domain.FilterChallenge
 	return a.repo.FilterChallenges(ctx, args)
 }
 
+func (a *App) UpdateChallengeByID(ctx context.Context, id uuid.UUID, args *domain.CreateChallengeArgs) (*domain.Challenge, error) {
+	start, end, err := args.GetStartEndTime()
+	if err != nil {
+		return nil, err
+	}
+
+	ch := &domain.Challenge{
+		ID:          id,
+		Content:     args.Content,
+		Description: args.Description,
+		StartTime:   start,
+		EndTime:     end,
+		Published:   args.Published,
+	}
+
+	return a.repo.UpdateChallengeByID(ctx, ch)
+}
+
 func (a *App) CreateChallengeFromArgs(ctx context.Context, args domain.CreateChallengeArgs, strict bool) (*domain.Challenge, error) {
 	startTime, err := time.Parse(args.TimeLayout, args.StartTime)
 	if err != nil {

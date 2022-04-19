@@ -30,6 +30,9 @@
     {{ if .Error }}
     {{ template "alert-warning" .Error }}
     {{ end }}
+    {{ if .Message }}
+    {{ template "alert-success" .Message }}
+    {{ end }}
     <div class="container">
       {{ template "view" . }}
       <script type="text/javascript" src="/live.js"></script>
@@ -194,6 +197,24 @@
 <div class="container">
   <div class="notification is-warning">
     <button live-click="close-error-notification" class="delete"></button>
+    <div class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <i class="bi-exclamation-triangle-fill" style="font-size: 1.5rem;"></i>
+        </div>
+        <div class="level-item">
+          <span><strong>{{.}}</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+
+{{define "alert-success"}}
+<div class="container">
+  <div class="notification is-success">
+    <button live-click="close-message-notification" class="delete"></button>
     <div class="level">
       <div class="level-left">
         <div class="level-item">

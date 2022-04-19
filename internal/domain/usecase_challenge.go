@@ -69,8 +69,7 @@ func (ch *Challenge) AllowDetailsEdit() bool {
 		return false
 	}
 
-	// TODO: maybe allow to edit
-	if ch.Published {
+	if ch.HasOutcome() {
 		return false
 	}
 
@@ -91,6 +90,28 @@ func (ch *Challenge) StartStr() string {
 
 func (ch *Challenge) EndStr() string {
 	return ch.EndTime.Format(ChallengeTimeFormat)
+}
+
+func (a *CreateChallengeArgs) GetStartTime() (time.Time, error) {
+	return time.Parse(a.TimeLayout, a.StartTime)
+}
+
+func (a *CreateChallengeArgs) GetEndTime() (time.Time, error) {
+	return time.Parse(a.TimeLayout, a.EndTime)
+}
+
+func (a *CreateChallengeArgs) GetStartEndTime() (time.Time, time.Time, error) {
+	start, err := a.GetStartTime()
+	if err != nil {
+		return time.Time{}, time.Time{}, err
+	}
+
+	end, err := a.GetEndTime()
+	if err != nil {
+		return time.Time{}, time.Time{}, err
+	}
+
+	return start, end, nil
 }
 
 func (a *CreateChallengeArgs) Validate() error {
