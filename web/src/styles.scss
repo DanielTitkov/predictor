@@ -100,6 +100,14 @@ $hr-background-color: #ededed;
     /* IE6-9 fallback on horizontal gradient */
 }
 
+.challenge-card-unpublished {
+	background: $grey-light;
+    background: -moz-linear-gradient(-45deg, $grey-light 25%, $light 99%);
+    background: -webkit-linear-gradient(-45deg, $grey-light 25%, $light 99%);
+    background: linear-gradient(135deg, $grey-light 25%, $light 99%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='$grey-light', endColorstr='$light', GradientType=1);
+}
+
 input[type="checkbox"] {
     -webkit-appearance: none;
     width: 35px;

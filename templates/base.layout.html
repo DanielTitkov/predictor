@@ -238,6 +238,7 @@
 
 {{ define "challenge-card-style" }}
 
+{{ if .Published }}
 {{ if .HasOutcome }}
 {{ if .HasOutcomeAndTrue }}
 challenge-card-true
@@ -246,6 +247,9 @@ challenge-card-false
 {{ end }}
 {{ else }}
 challenge-card-unknown
+{{ end }}
+{{ else }}
+challenge-card-unpublished
 {{ end }}
 
 {{ end }}

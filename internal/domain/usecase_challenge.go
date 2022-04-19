@@ -76,6 +76,26 @@ func (ch *Challenge) AllowDetailsEdit() bool {
 	return true
 }
 
+func (ch *Challenge) AllowVoting() bool {
+	if !ch.Started() {
+		return false
+	}
+
+	if ch.Finished() {
+		return false
+	}
+
+	if !ch.Published {
+		return false
+	}
+
+	if ch.HasOutcome() {
+		return false
+	}
+
+	return true
+}
+
 func (ch *Challenge) HasOutcomeAndTrue() bool {
 	// safety check
 	if !ch.HasOutcome() {

@@ -49,19 +49,22 @@
     </h3>
     {{ else }}
     <!-- else user prediction -->
+    {{ if .Challenge.AllowVoting }}
     <div class="columns">
       <div class="column">
         <button live-click="add-prediction-modal" live-value-addprediction="true"
-          class="button is-large is-success is-fullwidth">Да</button>
+          class="button is-large is-fullwidth is-light is-rounded"><b>Да</b></button>
       </div>
       <div class="column">
         <button live-click="add-prediction-modal" live-value-addprediction="false"
-          class="button is-large is-danger is-fullwidth">Нет</button>
+          class="button is-large is-fullwidth is-dark is-rounded"><b>Нет</b></button>
       </div>
       {{ if .ShowModal }}
       {{ template "challenge-details-modal" . }}
       {{ end }}
     </div>
+    {{ end }}
+    <!-- end allow voting -->
     {{ template "challenge-details-no-prediction-counter" . }}
     {{ end }}
     <!-- end user prediction -->
@@ -94,6 +97,7 @@
         </span>
         {{ end }}
       </h3>
+      {{ if .Challenge.Published }}
       <div class="has-text-centered">
         <a class="twitter-share-button"
           href="https://twitter.com/intent/tweet?text={{ .Challenge.Content }} - народный прогноз" data-size="large"
@@ -102,6 +106,7 @@
         </a>
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
       </div>
+      {{ end }}
     </div>
   </div>
   {{ if .User }}
