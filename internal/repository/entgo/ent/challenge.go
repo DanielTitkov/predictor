@@ -46,11 +46,13 @@ type Challenge struct {
 type ChallengeEdges struct {
 	// Predictions holds the value of the predictions edge.
 	Predictions []*Prediction `json:"predictions,omitempty"`
+	// Proofs holds the value of the proofs edge.
+	Proofs []*Proof `json:"proofs,omitempty"`
 	// Author holds the value of the author edge.
 	Author *User `json:"author,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // PredictionsOrErr returns the Predictions value or an error if the edge
@@ -62,10 +64,19 @@ func (e ChallengeEdges) PredictionsOrErr() ([]*Prediction, error) {
 	return nil, &NotLoadedError{edge: "predictions"}
 }
 
+// ProofsOrErr returns the Proofs value or an error if the edge
+// was not loaded in eager-loading.
+func (e ChallengeEdges) ProofsOrErr() ([]*Proof, error) {
+	if e.loadedTypes[1] {
+		return e.Proofs, nil
+	}
+	return nil, &NotLoadedError{edge: "proofs"}
+}
+
 // AuthorOrErr returns the Author value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ChallengeEdges) AuthorOrErr() (*User, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Author == nil {
 			// The edge author was loaded in eager-loading,
 			// but was not found.
@@ -182,6 +193,11 @@ func (c *Challenge) assignValues(columns []string, values []interface{}) error {
 // QueryPredictions queries the "predictions" edge of the Challenge entity.
 func (c *Challenge) QueryPredictions() *PredictionQuery {
 	return (&ChallengeClient{config: c.config}).QueryPredictions(c)
+}
+
+// QueryProofs queries the "proofs" edge of the Challenge entity.
+func (c *Challenge) QueryProofs() *ProofQuery {
+	return (&ChallengeClient{config: c.config}).QueryProofs(c)
 }
 
 // QueryAuthor queries the "author" edge of the Challenge entity.

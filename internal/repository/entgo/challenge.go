@@ -347,15 +347,7 @@ func (r *EntgoRepository) CreateChallenge(ctx context.Context, ch *domain.Challe
 }
 
 func (r *EntgoRepository) UpdateChallengeByID(ctx context.Context, ch *domain.Challenge) (*domain.Challenge, error) {
-	c, err := r.client.Challenge.
-		Query().
-		Where(challenge.IDEQ(ch.ID)).
-		Only(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	c, err = c.Update().
+	c, err := r.client.Challenge.UpdateOneID(ch.ID).
 		SetContent(ch.Content).
 		SetDescription(ch.Description).
 		SetStartTime(ch.StartTime).
@@ -559,11 +551,51 @@ func (r *EntgoRepository) FilterUserChallenges(ctx context.Context, args *domain
 	return res, count, nil
 }
 
+func (r *EntgoRepository) SetChallengeOutcome(ctx context.Context, id uuid.UUID, outcome bool, proofs []*domain.Proof) error {
+	tx, err := r.client.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("starting a transaction: %w", err)
+	}
+
+	// create proofs for challenge
+	bulk := make([]*ent.ProofCreate, len(proofs))
+	for i, p := range proofs {
+		bulk[i] = tx.Proof.
+			Create().
+			SetChallengeID(id).
+			SetContent(p.Content).
+			SetLink(p.Link).
+			SetMeta(p.Meta)
+	}
+	_, err = tx.Proof.CreateBulk(bulk...).Save(ctx)
+	if err != nil {
+		return rollback(tx, err)
+	}
+
+	// set challenge outcome
+	_, err = tx.Challenge.
+		UpdateOneID(id).
+		SetOutcome(outcome).
+		Save(ctx)
+	if err != nil {
+		return rollback(tx, err)
+	}
+
+	return tx.Commit()
+}
+
 func entToDomainChallenge(ch *ent.Challenge, userPrediction *domain.Prediction) *domain.Challenge {
 	var predictions []*domain.Prediction
 	if ch.Edges.Predictions != nil {
 		for _, p := range ch.Edges.Predictions {
 			predictions = append(predictions, entToDomainPrediction(p))
+		}
+	}
+
+	var proofs []*domain.Proof
+	if ch.Edges.Proofs != nil {
+		for _, p := range ch.Edges.Proofs {
+			proofs = append(proofs, entToDomainProof(p))
 		}
 	}
 
@@ -583,5 +615,6 @@ func entToDomainChallenge(ch *ent.Challenge, userPrediction *domain.Prediction) 
 		Predictions:    predictions,
 		AuthorID:       authorID,
 		UserPrediction: userPrediction,
+		Proofs:         proofs,
 	}
 }

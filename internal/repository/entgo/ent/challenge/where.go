@@ -808,6 +808,34 @@ func HasPredictionsWith(preds ...predicate.Prediction) predicate.Challenge {
 	})
 }
 
+// HasProofs applies the HasEdge predicate on the "proofs" edge.
+func HasProofs() predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ProofsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProofsTable, ProofsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasProofsWith applies the HasEdge predicate on the "proofs" edge with a given conditions (other predicates).
+func HasProofsWith(preds ...predicate.Proof) predicate.Challenge {
+	return predicate.Challenge(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ProofsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProofsTable, ProofsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasAuthor applies the HasEdge predicate on the "author" edge.
 func HasAuthor() predicate.Challenge {
 	return predicate.Challenge(func(s *sql.Selector) {

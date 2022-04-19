@@ -27,6 +27,7 @@ type hooks struct {
 	Badge       []ent.Hook
 	Challenge   []ent.Hook
 	Prediction  []ent.Hook
+	Proof       []ent.Hook
 	User        []ent.Hook
 	UserSession []ent.Hook
 }

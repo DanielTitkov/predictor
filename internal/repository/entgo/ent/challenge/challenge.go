@@ -34,6 +34,8 @@ const (
 	FieldType = "type"
 	// EdgePredictions holds the string denoting the predictions edge name in mutations.
 	EdgePredictions = "predictions"
+	// EdgeProofs holds the string denoting the proofs edge name in mutations.
+	EdgeProofs = "proofs"
 	// EdgeAuthor holds the string denoting the author edge name in mutations.
 	EdgeAuthor = "author"
 	// Table holds the table name of the challenge in the database.
@@ -45,6 +47,13 @@ const (
 	PredictionsInverseTable = "predictions"
 	// PredictionsColumn is the table column denoting the predictions relation/edge.
 	PredictionsColumn = "challenge_predictions"
+	// ProofsTable is the table that holds the proofs relation/edge.
+	ProofsTable = "proofs"
+	// ProofsInverseTable is the table name for the Proof entity.
+	// It exists in this package in order to avoid circular dependency with the "proof" package.
+	ProofsInverseTable = "proofs"
+	// ProofsColumn is the table column denoting the proofs relation/edge.
+	ProofsColumn = "challenge_proofs"
 	// AuthorTable is the table that holds the author relation/edge.
 	AuthorTable = "challenges"
 	// AuthorInverseTable is the table name for the User entity.

@@ -14,6 +14,7 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/predicate"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/proof"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/google/uuid"
 )
@@ -124,6 +125,21 @@ func (cu *ChallengeUpdate) AddPredictions(p ...*Prediction) *ChallengeUpdate {
 	return cu.AddPredictionIDs(ids...)
 }
 
+// AddProofIDs adds the "proofs" edge to the Proof entity by IDs.
+func (cu *ChallengeUpdate) AddProofIDs(ids ...uuid.UUID) *ChallengeUpdate {
+	cu.mutation.AddProofIDs(ids...)
+	return cu
+}
+
+// AddProofs adds the "proofs" edges to the Proof entity.
+func (cu *ChallengeUpdate) AddProofs(p ...*Proof) *ChallengeUpdate {
+	ids := make([]uuid.UUID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cu.AddProofIDs(ids...)
+}
+
 // SetAuthorID sets the "author" edge to the User entity by ID.
 func (cu *ChallengeUpdate) SetAuthorID(id uuid.UUID) *ChallengeUpdate {
 	cu.mutation.SetAuthorID(id)
@@ -167,6 +183,27 @@ func (cu *ChallengeUpdate) RemovePredictions(p ...*Prediction) *ChallengeUpdate 
 		ids[i] = p[i].ID
 	}
 	return cu.RemovePredictionIDs(ids...)
+}
+
+// ClearProofs clears all "proofs" edges to the Proof entity.
+func (cu *ChallengeUpdate) ClearProofs() *ChallengeUpdate {
+	cu.mutation.ClearProofs()
+	return cu
+}
+
+// RemoveProofIDs removes the "proofs" edge to Proof entities by IDs.
+func (cu *ChallengeUpdate) RemoveProofIDs(ids ...uuid.UUID) *ChallengeUpdate {
+	cu.mutation.RemoveProofIDs(ids...)
+	return cu
+}
+
+// RemoveProofs removes "proofs" edges to Proof entities.
+func (cu *ChallengeUpdate) RemoveProofs(p ...*Proof) *ChallengeUpdate {
+	ids := make([]uuid.UUID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cu.RemoveProofIDs(ids...)
 }
 
 // ClearAuthor clears the "author" edge to the User entity.
@@ -392,6 +429,60 @@ func (cu *ChallengeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.ProofsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   challenge.ProofsTable,
+			Columns: []string{challenge.ProofsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: proof.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedProofsIDs(); len(nodes) > 0 && !cu.mutation.ProofsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   challenge.ProofsTable,
+			Columns: []string{challenge.ProofsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: proof.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.ProofsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   challenge.ProofsTable,
+			Columns: []string{challenge.ProofsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: proof.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if cu.mutation.AuthorCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -539,6 +630,21 @@ func (cuo *ChallengeUpdateOne) AddPredictions(p ...*Prediction) *ChallengeUpdate
 	return cuo.AddPredictionIDs(ids...)
 }
 
+// AddProofIDs adds the "proofs" edge to the Proof entity by IDs.
+func (cuo *ChallengeUpdateOne) AddProofIDs(ids ...uuid.UUID) *ChallengeUpdateOne {
+	cuo.mutation.AddProofIDs(ids...)
+	return cuo
+}
+
+// AddProofs adds the "proofs" edges to the Proof entity.
+func (cuo *ChallengeUpdateOne) AddProofs(p ...*Proof) *ChallengeUpdateOne {
+	ids := make([]uuid.UUID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cuo.AddProofIDs(ids...)
+}
+
 // SetAuthorID sets the "author" edge to the User entity by ID.
 func (cuo *ChallengeUpdateOne) SetAuthorID(id uuid.UUID) *ChallengeUpdateOne {
 	cuo.mutation.SetAuthorID(id)
@@ -582,6 +688,27 @@ func (cuo *ChallengeUpdateOne) RemovePredictions(p ...*Prediction) *ChallengeUpd
 		ids[i] = p[i].ID
 	}
 	return cuo.RemovePredictionIDs(ids...)
+}
+
+// ClearProofs clears all "proofs" edges to the Proof entity.
+func (cuo *ChallengeUpdateOne) ClearProofs() *ChallengeUpdateOne {
+	cuo.mutation.ClearProofs()
+	return cuo
+}
+
+// RemoveProofIDs removes the "proofs" edge to Proof entities by IDs.
+func (cuo *ChallengeUpdateOne) RemoveProofIDs(ids ...uuid.UUID) *ChallengeUpdateOne {
+	cuo.mutation.RemoveProofIDs(ids...)
+	return cuo
+}
+
+// RemoveProofs removes "proofs" edges to Proof entities.
+func (cuo *ChallengeUpdateOne) RemoveProofs(p ...*Proof) *ChallengeUpdateOne {
+	ids := make([]uuid.UUID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cuo.RemoveProofIDs(ids...)
 }
 
 // ClearAuthor clears the "author" edge to the User entity.
@@ -823,6 +950,60 @@ func (cuo *ChallengeUpdateOne) sqlSave(ctx context.Context) (_node *Challenge, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: prediction.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.ProofsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   challenge.ProofsTable,
+			Columns: []string{challenge.ProofsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: proof.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedProofsIDs(); len(nodes) > 0 && !cuo.mutation.ProofsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   challenge.ProofsTable,
+			Columns: []string{challenge.ProofsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: proof.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.ProofsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   challenge.ProofsTable,
+			Columns: []string{challenge.ProofsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: proof.FieldID,
 				},
 			},
 		}

@@ -8,6 +8,7 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/badge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/proof"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/schema"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/usersession"
@@ -105,6 +106,29 @@ func init() {
 	predictionDescID := predictionFields[0].Descriptor()
 	// prediction.DefaultID holds the default value on creation for the id field.
 	prediction.DefaultID = predictionDescID.Default.(func() uuid.UUID)
+	proofMixin := schema.Proof{}.Mixin()
+	proofMixinFields0 := proofMixin[0].Fields()
+	_ = proofMixinFields0
+	proofFields := schema.Proof{}.Fields()
+	_ = proofFields
+	// proofDescCreateTime is the schema descriptor for create_time field.
+	proofDescCreateTime := proofMixinFields0[0].Descriptor()
+	// proof.DefaultCreateTime holds the default value on creation for the create_time field.
+	proof.DefaultCreateTime = proofDescCreateTime.Default.(func() time.Time)
+	// proofDescUpdateTime is the schema descriptor for update_time field.
+	proofDescUpdateTime := proofMixinFields0[1].Descriptor()
+	// proof.DefaultUpdateTime holds the default value on creation for the update_time field.
+	proof.DefaultUpdateTime = proofDescUpdateTime.Default.(func() time.Time)
+	// proof.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	proof.UpdateDefaultUpdateTime = proofDescUpdateTime.UpdateDefault.(func() time.Time)
+	// proofDescContent is the schema descriptor for content field.
+	proofDescContent := proofFields[1].Descriptor()
+	// proof.ContentValidator is a validator for the "content" field. It is called by the builders before save.
+	proof.ContentValidator = proofDescContent.Validators[0].(func(string) error)
+	// proofDescID is the schema descriptor for id field.
+	proofDescID := proofFields[0].Descriptor()
+	// proof.DefaultID holds the default value on creation for the id field.
+	proof.DefaultID = proofDescID.Default.(func() uuid.UUID)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0

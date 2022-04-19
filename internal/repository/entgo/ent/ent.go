@@ -11,6 +11,7 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/badge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/proof"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/usersession"
 )
@@ -36,6 +37,7 @@ func columnChecker(table string) func(string) error {
 		badge.Table:       badge.ValidColumn,
 		challenge.Table:   challenge.ValidColumn,
 		prediction.Table:  prediction.ValidColumn,
+		proof.Table:       proof.ValidColumn,
 		user.Table:        user.ValidColumn,
 		usersession.Table: usersession.ValidColumn,
 	}

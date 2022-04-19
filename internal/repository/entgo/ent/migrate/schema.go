@@ -88,6 +88,30 @@ var (
 			},
 		},
 	}
+	// ProofsColumns holds the columns for the "proofs" table.
+	ProofsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "content", Type: field.TypeString, Size: 280},
+		{Name: "link", Type: field.TypeString},
+		{Name: "meta", Type: field.TypeJSON, Nullable: true},
+		{Name: "challenge_proofs", Type: field.TypeUUID},
+	}
+	// ProofsTable holds the schema information for the "proofs" table.
+	ProofsTable = &schema.Table{
+		Name:       "proofs",
+		Columns:    ProofsColumns,
+		PrimaryKey: []*schema.Column{ProofsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "proofs_challenges_proofs",
+				Columns:    []*schema.Column{ProofsColumns[6]},
+				RefColumns: []*schema.Column{ChallengesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -171,6 +195,7 @@ var (
 		BadgesTable,
 		ChallengesTable,
 		PredictionsTable,
+		ProofsTable,
 		UsersTable,
 		UserSessionsTable,
 		UserBadgesTable,
@@ -181,6 +206,7 @@ func init() {
 	ChallengesTable.ForeignKeys[0].RefTable = UsersTable
 	PredictionsTable.ForeignKeys[0].RefTable = ChallengesTable
 	PredictionsTable.ForeignKeys[1].RefTable = UsersTable
+	ProofsTable.ForeignKeys[0].RefTable = ChallengesTable
 	UserSessionsTable.ForeignKeys[0].RefTable = UsersTable
 	UserBadgesTable.ForeignKeys[0].RefTable = UsersTable
 	UserBadgesTable.ForeignKeys[1].RefTable = BadgesTable

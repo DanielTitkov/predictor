@@ -15,6 +15,7 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/predicate"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/proof"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/google/uuid"
 )
@@ -30,6 +31,7 @@ type ChallengeQuery struct {
 	predicates []predicate.Challenge
 	// eager-loading edges.
 	withPredictions *PredictionQuery
+	withProofs      *ProofQuery
 	withAuthor      *UserQuery
 	withFKs         bool
 	// intermediate query (i.e. traversal path).
@@ -83,6 +85,28 @@ func (cq *ChallengeQuery) QueryPredictions() *PredictionQuery {
 			sqlgraph.From(challenge.Table, challenge.FieldID, selector),
 			sqlgraph.To(prediction.Table, prediction.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, challenge.PredictionsTable, challenge.PredictionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryProofs chains the current query on the "proofs" edge.
+func (cq *ChallengeQuery) QueryProofs() *ProofQuery {
+	query := &ProofQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(challenge.Table, challenge.FieldID, selector),
+			sqlgraph.To(proof.Table, proof.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, challenge.ProofsTable, challenge.ProofsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,6 +318,7 @@ func (cq *ChallengeQuery) Clone() *ChallengeQuery {
 		order:           append([]OrderFunc{}, cq.order...),
 		predicates:      append([]predicate.Challenge{}, cq.predicates...),
 		withPredictions: cq.withPredictions.Clone(),
+		withProofs:      cq.withProofs.Clone(),
 		withAuthor:      cq.withAuthor.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
@@ -310,6 +335,17 @@ func (cq *ChallengeQuery) WithPredictions(opts ...func(*PredictionQuery)) *Chall
 		opt(query)
 	}
 	cq.withPredictions = query
+	return cq
+}
+
+// WithProofs tells the query-builder to eager-load the nodes that are connected to
+// the "proofs" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ChallengeQuery) WithProofs(opts ...func(*ProofQuery)) *ChallengeQuery {
+	query := &ProofQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withProofs = query
 	return cq
 }
 
@@ -390,8 +426,9 @@ func (cq *ChallengeQuery) sqlAll(ctx context.Context) ([]*Challenge, error) {
 		nodes       = []*Challenge{}
 		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			cq.withPredictions != nil,
+			cq.withProofs != nil,
 			cq.withAuthor != nil,
 		}
 	)
@@ -447,6 +484,35 @@ func (cq *ChallengeQuery) sqlAll(ctx context.Context) ([]*Challenge, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "challenge_predictions" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Predictions = append(node.Edges.Predictions, n)
+		}
+	}
+
+	if query := cq.withProofs; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uuid.UUID]*Challenge)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Proofs = []*Proof{}
+		}
+		query.withFKs = true
+		query.Where(predicate.Proof(func(s *sql.Selector) {
+			s.Where(sql.InValues(challenge.ProofsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.challenge_proofs
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "challenge_proofs" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "challenge_proofs" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Proofs = append(node.Edges.Proofs, n)
 		}
 	}
 

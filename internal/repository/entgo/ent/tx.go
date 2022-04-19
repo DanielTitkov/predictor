@@ -18,6 +18,8 @@ type Tx struct {
 	Challenge *ChallengeClient
 	// Prediction is the client for interacting with the Prediction builders.
 	Prediction *PredictionClient
+	// Proof is the client for interacting with the Proof builders.
+	Proof *ProofClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserSession is the client for interacting with the UserSession builders.
@@ -160,6 +162,7 @@ func (tx *Tx) init() {
 	tx.Badge = NewBadgeClient(tx.config)
 	tx.Challenge = NewChallengeClient(tx.config)
 	tx.Prediction = NewPredictionClient(tx.config)
+	tx.Proof = NewProofClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserSession = NewUserSessionClient(tx.config)
 }

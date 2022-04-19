@@ -13,6 +13,7 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/predicate"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/proof"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/usersession"
 	"github.com/google/uuid"
@@ -32,6 +33,7 @@ const (
 	TypeBadge       = "Badge"
 	TypeChallenge   = "Challenge"
 	TypePrediction  = "Prediction"
+	TypeProof       = "Proof"
 	TypeUser        = "User"
 	TypeUserSession = "UserSession"
 )
@@ -697,6 +699,9 @@ type ChallengeMutation struct {
 	predictions        map[uuid.UUID]struct{}
 	removedpredictions map[uuid.UUID]struct{}
 	clearedpredictions bool
+	proofs             map[uuid.UUID]struct{}
+	removedproofs      map[uuid.UUID]struct{}
+	clearedproofs      bool
 	author             *uuid.UUID
 	clearedauthor      bool
 	done               bool
@@ -1212,6 +1217,60 @@ func (m *ChallengeMutation) ResetPredictions() {
 	m.removedpredictions = nil
 }
 
+// AddProofIDs adds the "proofs" edge to the Proof entity by ids.
+func (m *ChallengeMutation) AddProofIDs(ids ...uuid.UUID) {
+	if m.proofs == nil {
+		m.proofs = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.proofs[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProofs clears the "proofs" edge to the Proof entity.
+func (m *ChallengeMutation) ClearProofs() {
+	m.clearedproofs = true
+}
+
+// ProofsCleared reports if the "proofs" edge to the Proof entity was cleared.
+func (m *ChallengeMutation) ProofsCleared() bool {
+	return m.clearedproofs
+}
+
+// RemoveProofIDs removes the "proofs" edge to the Proof entity by IDs.
+func (m *ChallengeMutation) RemoveProofIDs(ids ...uuid.UUID) {
+	if m.removedproofs == nil {
+		m.removedproofs = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.proofs, ids[i])
+		m.removedproofs[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProofs returns the removed IDs of the "proofs" edge to the Proof entity.
+func (m *ChallengeMutation) RemovedProofsIDs() (ids []uuid.UUID) {
+	for id := range m.removedproofs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProofsIDs returns the "proofs" edge IDs in the mutation.
+func (m *ChallengeMutation) ProofsIDs() (ids []uuid.UUID) {
+	for id := range m.proofs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProofs resets all changes to the "proofs" edge.
+func (m *ChallengeMutation) ResetProofs() {
+	m.proofs = nil
+	m.clearedproofs = false
+	m.removedproofs = nil
+}
+
 // SetAuthorID sets the "author" edge to the User entity by id.
 func (m *ChallengeMutation) SetAuthorID(id uuid.UUID) {
 	m.author = &id
@@ -1520,9 +1579,12 @@ func (m *ChallengeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ChallengeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.predictions != nil {
 		edges = append(edges, challenge.EdgePredictions)
+	}
+	if m.proofs != nil {
+		edges = append(edges, challenge.EdgeProofs)
 	}
 	if m.author != nil {
 		edges = append(edges, challenge.EdgeAuthor)
@@ -1540,6 +1602,12 @@ func (m *ChallengeMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case challenge.EdgeProofs:
+		ids := make([]ent.Value, 0, len(m.proofs))
+		for id := range m.proofs {
+			ids = append(ids, id)
+		}
+		return ids
 	case challenge.EdgeAuthor:
 		if id := m.author; id != nil {
 			return []ent.Value{*id}
@@ -1550,9 +1618,12 @@ func (m *ChallengeMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ChallengeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedpredictions != nil {
 		edges = append(edges, challenge.EdgePredictions)
+	}
+	if m.removedproofs != nil {
+		edges = append(edges, challenge.EdgeProofs)
 	}
 	return edges
 }
@@ -1567,15 +1638,24 @@ func (m *ChallengeMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case challenge.EdgeProofs:
+		ids := make([]ent.Value, 0, len(m.removedproofs))
+		for id := range m.removedproofs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ChallengeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedpredictions {
 		edges = append(edges, challenge.EdgePredictions)
+	}
+	if m.clearedproofs {
+		edges = append(edges, challenge.EdgeProofs)
 	}
 	if m.clearedauthor {
 		edges = append(edges, challenge.EdgeAuthor)
@@ -1589,6 +1669,8 @@ func (m *ChallengeMutation) EdgeCleared(name string) bool {
 	switch name {
 	case challenge.EdgePredictions:
 		return m.clearedpredictions
+	case challenge.EdgeProofs:
+		return m.clearedproofs
 	case challenge.EdgeAuthor:
 		return m.clearedauthor
 	}
@@ -1612,6 +1694,9 @@ func (m *ChallengeMutation) ResetEdge(name string) error {
 	switch name {
 	case challenge.EdgePredictions:
 		m.ResetPredictions()
+		return nil
+	case challenge.EdgeProofs:
+		m.ResetProofs()
 		return nil
 	case challenge.EdgeAuthor:
 		m.ResetAuthor()
@@ -2247,6 +2332,630 @@ func (m *PredictionMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Prediction edge %s", name)
+}
+
+// ProofMutation represents an operation that mutates the Proof nodes in the graph.
+type ProofMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uuid.UUID
+	create_time      *time.Time
+	update_time      *time.Time
+	content          *string
+	link             *string
+	meta             *map[string]interface{}
+	clearedFields    map[string]struct{}
+	challenge        *uuid.UUID
+	clearedchallenge bool
+	done             bool
+	oldValue         func(context.Context) (*Proof, error)
+	predicates       []predicate.Proof
+}
+
+var _ ent.Mutation = (*ProofMutation)(nil)
+
+// proofOption allows management of the mutation configuration using functional options.
+type proofOption func(*ProofMutation)
+
+// newProofMutation creates new mutation for the Proof entity.
+func newProofMutation(c config, op Op, opts ...proofOption) *ProofMutation {
+	m := &ProofMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProof,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProofID sets the ID field of the mutation.
+func withProofID(id uuid.UUID) proofOption {
+	return func(m *ProofMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Proof
+		)
+		m.oldValue = func(ctx context.Context) (*Proof, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Proof.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProof sets the old Proof of the mutation.
+func withProof(node *Proof) proofOption {
+	return func(m *ProofMutation) {
+		m.oldValue = func(context.Context) (*Proof, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProofMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProofMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Proof entities.
+func (m *ProofMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProofMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ProofMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Proof.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *ProofMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *ProofMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the Proof entity.
+// If the Proof object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProofMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *ProofMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (m *ProofMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
+}
+
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *ProofMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateTime returns the old "update_time" field's value of the Proof entity.
+// If the Proof object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProofMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
+	}
+	return oldValue.UpdateTime, nil
+}
+
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *ProofMutation) ResetUpdateTime() {
+	m.update_time = nil
+}
+
+// SetContent sets the "content" field.
+func (m *ProofMutation) SetContent(s string) {
+	m.content = &s
+}
+
+// Content returns the value of the "content" field in the mutation.
+func (m *ProofMutation) Content() (r string, exists bool) {
+	v := m.content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContent returns the old "content" field's value of the Proof entity.
+// If the Proof object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProofMutation) OldContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
+	}
+	return oldValue.Content, nil
+}
+
+// ResetContent resets all changes to the "content" field.
+func (m *ProofMutation) ResetContent() {
+	m.content = nil
+}
+
+// SetLink sets the "link" field.
+func (m *ProofMutation) SetLink(s string) {
+	m.link = &s
+}
+
+// Link returns the value of the "link" field in the mutation.
+func (m *ProofMutation) Link() (r string, exists bool) {
+	v := m.link
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLink returns the old "link" field's value of the Proof entity.
+// If the Proof object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProofMutation) OldLink(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLink is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLink requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLink: %w", err)
+	}
+	return oldValue.Link, nil
+}
+
+// ResetLink resets all changes to the "link" field.
+func (m *ProofMutation) ResetLink() {
+	m.link = nil
+}
+
+// SetMeta sets the "meta" field.
+func (m *ProofMutation) SetMeta(value map[string]interface{}) {
+	m.meta = &value
+}
+
+// Meta returns the value of the "meta" field in the mutation.
+func (m *ProofMutation) Meta() (r map[string]interface{}, exists bool) {
+	v := m.meta
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMeta returns the old "meta" field's value of the Proof entity.
+// If the Proof object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProofMutation) OldMeta(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMeta is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMeta requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMeta: %w", err)
+	}
+	return oldValue.Meta, nil
+}
+
+// ClearMeta clears the value of the "meta" field.
+func (m *ProofMutation) ClearMeta() {
+	m.meta = nil
+	m.clearedFields[proof.FieldMeta] = struct{}{}
+}
+
+// MetaCleared returns if the "meta" field was cleared in this mutation.
+func (m *ProofMutation) MetaCleared() bool {
+	_, ok := m.clearedFields[proof.FieldMeta]
+	return ok
+}
+
+// ResetMeta resets all changes to the "meta" field.
+func (m *ProofMutation) ResetMeta() {
+	m.meta = nil
+	delete(m.clearedFields, proof.FieldMeta)
+}
+
+// SetChallengeID sets the "challenge" edge to the Challenge entity by id.
+func (m *ProofMutation) SetChallengeID(id uuid.UUID) {
+	m.challenge = &id
+}
+
+// ClearChallenge clears the "challenge" edge to the Challenge entity.
+func (m *ProofMutation) ClearChallenge() {
+	m.clearedchallenge = true
+}
+
+// ChallengeCleared reports if the "challenge" edge to the Challenge entity was cleared.
+func (m *ProofMutation) ChallengeCleared() bool {
+	return m.clearedchallenge
+}
+
+// ChallengeID returns the "challenge" edge ID in the mutation.
+func (m *ProofMutation) ChallengeID() (id uuid.UUID, exists bool) {
+	if m.challenge != nil {
+		return *m.challenge, true
+	}
+	return
+}
+
+// ChallengeIDs returns the "challenge" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ChallengeID instead. It exists only for internal usage by the builders.
+func (m *ProofMutation) ChallengeIDs() (ids []uuid.UUID) {
+	if id := m.challenge; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetChallenge resets all changes to the "challenge" edge.
+func (m *ProofMutation) ResetChallenge() {
+	m.challenge = nil
+	m.clearedchallenge = false
+}
+
+// Where appends a list predicates to the ProofMutation builder.
+func (m *ProofMutation) Where(ps ...predicate.Proof) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ProofMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Proof).
+func (m *ProofMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProofMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.create_time != nil {
+		fields = append(fields, proof.FieldCreateTime)
+	}
+	if m.update_time != nil {
+		fields = append(fields, proof.FieldUpdateTime)
+	}
+	if m.content != nil {
+		fields = append(fields, proof.FieldContent)
+	}
+	if m.link != nil {
+		fields = append(fields, proof.FieldLink)
+	}
+	if m.meta != nil {
+		fields = append(fields, proof.FieldMeta)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProofMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case proof.FieldCreateTime:
+		return m.CreateTime()
+	case proof.FieldUpdateTime:
+		return m.UpdateTime()
+	case proof.FieldContent:
+		return m.Content()
+	case proof.FieldLink:
+		return m.Link()
+	case proof.FieldMeta:
+		return m.Meta()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProofMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case proof.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case proof.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
+	case proof.FieldContent:
+		return m.OldContent(ctx)
+	case proof.FieldLink:
+		return m.OldLink(ctx)
+	case proof.FieldMeta:
+		return m.OldMeta(ctx)
+	}
+	return nil, fmt.Errorf("unknown Proof field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProofMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case proof.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case proof.FieldUpdateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateTime(v)
+		return nil
+	case proof.FieldContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContent(v)
+		return nil
+	case proof.FieldLink:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLink(v)
+		return nil
+	case proof.FieldMeta:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMeta(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Proof field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProofMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProofMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProofMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Proof numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProofMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(proof.FieldMeta) {
+		fields = append(fields, proof.FieldMeta)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProofMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProofMutation) ClearField(name string) error {
+	switch name {
+	case proof.FieldMeta:
+		m.ClearMeta()
+		return nil
+	}
+	return fmt.Errorf("unknown Proof nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProofMutation) ResetField(name string) error {
+	switch name {
+	case proof.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case proof.FieldUpdateTime:
+		m.ResetUpdateTime()
+		return nil
+	case proof.FieldContent:
+		m.ResetContent()
+		return nil
+	case proof.FieldLink:
+		m.ResetLink()
+		return nil
+	case proof.FieldMeta:
+		m.ResetMeta()
+		return nil
+	}
+	return fmt.Errorf("unknown Proof field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProofMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.challenge != nil {
+		edges = append(edges, proof.EdgeChallenge)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProofMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case proof.EdgeChallenge:
+		if id := m.challenge; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProofMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProofMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProofMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedchallenge {
+		edges = append(edges, proof.EdgeChallenge)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProofMutation) EdgeCleared(name string) bool {
+	switch name {
+	case proof.EdgeChallenge:
+		return m.clearedchallenge
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProofMutation) ClearEdge(name string) error {
+	switch name {
+	case proof.EdgeChallenge:
+		m.ClearChallenge()
+		return nil
+	}
+	return fmt.Errorf("unknown Proof unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProofMutation) ResetEdge(name string) error {
+	switch name {
+	case proof.EdgeChallenge:
+		m.ResetChallenge()
+		return nil
+	}
+	return fmt.Errorf("unknown Proof edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.

@@ -13,6 +13,7 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/badge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/proof"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/usersession"
 
@@ -32,6 +33,8 @@ type Client struct {
 	Challenge *ChallengeClient
 	// Prediction is the client for interacting with the Prediction builders.
 	Prediction *PredictionClient
+	// Proof is the client for interacting with the Proof builders.
+	Proof *ProofClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserSession is the client for interacting with the UserSession builders.
@@ -52,6 +55,7 @@ func (c *Client) init() {
 	c.Badge = NewBadgeClient(c.config)
 	c.Challenge = NewChallengeClient(c.config)
 	c.Prediction = NewPredictionClient(c.config)
+	c.Proof = NewProofClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserSession = NewUserSessionClient(c.config)
 }
@@ -90,6 +94,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Badge:       NewBadgeClient(cfg),
 		Challenge:   NewChallengeClient(cfg),
 		Prediction:  NewPredictionClient(cfg),
+		Proof:       NewProofClient(cfg),
 		User:        NewUserClient(cfg),
 		UserSession: NewUserSessionClient(cfg),
 	}, nil
@@ -114,6 +119,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Badge:       NewBadgeClient(cfg),
 		Challenge:   NewChallengeClient(cfg),
 		Prediction:  NewPredictionClient(cfg),
+		Proof:       NewProofClient(cfg),
 		User:        NewUserClient(cfg),
 		UserSession: NewUserSessionClient(cfg),
 	}, nil
@@ -148,6 +154,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Badge.Use(hooks...)
 	c.Challenge.Use(hooks...)
 	c.Prediction.Use(hooks...)
+	c.Proof.Use(hooks...)
 	c.User.Use(hooks...)
 	c.UserSession.Use(hooks...)
 }
@@ -359,6 +366,22 @@ func (c *ChallengeClient) QueryPredictions(ch *Challenge) *PredictionQuery {
 	return query
 }
 
+// QueryProofs queries the proofs edge of a Challenge.
+func (c *ChallengeClient) QueryProofs(ch *Challenge) *ProofQuery {
+	query := &ProofQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ch.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(challenge.Table, challenge.FieldID, id),
+			sqlgraph.To(proof.Table, proof.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, challenge.ProofsTable, challenge.ProofsColumn),
+		)
+		fromV = sqlgraph.Neighbors(ch.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryAuthor queries the author edge of a Challenge.
 func (c *ChallengeClient) QueryAuthor(ch *Challenge) *UserQuery {
 	query := &UserQuery{config: c.config}
@@ -500,6 +523,112 @@ func (c *PredictionClient) QueryUser(pr *Prediction) *UserQuery {
 // Hooks returns the client hooks.
 func (c *PredictionClient) Hooks() []Hook {
 	return c.hooks.Prediction
+}
+
+// ProofClient is a client for the Proof schema.
+type ProofClient struct {
+	config
+}
+
+// NewProofClient returns a client for the Proof from the given config.
+func NewProofClient(c config) *ProofClient {
+	return &ProofClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `proof.Hooks(f(g(h())))`.
+func (c *ProofClient) Use(hooks ...Hook) {
+	c.hooks.Proof = append(c.hooks.Proof, hooks...)
+}
+
+// Create returns a create builder for Proof.
+func (c *ProofClient) Create() *ProofCreate {
+	mutation := newProofMutation(c.config, OpCreate)
+	return &ProofCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Proof entities.
+func (c *ProofClient) CreateBulk(builders ...*ProofCreate) *ProofCreateBulk {
+	return &ProofCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Proof.
+func (c *ProofClient) Update() *ProofUpdate {
+	mutation := newProofMutation(c.config, OpUpdate)
+	return &ProofUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProofClient) UpdateOne(pr *Proof) *ProofUpdateOne {
+	mutation := newProofMutation(c.config, OpUpdateOne, withProof(pr))
+	return &ProofUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProofClient) UpdateOneID(id uuid.UUID) *ProofUpdateOne {
+	mutation := newProofMutation(c.config, OpUpdateOne, withProofID(id))
+	return &ProofUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Proof.
+func (c *ProofClient) Delete() *ProofDelete {
+	mutation := newProofMutation(c.config, OpDelete)
+	return &ProofDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ProofClient) DeleteOne(pr *Proof) *ProofDeleteOne {
+	return c.DeleteOneID(pr.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ProofClient) DeleteOneID(id uuid.UUID) *ProofDeleteOne {
+	builder := c.Delete().Where(proof.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProofDeleteOne{builder}
+}
+
+// Query returns a query builder for Proof.
+func (c *ProofClient) Query() *ProofQuery {
+	return &ProofQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Proof entity by its id.
+func (c *ProofClient) Get(ctx context.Context, id uuid.UUID) (*Proof, error) {
+	return c.Query().Where(proof.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProofClient) GetX(ctx context.Context, id uuid.UUID) *Proof {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryChallenge queries the challenge edge of a Proof.
+func (c *ProofClient) QueryChallenge(pr *Proof) *ChallengeQuery {
+	query := &ChallengeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(proof.Table, proof.FieldID, id),
+			sqlgraph.To(challenge.Table, challenge.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, proof.ChallengeTable, proof.ChallengeColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProofClient) Hooks() []Hook {
+	return c.hooks.Proof
 }
 
 // UserClient is a client for the User schema.

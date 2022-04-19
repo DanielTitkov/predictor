@@ -48,6 +48,19 @@ func (f PredictionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The ProofFunc type is an adapter to allow the use of ordinary
+// function as Proof mutator.
+type ProofFunc func(context.Context, *ent.ProofMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProofFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ProofMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProofMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)

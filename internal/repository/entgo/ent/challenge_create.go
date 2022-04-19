@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/challenge"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/prediction"
+	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/proof"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent/user"
 	"github.com/google/uuid"
 )
@@ -152,6 +153,21 @@ func (cc *ChallengeCreate) AddPredictions(p ...*Prediction) *ChallengeCreate {
 		ids[i] = p[i].ID
 	}
 	return cc.AddPredictionIDs(ids...)
+}
+
+// AddProofIDs adds the "proofs" edge to the Proof entity by IDs.
+func (cc *ChallengeCreate) AddProofIDs(ids ...uuid.UUID) *ChallengeCreate {
+	cc.mutation.AddProofIDs(ids...)
+	return cc
+}
+
+// AddProofs adds the "proofs" edges to the Proof entity.
+func (cc *ChallengeCreate) AddProofs(p ...*Proof) *ChallengeCreate {
+	ids := make([]uuid.UUID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cc.AddProofIDs(ids...)
 }
 
 // SetAuthorID sets the "author" edge to the User entity by ID.
@@ -423,6 +439,25 @@ func (cc *ChallengeCreate) createSpec() (*Challenge, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: prediction.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.ProofsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   challenge.ProofsTable,
+			Columns: []string{challenge.ProofsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: proof.FieldID,
 				},
 			},
 		}

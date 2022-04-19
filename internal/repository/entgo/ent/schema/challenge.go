@@ -35,6 +35,7 @@ func (Challenge) Edges() []ent.Edge {
 	return []ent.Edge{
 		// has
 		edge.To("predictions", Prediction.Type),
+		edge.To("proofs", Proof.Type),
 		// belongs to
 		edge.From("author", User.Type).Ref("challenges").Unique(),
 	}

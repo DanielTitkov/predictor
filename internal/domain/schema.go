@@ -58,6 +58,7 @@ type (
 		StartTime      time.Time
 		EndTime        time.Time
 		Predictions    []*Prediction
+		Proofs         []*Proof
 		UserPrediction *Prediction
 	}
 
@@ -66,6 +67,14 @@ type (
 		UserID      uuid.UUID
 		ChallengeID uuid.UUID
 		Prognosis   bool
+		Meta        map[string]interface{}
+	}
+
+	Proof struct {
+		ID          uuid.UUID
+		ChallengeID uuid.UUID
+		Content     string
+		Link        string
 		Meta        map[string]interface{}
 	}
 
