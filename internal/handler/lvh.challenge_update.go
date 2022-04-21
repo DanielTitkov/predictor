@@ -20,12 +20,17 @@ const (
 	// events
 	eventEditChallengeValidate = "edit-validate"
 	eventEditChallengeSubmit   = "edit-submit"
+	eventEditOutcomeValidate   = "outcome-validate"
+	eventEditOutcomeSubmit     = "outcome-submit"
 	// params
-	paramEditChallengeContent     = "content"
-	paramEditChallengeDescription = "description"
-	paramEditChallengeStartTime   = "start-time"
-	paramEditChallengeEndTime     = "end-time"
-	paramEditChallengePublished   = "published"
+	paramEditChallengeContent      = "content"
+	paramEditChallengeDescription  = "description"
+	paramEditChallengeStartTime    = "start-time"
+	paramEditChallengeEndTime      = "end-time"
+	paramEditChallengePublished    = "published"
+	paramEditChallengeProofContent = "proof-content" // add -1 -2 etc.
+	paramEditChallengeProofLink    = "proof-link"    // add -1 -2 etc.
+	paramEditChallengeOutcome      = "outcome"
 
 // params values
 )
@@ -37,6 +42,7 @@ type (
 		ChallengeArgs domain.CreateChallengeArgs
 		FormPrefill   domain.CreateChallengeArgs
 		FormError     error
+		OutcomeError  error
 		TimeLayout    string
 	}
 )
@@ -68,6 +74,7 @@ func (h *Handler) NewChallengeUpdateInstance(s live.Socket) *ChallengeUpdateInst
 		return &ChallengeUpdateInstance{
 			CommonInstance: h.NewCommon(s),
 			FormError:      nil,
+			OutcomeError:   errors.New("provide outcome and proofs"),
 			TimeLayout:     h.app.Cfg.App.DefaultTimeLayout,
 		}
 	}
@@ -183,6 +190,40 @@ func (h *Handler) ChallengeUpdate() live.Handler {
 		return nil, nil
 	})
 
+	lvh.HandleEvent(eventEditOutcomeValidate, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+		instance := h.NewChallengeUpdateInstance(s)
+
+		instance.OutcomeError = nil
+		proofs := instance.proofsFromParams(p, h.app.Cfg.App.MinProofCount)
+		if len(proofs) < h.app.Cfg.App.MinProofCount {
+			instance.OutcomeError = fmt.Errorf("minimal proof count is %d, but got %d", h.app.Cfg.App.MinProofCount, len(proofs))
+		}
+
+		return instance, nil
+	})
+
+	lvh.HandleEvent(eventEditOutcomeSubmit, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+		instance := h.NewChallengeUpdateInstance(s)
+
+		instance.OutcomeError = nil
+		proofs := instance.proofsFromParams(p, h.app.Cfg.App.MinProofCount)
+		if len(proofs) < h.app.Cfg.App.MinProofCount {
+			instance.OutcomeError = fmt.Errorf("minimal proof count is %d, but got %d", h.app.Cfg.App.MinProofCount, len(proofs))
+			return instance, nil
+		}
+
+		outcome := p.Checkbox(paramEditChallengeOutcome)
+		err := h.app.SetChallengeOutcome(ctx, instance.Challenge.ID, outcome, proofs)
+		if err != nil {
+			return instance.withError(err), nil
+		}
+
+		u, _ := url.Parse(fmt.Sprintf("/challenge/%s", instance.Challenge.ID))
+		s.Redirect(u)
+
+		return instance, nil
+	})
+
 	return lvh
 }
 
@@ -195,4 +236,23 @@ func editChallengeArgsFromParams(p live.Params, layout string) domain.CreateChal
 		Published:   p.Checkbox(paramEditChallengePublished),
 		TimeLayout:  layout,
 	}
+}
+
+func (ins *ChallengeUpdateInstance) proofsFromParams(p live.Params, proofCount int) []*domain.Proof {
+	var proofs []*domain.Proof
+
+	for i := 0; i < proofCount; i++ {
+		proof := &domain.Proof{
+			Content: p.String(fmt.Sprintf("%s-%d", paramEditChallengeProofContent, i+1)),
+			Link:    p.String(fmt.Sprintf("%s-%d", paramEditChallengeProofLink, i+1)),
+		}
+
+		if proof.Content == "" || proof.Link == "" {
+			continue
+		}
+
+		proofs = append(proofs, proof)
+	}
+
+	return proofs
 }

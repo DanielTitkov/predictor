@@ -18,9 +18,10 @@ import (
 
 const (
 	// events
-	eventAddPrediction      = "add-prediction"
-	eventAddPredictionModal = "add-prediction-modal"
-	eventCloseModal         = "close-modal"
+	eventAddPrediction                = "add-prediction"
+	eventAddPredictionModal           = "add-prediction-modal"
+	eventCloseModal                   = "close-modal"
+	eventChallengeDetailsToggleProofs = "toggle-proofs"
 	// params
 	paramChallengeDetailsChallengeID = "challengeID"
 	paramAddPredictionValue          = "addprediction"
@@ -33,6 +34,7 @@ type (
 		Challenge       *domain.Challenge
 		ShowModal       bool
 		ModalPrediction bool
+		ShowProofs      bool
 	}
 )
 
@@ -42,10 +44,15 @@ func (h *Handler) NewChallengeDetailsInstance(s live.Socket) *ChallengeDetailsIn
 		return &ChallengeDetailsInstance{
 			CommonInstance: h.NewCommon(s),
 			ShowModal:      false,
+			ShowProofs:     false,
 		}
 	}
 
 	return m
+}
+
+func (ins *ChallengeDetailsInstance) toggleProofs() {
+	ins.ShowProofs = !ins.ShowProofs
 }
 
 func (h *Handler) ChallengeDetails() live.Handler {
@@ -134,6 +141,12 @@ func (h *Handler) ChallengeDetails() live.Handler {
 	lvh.HandleEvent(eventCloseModal, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
 		instance := h.NewChallengeDetailsInstance(s)
 		instance.ShowModal = false
+		return instance, nil
+	})
+
+	lvh.HandleEvent(eventChallengeDetailsToggleProofs, func(ctx context.Context, s live.Socket, p live.Params) (interface{}, error) {
+		instance := h.NewChallengeDetailsInstance(s)
+		instance.toggleProofs()
 		return instance, nil
 	})
 

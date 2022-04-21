@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"errors"
-	"fmt"
 	"html/template"
 	"log"
 	"math"
@@ -236,8 +235,6 @@ func (h *Handler) Admin() live.Handler {
 		if instance.FormError != nil {
 			return instance, nil
 		}
-
-		fmt.Printf("ARGS \n%+v\n", instance.CreateArgs)
 
 		challenge, err := h.app.CreateChallengeFromArgs(ctx, instance.CreateArgs, true)
 		if err != nil {

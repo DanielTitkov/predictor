@@ -2,11 +2,15 @@
 {{ define "view" }}
 {{ template "back-to-home" }}
 <div class="section">
+  <div class='notification {{ template "challenge-card-style" .Challenge }}'>
+    <p class="title is-3">{{ .Challenge.Content }}</p>
+    <p class="subtitle is-5">{{ .Challenge.Description }}</p>
+  </div>
   <div class="block">
     <p class="title is-3 has-text-centered">Edit challenge details</p>
     {{ if .Challenge.AllowDetailsEdit }}
     <!-- live-change="edit-validate" -->
-    <form id="edit-challenge-form" live-submit="edit-submit" >
+    <form id="edit-challenge-form" live-submit="edit-submit">
       {{ if .FormError }}
       <div class="block">
         <p class="title is-5 has-text-danger">
@@ -92,13 +96,13 @@
     <p class="title is-3 has-text-centered">Edit outcome</p>
     {{ if .Challenge.AllowOutcomeEdit }}
     <form id="outcome-form" live-submit="outcome-submit" live-change="outcome-validate">
-      <!-- {{ if .FormError }}
+      {{ if .OutcomeError }}
       <div class="block">
         <p class="title is-5 has-text-danger">
-          {{ .FormError.Error }}
+          {{ .OutcomeError.Error }}
         </p>
       </div>
-      {{ end }} -->
+      {{ end }}
       <div class="field">
         <div class="control">
           <label class="checkbox">
@@ -107,9 +111,53 @@
           </label>
         </div>
       </div>
+      <div class="field">
+        <p class="title is-4">Add proofs</p>
+        <div class="field">
+          <p class="heading">Proof 1</p>
+          <label class="label">Content</label>
+          <div class="control">
+            <input class="input" name="proof-content-1" type="text" placeholder="Content 1">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Link</label>
+          <div class="control">
+            <input class="input" name="proof-link-1" type="text" placeholder="https://">
+          </div>
+        </div>
+        <hr>
+        <p class="heading">Proof 2</p>
+        <div class="field">
+          <label class="label">Content</label>
+          <div class="control">
+            <input class="input" name="proof-content-2" type="text" placeholder="Content 2">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Link</label>
+          <div class="control">
+            <input class="input" name="proof-link-2" type="text" placeholder="https://">
+          </div>
+        </div>
+        <hr>
+        <p class="heading">Proof 3</p>
+        <div class="field">
+          <label class="label">Content</label>
+          <div class="control">
+            <input class="input" name="proof-content-3" type="text" placeholder="Content 3">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Link</label>
+          <div class="control">
+            <input class="input" name="proof-link-3" type="text" placeholder="https://">
+          </div>
+        </div>
+      </div>
       <div class="field is-grouped is-grouped-right">
         <div class="control">
-          <button class="button is-link is-large is-rounded">
+          <button class="button is-link is-large is-rounded" {{ if .OutcomeError }}disabled{{ end }}>
             Update outcome
           </button>
         </div>

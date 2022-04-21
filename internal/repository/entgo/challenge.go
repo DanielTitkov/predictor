@@ -52,6 +52,7 @@ func (r *EntgoRepository) GetChallengeByContent(ctx context.Context, content str
 		Query().
 		Where(challenge.ContentEQ(content)).
 		WithPredictions().
+		WithProofs().
 		Only(ctx)
 	if err != nil {
 		return nil, err
@@ -66,6 +67,7 @@ func (r *EntgoRepository) GetChallengeByID(ctx context.Context, id uuid.UUID, us
 		Where(challenge.IDEQ(id)).
 		WithPredictions().
 		WithAuthor().
+		WithProofs().
 		Only(ctx)
 	if err != nil {
 		return nil, err
@@ -108,6 +110,7 @@ func (r *EntgoRepository) GetRandomFinishedChallenges(ctx context.Context, limit
 			),
 		).
 		WithPredictions().
+		WithProofs().
 		All(ctx)
 	if err != nil {
 		return nil, err
@@ -145,6 +148,7 @@ func (r *EntgoRepository) GetRandomFalseChallenges(ctx context.Context, limit in
 			),
 		).
 		WithPredictions().
+		WithProofs().
 		All(ctx)
 	if err != nil {
 		return nil, err
@@ -182,6 +186,7 @@ func (r *EntgoRepository) GetRandomTrueChallenges(ctx context.Context, limit int
 			),
 		).
 		WithPredictions().
+		WithProofs().
 		All(ctx)
 	if err != nil {
 		return nil, err
@@ -416,7 +421,8 @@ func (r *EntgoRepository) CreateOrUpdateChallengeByContent(ctx context.Context, 
 func (r *EntgoRepository) FilterChallenges(ctx context.Context, args *domain.FilterChallengesArgs) ([]*domain.Challenge, int, error) {
 	query := r.client.Challenge.
 		Query().
-		WithPredictions()
+		WithPredictions().
+		WithProofs()
 
 	if args.Finished {
 		query.Where(challenge.And(
@@ -490,7 +496,8 @@ func (r *EntgoRepository) FilterUserChallenges(ctx context.Context, args *domain
 			q.Where(prediction.HasUserWith(
 				user.IDEQ(args.UserID),
 			))
-		})
+		}).
+		WithProofs()
 
 	if args.Finished {
 		query.Where(challenge.And(

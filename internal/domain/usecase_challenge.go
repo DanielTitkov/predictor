@@ -104,12 +104,24 @@ func (ch *Challenge) HasOutcomeAndTrue() bool {
 	return *ch.Outcome
 }
 
+func (ch *Challenge) HasProofs() bool {
+	return len(ch.Proofs) > 0
+}
+
 func (ch *Challenge) StartStr() string {
 	return ch.StartTime.Format(ChallengeTimeFormat)
 }
 
 func (ch *Challenge) EndStr() string {
 	return ch.EndTime.Format(ChallengeTimeFormat)
+}
+
+func (ch *Challenge) URL() string {
+	return fmt.Sprintf("/challenge/%s", ch.ID)
+}
+
+func (ch *Challenge) EditURL() string {
+	return fmt.Sprintf("%s/edit", ch.URL())
 }
 
 func (a *CreateChallengeArgs) GetStartTime() (time.Time, error) {
