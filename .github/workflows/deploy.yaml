@@ -13,7 +13,6 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-
       - name: Golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
@@ -30,10 +29,8 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.16
-
       - name: Check out code
         uses: actions/checkout@v2
-
       - name: Test
         run: make test
 
@@ -47,10 +44,8 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.16
-
       - name: Check out code
         uses: actions/checkout@v2
-
       - name: Build
         run: make build
 
@@ -66,79 +61,76 @@ jobs:
     steps:
       - name: Login to docker.io
         run:  echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
-
       - name: Check out code
         uses: actions/checkout@v2
-      
       - name: Build image
         run: docker build -t $LOGIN/$NAME:${GITHUB_REF:11} -f deployments/docker/Dockerfile .
-
       - name: Push image to docker.io
         run: docker push $LOGIN/$NAME:${GITHUB_REF:11} 
 
   # tell server to pull new contaner and run it
-  deploy:
-    environment: stage
-    name: Deploy
-    needs: [publish]
-    runs-on: ubuntu-latest
-    env: 
-      TAG: ${{ github.ref }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      SECRET_KEY: ${{ secrets.APP_SECRET_KEY }}
-      TELEGRAM_TO: ${{ secrets.TELEGRAM_TO }}
-      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-      CONFIG_PATH: ./configs/deploy_config_111.yml
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v2
+  # deploy:
+  #   environment: stage
+  #   name: Deploy
+  #   needs: [publish]
+  #   runs-on: ubuntu-latest
+  #   env: 
+  #     TAG: ${{ github.ref }}
+  #     DB_NAME: ${{ secrets.DB_NAME }}
+  #     DB_HOST: ${{ secrets.DB_HOST }}
+  #     DB_PORT: ${{ secrets.DB_PORT }}
+  #     DB_USER: ${{ secrets.DB_USER }}
+  #     DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  #     SECRET_KEY: ${{ secrets.APP_SECRET_KEY }}
+  #     TELEGRAM_TO: ${{ secrets.TELEGRAM_TO }}
+  #     TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+  #     CONFIG_PATH: ./configs/deploy_config_111.yml
+  #   steps:
+  #   - name: Check out code
+  #     uses: actions/checkout@v2
 
-    - name: Build deploy config
-      run: make substitute_config_vars
+  #   - name: Build deploy config
+  #     run: make substitute_config_vars
       
-    - name: Copy file via ssh password
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        port: ${{ secrets.PORT }}
-        password: ${{ secrets.SSH_PASSWORD }}
-        source: "./configs/deploy_config_111.yml"
-        target: "./app"
+  #   - name: Copy file via ssh password
+  #     uses: appleboy/scp-action@master
+  #     with:
+  #       host: ${{ secrets.HOST }}
+  #       username: ${{ secrets.USERNAME }}
+  #       port: ${{ secrets.PORT }}
+  #       password: ${{ secrets.SSH_PASSWORD }}
+  #       source: "./configs/deploy_config_111.yml"
+  #       target: "./app"
 
-    - name: Execute remote command
-      uses: appleboy/ssh-action@master
-      with:
-        script_stop: true
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        port: ${{ secrets.PORT }}
-        password: ${{ secrets.SSH_PASSWORD }}
-        envs: TAG
-        script: | 
-          mkdir -p app
-          cd app
-          echo "container tag ${TAG:11}" 
-          docker pull ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${TAG:11}
-          docker stop $(docker ps -a -q --filter name=^/${{ secrets.DOCKER_NAME }}$) || :
-          docker run -p ${{ secrets.API_PORT }}:8000 -d --rm -e CONFIG_PATH=/opt/configs/deploy_config_111.yml --mount type=bind,source=$(pwd)/configs,target=/opt/configs --name=${{ secrets.DOCKER_NAME }} ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${TAG:11}
-          echo "all ok"
+  #   - name: Execute remote command
+  #     uses: appleboy/ssh-action@master
+  #     with:
+  #       script_stop: true
+  #       host: ${{ secrets.HOST }}
+  #       username: ${{ secrets.USERNAME }}
+  #       port: ${{ secrets.PORT }}
+  #       password: ${{ secrets.SSH_PASSWORD }}
+  #       envs: TAG
+  #       script: | 
+  #         mkdir -p app
+  #         cd app
+  #         echo "container tag ${TAG:11}" 
+  #         docker pull ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${TAG:11}
+  #         docker stop $(docker ps -a -q --filter name=^/${{ secrets.DOCKER_NAME }}$) || :
+  #         docker run -p ${{ secrets.API_PORT }}:8000 -d --rm -e CONFIG_PATH=/opt/configs/deploy_config_111.yml --mount type=bind,source=$(pwd)/configs,target=/opt/configs --name=${{ secrets.DOCKER_NAME }} ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${TAG:11}
+  #         echo "all ok"
 
-  report:
-    environment: stage
-    name: Report deploy
-    needs: [deploy]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Report deploy
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            Deploy done from ${{ github.ref }}
-            Service is listening at ${{ secrets.HOST }}:${{ secrets.API_PORT }}
+  # report:
+  #   environment: stage
+  #   name: Report deploy
+  #   needs: [deploy]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Report deploy
+  #       uses: appleboy/telegram-action@master
+  #       with:
+  #         to: ${{ secrets.TELEGRAM_TO }}
+  #         token: ${{ secrets.TELEGRAM_TOKEN }}
+  #         message: |
+  #           Deploy done from ${{ github.ref }}
+  #           Service is listening at ${{ secrets.HOST }}:${{ secrets.API_PORT }}

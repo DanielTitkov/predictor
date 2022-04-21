@@ -52,11 +52,6 @@ func (ins *ChallengeUpdateInstance) withError(err error) *ChallengeUpdateInstanc
 	return ins
 }
 
-func (ins *ChallengeUpdateInstance) withMessage(msg string) *ChallengeUpdateInstance {
-	ins.Message = &msg
-	return ins
-}
-
 func (ins *ChallengeUpdateInstance) initArgs() {
 	ins.ChallengeArgs = domain.CreateChallengeArgs{
 		Type:        ins.Challenge.Type,
