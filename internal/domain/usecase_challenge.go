@@ -41,10 +41,16 @@ func (ch *Challenge) VotesFalse() int {
 }
 
 func (ch *Challenge) PercTrue() int {
+	if ch.Votes() == 0 {
+		return 0
+	}
 	return int(float64(ch.VotesTrue()) / float64(ch.Votes()) * 100.0)
 }
 
 func (ch *Challenge) PercFalse() int {
+	if ch.Votes() == 0 {
+		return 0
+	}
 	return 100 - ch.PercTrue()
 }
 
