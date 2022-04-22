@@ -122,6 +122,8 @@ jobs:
     name: Report deploy
     needs: [deploy]
     runs-on: ubuntu-latest
+    env: 
+      TAG: ${{ github.ref }}
     steps:
       - name: Report deploy
         uses: appleboy/telegram-action@master
@@ -129,6 +131,6 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            Service: **${{ secrets.DOCKER_NAME }}**
+            Service: ${{ secrets.DOCKER_NAME }}
             Deploy done from ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${TAG:11}
             Service is listening at ${{ secrets.HOST }}:${{ secrets.API_PORT }}
