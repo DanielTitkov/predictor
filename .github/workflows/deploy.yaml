@@ -129,5 +129,6 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            Deploy done from ${{ github.ref }}
+            Service: **${{ secrets.DOCKER_NAME }}**
+            Deploy done from ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${TAG:11}
             Service is listening at ${{ secrets.HOST }}:${{ secrets.API_PORT }}
