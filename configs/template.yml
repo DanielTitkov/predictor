@@ -10,7 +10,7 @@ app:
   defaultChallengePageLimit: 10
   homeChallengePageLimit: 4
   systemSummaryInterval: 15 # minutes
-  systemSummaryTimeout: 500 # milliseconds
+  systemSummaryTimeout: 1500 # milliseconds
   defaultTimeLayout: "2006-01-02"
   minProofCount: 3
 debug:

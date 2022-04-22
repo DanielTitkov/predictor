@@ -1,6 +1,7 @@
 NAME := app
 BUILD_CMD ?= CGO_ENABLED=0 go build -o bin/${NAME} -ldflags '-v -w -s' ./cmd/${NAME}
 DEV_CONFIG_PATH := ./configs/dev.yml
+STAGE_CONFIG_PATH := ./configs/stage.yml
 CONFIG_TEMPLATE_PATH := ./configs/template.yml
 
 # Docker
@@ -18,6 +19,10 @@ endef
 .PHONY: run
 run: entgen css
 	go run cmd/$(NAME)/main.go ${DEV_CONFIG_PATH}
+
+.PHONY: stage
+stage: entgen css
+	go run cmd/$(NAME)/main.go ${STAGE_CONFIG_PATH}
 
 .PHONY: up
 up: 
