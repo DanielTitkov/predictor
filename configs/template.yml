@@ -7,17 +7,28 @@ server:
   port: 8000
   host: "0.0.0.0"
 app:
-  defaultChallengePageLimit: 5
-  systemSummaryInterval: 5 # minutes
+  defaultChallengePageLimit: 10
+  homeChallengePageLimit: 4
+  systemSummaryInterval: 15 # minutes
   systemSummaryTimeout: 500 # milliseconds
   defaultTimeLayout: "2006-01-02"
+  minProofCount: 3
+debug:
+  logDBQueries: false
 auth:
   exp: 72 # hours
   secret: {{secret_key}}
 data:
   presets:
     challengePresetsPaths: 
-      - ./data/presets/challenges.json
+      # - ./data/presets/challenges.json
+      # - ./data/presets/challenges_auto.json
+    userPresetsPaths:
+      # - ./data/presets/users.json
+      # - ./data/presets/users_auto.json
+    predictionPresetsPaths: 
+      # - ./data/presets/predictions.json
+      # - ./data/presets/predictions_auto.json
 external:
   telegram:
     telegramTo: {{telegram_to}}
