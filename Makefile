@@ -69,6 +69,8 @@ substitute_config_vars:
 		s/{{db_user}}/${DB_USER}/g;                 \
 		s/{{secret_key}}/${SECRET_KEY}/g;           \
 		s/{{telegram_to}}/${TELEGRAM_TO}/g;         \
-		s/{{telegram_token}}/${TELEGRAM_TOKEN}/g;   \
+		s/{{google_auth_client}}/${GOOGLE_AUTH_CLIENT}/g;   \
+		s/{{google_auth_secret}}/${GOOGLE_AUTH_SECRET}/g;   \
+		s/{{google_auth_callback}}/${GOOGLE_AUTH_CALLBACK}/g;   \
 		" ${CONFIG_TEMPLATE_PATH})
 	cat ${CONFIG_PATH}

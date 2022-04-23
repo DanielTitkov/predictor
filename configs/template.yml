@@ -18,6 +18,10 @@ debug:
 auth:
   exp: 72 # hours
   secret: {{secret_key}}
+  google:
+    client: {{google_auth_client}}
+    secret: {{google_auth_secret}}
+    callback: {{google_auth_callback}}
 data:
   presets:
     challengePresetsPaths: 
