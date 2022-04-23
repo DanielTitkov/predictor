@@ -2,10 +2,8 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"errors"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/DanielTitkov/predictor/cmd/app/prepare"
@@ -18,7 +16,6 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
-	"golang.org/x/crypto/acme/autocert"
 
 	_ "github.com/lib/pq"
 )
@@ -83,32 +80,32 @@ func main() {
 	h := handler.NewHandler(a, logger, "templates/")
 	r := prepare.Mux(cfg, store, h)
 
-	var httpsServer *http.Server
-	var certManager *autocert.Manager
+	// var certManager *autocert.Manager
+	// var httpsServer *http.Server
 
-	if cfg.Env != "dev" {
-		httpsServer = prepare.Server(cfg, r)
-		certManager := &autocert.Manager{
-			Prompt:     autocert.AcceptTOS,
-			HostPolicy: autocert.HostWhitelist("predictor.live", "www.predictor.live"),
-			Cache:      autocert.DirCache("certs"),
-		}
-		httpsServer.Addr = cfg.Server.GetAddress(true)
-		httpsServer.TLSConfig = &tls.Config{GetCertificate: certManager.GetCertificate}
+	// if cfg.Env != "dev" {
+	// 	httpsServer = prepare.Server(cfg, r)
+	// 	certManager := &autocert.Manager{
+	// 		Prompt:     autocert.AcceptTOS,
+	// 		HostPolicy: autocert.HostWhitelist("predictor.live", "www.predictor.live"),
+	// 		Cache:      autocert.DirCache("certs"),
+	// 	}
+	// 	httpsServer.Addr = cfg.Server.GetAddress(true)
+	// 	httpsServer.TLSConfig = &tls.Config{GetCertificate: certManager.GetCertificate}
 
-		go func() {
-			logger.Info("starting https server on %s", cfg.Server.GetAddress(true))
-			err := httpsServer.ListenAndServeTLS("", "")
-			if err != nil {
-				log.Fatalf("httpsServer.ListendAndServeTLS() failed with %s", err)
-			}
-		}()
-	}
+	// 	go func() {
+	// 		logger.Info("starting https server on %s", cfg.Server.GetAddress(true))
+	// 		err := httpsServer.ListenAndServeTLS("", "")
+	// 		if err != nil {
+	// 			log.Fatalf("httpsServer.ListendAndServeTLS() failed with %s", err)
+	// 		}
+	// 	}()
+	// }
 
 	httpServer := prepare.Server(cfg, r)
-	if certManager != nil {
-		httpServer.Handler = certManager.HTTPHandler(httpServer.Handler)
-	}
+	// if certManager != nil {
+	// 	httpServer.Handler = certManager.HTTPHandler(httpServer.Handler)
+	// }
 	httpServer.Addr = cfg.Server.GetAddress(false)
 	logger.Info("starting http server", cfg.Server.GetAddress(false))
 	log.Fatal(httpServer.ListenAndServe())
