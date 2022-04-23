@@ -14,8 +14,6 @@ import (
 	"github.com/DanielTitkov/predictor/internal/repository/entgo"
 	"github.com/DanielTitkov/predictor/internal/repository/entgo/ent"
 	"github.com/DanielTitkov/predictor/logger"
-	"github.com/gorilla/mux"
-	"github.com/jfyne/live"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
@@ -63,12 +61,7 @@ func main() {
 
 	repo := entgo.NewEntgoRepository(db, logger)
 
-	store := live.NewCookieStore("go-live-session", []byte(cfg.Auth.Secret))
-	store.Store.Options.SameSite = http.SameSiteLaxMode
-	store.Store.MaxAge(cfg.Auth.Exp)
-	store.Store.Options.Path = "/"
-	store.Store.Options.HttpOnly = true
-	store.Store.Options.Secure = !(cfg.Env == "dev")
+	store := prepare.Store(cfg)
 
 	a, err := app.New(cfg, logger, repo, store.Store)
 	if err != nil {
@@ -86,41 +79,9 @@ func main() {
 	)
 
 	h := handler.NewHandler(a, logger, "templates/")
-	r := mux.NewRouter()
-	r.Use(h.Middleware)
-	r.NotFoundHandler = http.HandlerFunc(h.NotFoundRedirect)
-	// main handler
-	r.Handle("/challenge/{challengeID}/edit", live.NewHttpHandler(store, h.ChallengeUpdate()))
-	r.Handle("/challenge/{challengeID}", live.NewHttpHandler(store, h.ChallengeDetails()))
-	r.Handle("/challenges", live.NewHttpHandler(store, h.ChallengeList()))
-	r.Handle("/about", live.NewHttpHandler(store, h.About()))
-	r.Handle("/profile", live.NewHttpHandler(store, h.Profile()))
-	r.Handle("/admin", live.NewHttpHandler(store, h.Admin()))
-	r.Handle("/404", live.NewHttpHandler(store, h.NotFound()))
-	r.Handle("/", live.NewHttpHandler(store, h.Home()))
-
-	// live scripts
-	r.Handle("/live.js", live.Javascript{})
-	r.Handle("/auto.js.map", live.JavascriptMap{})
-
-	// auth
-	r.HandleFunc("/auth/logout", h.Logout)
-	r.HandleFunc("/auth/{provider}", h.BeginOAuth)
-	r.HandleFunc("/auth/{provider}/callback", h.CompleteOAuth)
-
-	// static
-	r.HandleFunc("/favicon.ico", faviconHandler)
-	r.HandleFunc("/static/css/styles.css", stylesHandler)
+	r := prepare.Server(cfg, store, h)
 
 	// serve
 	logger.Info("starting server", cfg.Server.GetAddress())
 	log.Fatal(http.ListenAndServe(cfg.Server.GetAddress(), r))
-}
-
-func faviconHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "web/media/favicon.ico")
-}
-
-func stylesHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "web/dist/css/styles.css")
 }
