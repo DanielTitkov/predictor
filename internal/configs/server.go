@@ -8,10 +8,6 @@ type ServerConfig struct {
 	Host    string
 }
 
-func (s *ServerConfig) GetAddress(tls bool) string {
-	port := s.Port
-	if tls {
-		port = s.TLSPort
-	}
-	return fmt.Sprintf("%s:%d", s.Host, port)
+func (s *ServerConfig) GetAddress() string {
+	return fmt.Sprintf("%s:%d", s.Host, s.Port)
 }

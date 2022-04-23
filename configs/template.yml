@@ -5,7 +5,6 @@ db:
   driver: postgres
 server:
   port: 80
-  tlsPort: 443
   host: "0.0.0.0"
 app:
   defaultChallengePageLimit: 10

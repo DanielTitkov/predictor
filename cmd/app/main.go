@@ -80,33 +80,8 @@ func main() {
 	h := handler.NewHandler(a, logger, "templates/")
 	r := prepare.Mux(cfg, store, h)
 
-	// var certManager *autocert.Manager
-	// var httpsServer *http.Server
-
-	// if cfg.Env != "dev" {
-	// 	httpsServer = prepare.Server(cfg, r)
-	// 	certManager := &autocert.Manager{
-	// 		Prompt:     autocert.AcceptTOS,
-	// 		HostPolicy: autocert.HostWhitelist("predictor.live", "www.predictor.live"),
-	// 		Cache:      autocert.DirCache("certs"),
-	// 	}
-	// 	httpsServer.Addr = cfg.Server.GetAddress(true)
-	// 	httpsServer.TLSConfig = &tls.Config{GetCertificate: certManager.GetCertificate}
-
-	// 	go func() {
-	// 		logger.Info("starting https server on %s", cfg.Server.GetAddress(true))
-	// 		err := httpsServer.ListenAndServeTLS("", "")
-	// 		if err != nil {
-	// 			log.Fatalf("httpsServer.ListendAndServeTLS() failed with %s", err)
-	// 		}
-	// 	}()
-	// }
-
 	httpServer := prepare.Server(cfg, r)
-	// if certManager != nil {
-	// 	httpServer.Handler = certManager.HTTPHandler(httpServer.Handler)
-	// }
-	httpServer.Addr = cfg.Server.GetAddress(false)
-	logger.Info("starting http server", cfg.Server.GetAddress(false))
+	httpServer.Addr = cfg.Server.GetAddress()
+	logger.Info("starting http server", cfg.Server.GetAddress())
 	log.Fatal(httpServer.ListenAndServe())
 }

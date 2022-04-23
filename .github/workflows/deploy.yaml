@@ -132,4 +132,4 @@ jobs:
             Service: ${{ secrets.DOCKER_NAME }}
             Deploy done from ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${{ github.ref }}
             Listening at:
-            - http ${{ secrets.HOST }}:${{ secrets.HTTP_PORT }}
+            - ${{ secrets.DOMAIN }}
