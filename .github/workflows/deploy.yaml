@@ -131,4 +131,6 @@ jobs:
           message: |
             Service: ${{ secrets.DOCKER_NAME }}
             Deploy done from ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${{ github.ref }}
-            Service is listening at ${{ secrets.HOST }}:${{ secrets.API_PORT }}
+            Listening at:
+            - http ${{ secrets.HOST }}:${{ secrets.HTTP_PORT }}
+            - https ${{ secrets.HOST }}:${{ secrets.HTTPS_PORT }}
