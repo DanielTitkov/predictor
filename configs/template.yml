@@ -4,8 +4,8 @@ db:
   uri: "host={{db_host}} port={{db_port}} user={{db_user}} dbname={{db_name}} password={{db_password}} sslmode=require"
   driver: postgres
 server:
-  port: 8000
-  tlsPort: 8443
+  port: 80
+  tlsPort: 443
   host: "0.0.0.0"
 app:
   defaultChallengePageLimit: 10

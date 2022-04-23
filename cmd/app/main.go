@@ -90,7 +90,7 @@ func main() {
 		httpsServer = prepare.Server(cfg, r)
 		certManager := &autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
-			HostPolicy: autocert.HostWhitelist("predictor.live"),
+			HostPolicy: autocert.HostWhitelist("predictor.live", "www.predictor.live"),
 			Cache:      autocert.DirCache("certs"),
 		}
 		httpsServer.Addr = cfg.Server.GetAddress(true)
