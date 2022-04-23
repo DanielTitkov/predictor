@@ -3,10 +3,15 @@ package configs
 import "fmt"
 
 type ServerConfig struct {
-	Port int
-	Host string
+	Port    int
+	TLSPort int `yaml:"tlsPort"`
+	Host    string
 }
 
-func (s *ServerConfig) GetAddress() string {
-	return fmt.Sprintf("%s:%d", s.Host, s.Port)
+func (s *ServerConfig) GetAddress(tls bool) string {
+	port := s.Port
+	if tls {
+		port = s.TLSPort
+	}
+	return fmt.Sprintf("%s:%d", s.Host, port)
 }

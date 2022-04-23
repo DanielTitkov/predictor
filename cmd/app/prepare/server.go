@@ -2,6 +2,7 @@ package prepare
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/DanielTitkov/predictor/internal/configs"
 	"github.com/DanielTitkov/predictor/internal/handler"
@@ -9,7 +10,7 @@ import (
 	"github.com/jfyne/live"
 )
 
-func Server(cfg configs.Config, store live.HttpSessionStore, h *handler.Handler) *mux.Router {
+func Mux(cfg configs.Config, store live.HttpSessionStore, h *handler.Handler) *mux.Router {
 	r := mux.NewRouter()
 	r.Use(h.Middleware)
 	r.NotFoundHandler = http.HandlerFunc(h.NotFoundRedirect)
@@ -37,6 +38,17 @@ func Server(cfg configs.Config, store live.HttpSessionStore, h *handler.Handler)
 	r.HandleFunc("/static/css/styles.css", stylesHandler)
 
 	return r
+}
+
+func Server(cfg configs.Config, handler *mux.Router) *http.Server {
+	server := &http.Server{
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		IdleTimeout:  120 * time.Second,
+		Handler:      handler,
+	}
+
+	return server
 }
 
 func faviconHandler(w http.ResponseWriter, r *http.Request) {
