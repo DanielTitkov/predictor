@@ -62,15 +62,15 @@ db:
 .PHONY: substitute_config_vars
 substitute_config_vars:
 	$(call sedi," \
-		s/{{db_password}}/${DB_PASSWORD}/g;         \
-		s/{{db_name}}/${DB_NAME}/g;                 \
-		s/{{db_host}}/${DB_HOST}/g;                 \
-		s/{{db_port}}/${DB_PORT}/g;                 \
-		s/{{db_user}}/${DB_USER}/g;                 \
-		s/{{secret_key}}/${SECRET_KEY}/g;           \
-		s/{{telegram_to}}/${TELEGRAM_TO}/g;         \
-		s/{{google_auth_client}}/${GOOGLE_AUTH_CLIENT}/g;   \
-		s/{{google_auth_secret}}/${GOOGLE_AUTH_SECRET}/g;   \
-		s/{{google_auth_callback}}/${GOOGLE_AUTH_CALLBACK}/g;   \
+		s|{{db_password}}|${DB_PASSWORD}|g;         \
+		s|{{db_name}}|${DB_NAME}|g;                 \
+		s|{{db_host}}|${DB_HOST}|g;                 \
+		s|{{db_port}}|${DB_PORT}|g;                 \
+		s|{{db_user}}|${DB_USER}|g;                 \
+		s|{{secret_key}}|${SECRET_KEY}|g;           \
+		s|{{telegram_to}}|${TELEGRAM_TO}|g;         \
+		s|{{google_auth_client}}|${GOOGLE_AUTH_CLIENT}|g;   \
+		s|{{google_auth_secret}}|${GOOGLE_AUTH_SECRET}|g;   \
+		s|{{google_auth_callback}}|${GOOGLE_AUTH_CALLBACK}|g;   \
 		" ${CONFIG_TEMPLATE_PATH})
 	cat ${CONFIG_PATH}
