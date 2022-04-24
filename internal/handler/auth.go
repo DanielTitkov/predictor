@@ -8,6 +8,8 @@ import (
 )
 
 func (h *Handler) Logout(res http.ResponseWriter, req *http.Request) {
+	defer http.Redirect(res, req, "/", http.StatusTemporaryRedirect)
+
 	user, err := h.app.GetUserBySession(req)
 	if err != nil {
 		// TODO: propagate error to context
@@ -26,8 +28,6 @@ func (h *Handler) Logout(res http.ResponseWriter, req *http.Request) {
 	}
 
 	h.log.Debug("user session set inactive", fmt.Sprintf("email: %s, sid: %s", user.Email, ses.SID))
-
-	http.Redirect(res, req, "/", http.StatusTemporaryRedirect)
 }
 
 func (h *Handler) BeginOAuth(res http.ResponseWriter, req *http.Request) {
@@ -35,6 +35,8 @@ func (h *Handler) BeginOAuth(res http.ResponseWriter, req *http.Request) {
 }
 
 func (h *Handler) CompleteOAuth(res http.ResponseWriter, req *http.Request) {
+	defer http.Redirect(res, req, "/", http.StatusTemporaryRedirect)
+
 	gu, err := gothic.CompleteUserAuth(res, req)
 	if err != nil {
 		h.log.Error("failed to complete oauth", err)
@@ -61,5 +63,4 @@ func (h *Handler) CompleteOAuth(res http.ResponseWriter, req *http.Request) {
 
 	h.log.Debug("user session refreshed", fmt.Sprintf("email: %s, sid: %s", user.Email, ses.SID))
 
-	http.Redirect(res, req, "/", http.StatusTemporaryRedirect)
 }
