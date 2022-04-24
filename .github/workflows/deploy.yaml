@@ -84,6 +84,9 @@ jobs:
       SECRET_KEY: ${{ secrets.APP_SECRET_KEY }}
       TELEGRAM_TO: ${{ secrets.TELEGRAM_TO }}
       TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      GOOGLE_AUTH_CLIENT: ${{ secrets.GOOGLE_AUTH_CLIENT }}
+      GOOGLE_AUTH_SECRET: ${{ secrets.GOOGLE_AUTH_SECRET }}
+      GOOGLE_AUTH_CALLBACK: ${{ secrets.GOOGLE_AUTH_CALLBACK }}
       CONFIG_PATH: ./configs/deploy_config_111.yml
     steps:
       - name: Check out code
@@ -114,7 +117,7 @@ jobs:
             echo "container tag ${TAG:11}" 
             docker pull ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${TAG:11}
             docker stop $(docker ps -a -q --filter name=^/${{ secrets.DOCKER_NAME }}$) || :
-            docker run -p 80:${{ secrets.HTTP_PORT }} -d --rm -e CONFIG_PATH=/opt/configs/deploy_config_111.yml --mount type=bind,source=$(pwd)/configs,target=/opt/configs --name=${{ secrets.DOCKER_NAME }} ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${TAG:11}
+            docker run --restart unless-stopped -p 80:${{ secrets.HTTP_PORT }} -d --rm -e CONFIG_PATH=/opt/configs/deploy_config_111.yml --mount type=bind,source=$(pwd)/configs,target=/opt/configs --name=${{ secrets.DOCKER_NAME }} ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${TAG:11}
             echo "all ok"
 
   report:
