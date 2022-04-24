@@ -12,7 +12,7 @@
         <div class="box p-6">
           <h4 class="title is-4 has-text-centered">Близки к завершению</h4>
           {{ if eq .ClosingChallengesCount 0 }}
-          <h5 class="title is-5 has-text-centered">Сейчас нет незавершенных предсказаний</h5>
+          <h5 class="subtitle is-5 has-text-centered mt-5">Сейчас нет незавершенных предсказаний</h5>
           {{ else }}
           {{ range $i, $challenge := .ClosingChallenges }}
           {{ template "challenge-card" $challenge }}
@@ -22,7 +22,7 @@
           <hr>
           <h4 class="title is-4 has-text-centered">Открытые предсказания</h4>
           {{ if eq .RandomOngoingChallengesCount 0 }}
-          <h5 class="title is-5 has-text-centered">Пока нет вопросов на которые вы ещё не ответили</h5>
+          <h5 class="subtitle is-5 has-text-centered mt-5">Пока нет вопросов на которые вы ещё не ответили</h5>
           {{ else }}
           {{ range $i, $challenge := .RandomOngoingChallenges }}
           {{ template "challenge-card" $challenge }}
@@ -41,7 +41,7 @@
           <hr>
           <h4 class="title is-4 has-text-centered">Ожидают результата</h4>
           {{ if eq .RandomPendingChallengesCount 0 }}
-          <h5 class="title is-5 has-text-centered">Сейчас нет предсказаний без результата</h5>
+          <h5 class="subtitle is-5 has-text-centered mt-5">Сейчас нет предсказаний без результата</h5>
           {{ else }}
           {{ range $i, $challenge := .RandomPendingChallenges }}
           {{ template "challenge-card" $challenge }}
