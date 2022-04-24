@@ -16,7 +16,7 @@ app:
 debug:
   logDBQueries: false
 auth:
-  exp: 72 # hours
+  exp: 259200 # seconds
   secret: {{secret_key}}
   google:
     client: {{google_auth_client}}
