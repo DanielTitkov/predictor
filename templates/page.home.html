@@ -2,9 +2,21 @@
 {{ define "view" }}
 
 <main>
-  <div class="section has-text-centered">
-    <h1 class="title is-1">Predictor</h1>
-    <h3 class="subtitle is-3">Социальная футурология</h3>
+  <div class="section">
+    <div class="has-text-centered">
+      <h1 class="title is-1">Predictor</h1>
+      <h3 class="subtitle is-3">Социальная футурология</h3>
+      <a {{if .User}}href="/profile" {{else}}disabled{{end}} class="button is-large is-link is-rounded">
+        Создать предсказание
+      </a>
+      {{ if .User }}
+      {{ else }}
+      <p class="heading has-text-centered mt-4">
+        <a class="has-text-link" live-click="open-login-modal">Войдите</a>, чтобы создавать предсказания
+      </p>
+      {{ end }}
+    </div>
+  </div>
   </div>
   <div class="block">
     <div class="columns is-4">
@@ -33,17 +45,6 @@
       </div>
       <div class="column">
         <div class="box p-6">
-          <a {{if .User}}href="/profile" {{else}}disabled{{end}}
-            class="button is-large is-fullwidth is-link is-rounded">
-            Создать предсказание
-          </a>
-          {{ if .User }}
-          {{ else }}
-          <p class="heading has-text-centered mt-4">
-            <a class="has-text-link" live-click="open-login-modal">Войдите</a>, чтобы создавать предсказания
-          </p>
-          {{ end }}
-          <hr>
           <h4 class="title is-4 has-text-centered">Завершенные предсказания</h4>
           {{ range $i, $challenge := .RandomFinishedChallenges }}
           {{ template "challenge-card" $challenge }}
