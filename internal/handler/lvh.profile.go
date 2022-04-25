@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"errors"
-	"fmt"
 	"html/template"
 	"log"
 	"math"
@@ -102,8 +101,6 @@ func (ins *ProfileInstance) updateChallenges(ctx context.Context, h *Handler) er
 	ins.ChallengeCount = count
 	ins.MaxPage = int(math.Ceil(float64(count) / float64(h.app.Cfg.App.DefaultChallengePageLimit)))
 
-	fmt.Printf("CHA %T\n", ins)
-
 	return nil
 }
 
@@ -115,9 +112,10 @@ func (h *Handler) NewProfileInstance(s live.Socket) *ProfileInstance {
 			Page:           1,
 			FilterArgs: domain.FilterChallengesArgs{
 				Ongoing:  false,
-				Finished: true,
+				Finished: false,
 			},
-			CreateChallengeForm: false,
+			ShowMine:            false,
+			CreateChallengeForm: true,
 			FormError:           errors.New("provide challenge details"),
 			CreatedChallenge:    nil,
 			TimeLayout:          h.app.Cfg.App.DefaultTimeLayout,
@@ -236,7 +234,6 @@ func (h *Handler) Profile() live.Handler {
 			return instance, nil
 		}
 
-		fmt.Println("BEFORE")
 		instance.Page = 1
 		instance.FilterArgs.AuthorID = instance.UserID
 		instance.ShowMine = true
@@ -245,10 +242,8 @@ func (h *Handler) Profile() live.Handler {
 		instance.CreateChallengeForm = false
 		instance.CreatedChallenge = nil
 		instance.FormError = nil
-		fmt.Println("AFTER")
 
 		err := instance.updateChallenges(ctx, h)
-		fmt.Println("AFTER UPD", err)
 		return instance.withError(err), nil
 	})
 

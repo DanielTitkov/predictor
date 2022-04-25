@@ -102,6 +102,18 @@ func (ch *Challenge) AllowVoting() bool {
 	return true
 }
 
+func (ch *Challenge) AllowShowVotes() bool {
+	if ch.HasOutcome() {
+		return true
+	}
+
+	if ch.UserPrediction != nil {
+		return true
+	}
+
+	return false
+}
+
 func (ch *Challenge) HasOutcomeAndTrue() bool {
 	// safety check
 	if !ch.HasOutcome() {

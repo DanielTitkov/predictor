@@ -1,7 +1,9 @@
 {{define "challenge-details-scale"}}
 <div class="block mb-6">
-    <progress class="progress is-large" value="{{ .Challenge.VotesTrue }}" max="{{ .Challenge.Votes }}">{{
-        .Challenge.PercTrue }}%</progress>
+    <progress class="progress is-large" {{ if .Challenge.AllowShowVotes }} value="{{ .Challenge.VotesTrue }}" {{end}}
+        max="{{ .Challenge.Votes }}">
+        {{ .Challenge.PercTrue }}%
+    </progress>
 </div>
 <div class="level is-mobile">
     <!-- Left side -->
@@ -10,7 +12,11 @@
             <div>
                 <p class="heading">Считают что это верно</p>
                 <p class="title is-1">
+                    {{ if .Challenge.AllowShowVotes }}
                     {{ .Challenge.PercTrue }}%
+                    {{ else }}
+                    ***
+                    {{ end }}
                 </p>
             </div>
         </div>
@@ -30,7 +36,11 @@
             <div>
                 <p class="heading">Считают что это неверно</p>
                 <p class="title is-1">
+                    {{ if .Challenge.AllowShowVotes }}
                     {{ .Challenge.PercFalse }}%
+                    {{ else }}
+                    ***
+                    {{ end }}
                 </p>
             </div>
         </div>

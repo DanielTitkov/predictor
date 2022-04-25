@@ -32,13 +32,9 @@
       <h3 class="subtitle is-3">{{ .Challenge.Description }}</h3>
     </div>
 
-    {{ if .Challenge.Finished }}
     {{ template "challenge-details-scale" . }}
-    {{ else }}
-    <!-- else finished-->
     {{ if .User }}
     {{ if .Challenge.UserPrediction }}
-    {{ template "challenge-details-scale" . }}
     <h3 class="title is-3 has-text-centered">
       Вы уже проголосовали:
       {{ if .Challenge.UserPrediction.Prognosis }}
@@ -65,16 +61,12 @@
     </div>
     {{ end }}
     <!-- end allow voting -->
-    {{ template "challenge-details-no-prediction-counter" . }}
     {{ end }}
     <!-- end user prediction -->
     {{ else }}
     <!-- else user -->
-    {{ template "challenge-details-no-prediction-counter" . }}
     {{ end }}
     <!-- end user -->
-    {{ end }}
-    <!-- end finished -->
 
     <div class="section">
       <h3 class="title is-3 has-text-centered">Фактический исход:
@@ -137,21 +129,6 @@
 </div>
 {{end}}
 
-{{define "challenge-details-no-prediction-counter"}}
-<div class="level is-mobile">
-  <!-- Left side -->
-
-  <!-- center -->
-  <div class="level-item has-text-centered">
-    <div>
-      <p class="heading">Голосов</p>
-      <p class="title is-1">{{ .Challenge.Votes }}</p>
-    </div>
-  </div>
-
-  <!-- Right side -->
-</div>
-{{end}}
 
 {{ define "challenge-details-proof" }}
 <div class="notification has-background-white">
