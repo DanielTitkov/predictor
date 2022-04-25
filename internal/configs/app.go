@@ -1,5 +1,7 @@
 package configs
 
+const LiveSessionName = "go-live-session"
+
 type AppConfig struct {
 	DefaultChallengePageLimit int    `yaml:"defaultChallengePageLimit"`
 	HomeChallengePageLimit    int    `yaml:"homeChallengePageLimit"`

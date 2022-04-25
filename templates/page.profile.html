@@ -80,8 +80,70 @@
       <ul>
         <li class="{{ if .FilterArgs.Finished }}is-active{{end}}"><a live-click="select-finished">Завершённые</a></li>
         <li class="{{ if .FilterArgs.Ongoing }}is-active{{end}}"><a live-click="select-ongoing">Открытые</a></li>
+        <li class="{{ if .ShowMine }}is-active{{end}}"><a live-click="select-mine">Мои</a></li>
+        <li class="{{ if .CreateChallengeForm }}is-active{{end}}"><a live-click="create-new">Создать</a></li>
       </ul>
     </div>
+    {{ if .CreateChallengeForm }}
+    <!-- if create challenge -->
+    <div class="block">
+      {{ if .CreatedChallenge }}
+      <div class="block">
+        <p class="title is-4 has-text-centered">Created challenge</p>
+        {{ template "challenge-list-item" .CreatedChallenge }}
+      </div>
+      {{ else }}
+      <form id="create-challenge-form" live-submit="create-new-submit" live-change="create-new-validate">
+        {{ if .FormError }}
+        <div class="block">
+          <p class="title is-5 has-text-danger">
+            {{ .FormError.Error }}
+          </p>
+        </div>
+        {{ end }}
+        <div class="field">
+          <label class="label">Content</label>
+          <div class="control">
+            <input class="input" name="content" live-debounce="blur" type="text" placeholder="Content">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Description</label>
+          <div class="control">
+            <input class="input" name="description" live-debounce="blur" type="text" placeholder="Description">
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-6">
+            <div class="field">
+              <label class="label">Start time</label>
+              <div class="control">
+                <input class="input" name="start-time" live-debounce="blur" type="text" placeholder="{{ .TimeLayout }}">
+              </div>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="field">
+              <label class="label">End time</label>
+              <div class="control">
+                <input class="input" name="end-time" live-debounce="blur" type="text" placeholder="{{ .TimeLayout }}">
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="field is-grouped is-grouped-right">
+          <div class="control">
+            <button class="button is-link is-large is-rounded" {{ if .FormError }}disabled{{ end }}>
+              Create challenge
+            </button>
+          </div>
+        </div>
+      </form>
+      {{ end }}
+    </div>
+    {{ else }}
+    <!-- else if create challenge -->
     <div class="level">
       <h4 class="title is-4">Найдено предсказаний: {{ .ChallengeCount }}</h4>
       <h4 class="subtitle is-5">Страница <b>{{ .Page }}</b> из <b>{{ .MaxPage }}</b></h4>
@@ -98,6 +160,7 @@
         <div class="column is-8 is-align-self-center">
           {{ template "challenge-list-item" $challenge }}
         </div>
+        {{ if $challenge.UserPrediction }}
         <div class="column is-align-self-center">
           <div class="columns is-mobile">
             <div class="column is-narrow is-size-1 is-align-self-center has-text-centered-tablet">
@@ -129,6 +192,8 @@
             </div>
           </div>
         </div>
+        {{ end }}
+        <!-- end if user prediction -->
       </div>
       <hr class="is-hidden-tablet">
       {{ end }}
@@ -137,8 +202,11 @@
     <div class="block">
       {{ template "challenge-list-pagination" . }}
     </div>
+    {{ end }}
+    <!-- end if create challenge -->
   </div>
-  {{ end }}  <!-- end if user -->
+  {{ end }}
+  <!-- end if user -->
 </main>
 {{ end }}
 

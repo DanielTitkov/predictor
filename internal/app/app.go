@@ -34,6 +34,7 @@ type (
 		FilterChallenges(context.Context, *domain.FilterChallengesArgs) ([]*domain.Challenge, int, error)
 		GetRandomTrueChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error)
 		GetRandomFalseChallenges(ctx context.Context, limit int) ([]*domain.Challenge, error)
+		GetChallengesByAuthor(ctx context.Context, authorID uuid.UUID, limit, offset int) ([]*domain.Challenge, int, error)
 
 		// user
 		IfEmailRegistered(context.Context, string) (bool, error)

@@ -72,6 +72,10 @@ func (a *App) FilterChallenges(ctx context.Context, args *domain.FilterChallenge
 	return a.repo.FilterChallenges(ctx, args)
 }
 
+func (a *App) GetChallengesByAuthor(ctx context.Context, authorID uuid.UUID, limit, offset int) ([]*domain.Challenge, int, error) {
+	return a.repo.GetChallengesByAuthor(ctx, authorID, limit, offset)
+}
+
 func (a *App) SetChallengeOutcome(ctx context.Context, id uuid.UUID, outcome bool, proofs []*domain.Proof) error {
 	if len(proofs) < a.Cfg.App.MinProofCount {
 		return fmt.Errorf("minimal proof count is %d, but got %d", a.Cfg.App.MinProofCount, len(proofs))

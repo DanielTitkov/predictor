@@ -4,10 +4,39 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
+
+	"github.com/DanielTitkov/predictor/internal/configs"
 
 	"github.com/DanielTitkov/predictor/internal/domain"
 	"github.com/jfyne/live"
 )
+
+func (a *App) ResetSession(res http.ResponseWriter, req *http.Request) error {
+	// all this crap doesn't work
+
+	http.SetCookie(res, &http.Cookie{
+		Name:     configs.LiveSessionName,
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Unix(0, 0),
+		HttpOnly: true,
+	})
+
+	sess := live.NewSession()
+	session, err := a.Store.Get(req, configs.LiveSessionName)
+	if err != nil {
+		return err
+	}
+
+	session.Values["_ls"] = sess
+	err = session.Save(req, res)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func (a *App) CreateUserSession(req *http.Request, user *domain.User) (*domain.UserSession, error) {
 	// get session sid for request

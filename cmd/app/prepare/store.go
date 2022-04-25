@@ -8,7 +8,7 @@ import (
 )
 
 func Store(cfg configs.Config) *live.CookieStore {
-	store := live.NewCookieStore("go-live-session", []byte(cfg.Auth.Secret))
+	store := live.NewCookieStore(configs.LiveSessionName, []byte(cfg.Auth.Secret))
 	store.Store.Options.SameSite = http.SameSiteLaxMode
 	store.Store.MaxAge(cfg.Auth.Exp)
 	store.Store.Options.Path = "/"

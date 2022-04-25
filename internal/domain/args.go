@@ -23,6 +23,7 @@ type (
 	}
 	FilterChallengesArgs struct {
 		UserID      uuid.UUID
+		AuthorID    uuid.UUID
 		Unvoted     bool
 		Ongoing     bool
 		Pending     bool

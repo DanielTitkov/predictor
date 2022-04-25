@@ -16,12 +16,12 @@
   <!-- debug start -->
   {{ if .Env }}
   {{ if eq .Env "dev" }}
-  <!-- <div class="box">
+  <div class="box">
     <p class="heading">Debug info</p>
     <p><b>Session: </b>{{ .Session }}</p>
     <p><b>Error: </b>{{ .Error }}</p>
     <p><b>User: </b>{{ .User }}</p>
-  </div> -->
+  </div>
   {{ end }}
   {{ end }}
   <!-- debug end -->
@@ -116,6 +116,8 @@
         </div>
       </div>
     </section>
+    <footer class="modal-card-foot">
+    </footer>
   </div>
 </div>
 {{ end }}

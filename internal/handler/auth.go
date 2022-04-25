@@ -8,6 +8,7 @@ import (
 )
 
 func (h *Handler) Logout(res http.ResponseWriter, req *http.Request) {
+	// defer h.app.ResetSession(res, req)
 	defer http.Redirect(res, req, "/", http.StatusTemporaryRedirect)
 
 	user, err := h.app.GetUserBySession(req)
