@@ -6,7 +6,7 @@
   <div class="section">
     <div class="columns">
       <div class="column is-4">
-        <div class="block has-text-centered">
+        <div class="block">
           <figure class="image is-128x128">
             <img class="is-rounded" src="{{ .User.Picture }}" alt="userpic">
           </figure>
@@ -29,11 +29,11 @@
       <div class="column">
         <div class="box notification has-background-white">
 
-          <h3 class="title is-3 has-text-centered">Статистика</h3>
+          <h3 class="title is-3 is-size-5-mobile has-text-centered">Статистика</h3>
           <progress class="progress is-large user-summary-meter" value="{{ .UserSummary.PercCorrect }}" max="100">{{
             .UserSummary.PercCorrect }}%</progress>
           <hr>
-          <div class="columns is-mobile is-size-4">
+          <div class="columns is-mobile is-size-4 is-size-6-mobile">
             <div class="column has-text-weight-semibold">
               Верно
             </div>
@@ -44,7 +44,7 @@
               ({{ .UserSummary.CorrectPredictions }})
             </div>
           </div>
-          <div class="columns is-mobile is-size-4">
+          <div class="columns is-mobile is-size-4 is-size-6-mobile">
             <div class="column has-text-weight-semibold">
               Неверно
             </div>
@@ -56,7 +56,7 @@
             </div>
           </div>
           <hr>
-          <div class="columns is-mobile is-size-5">
+          <div class="columns is-mobile is-size-5 is-size-6-mobile">
             <div class="column has-text-weight-semibold">
               Ожидают
             </div>
@@ -75,13 +75,29 @@
     {{ template "badge-selector" }}
   </div> -->
   <div class="section" id="challenges">
-    <h1 class="title is-3 has-text-centered">Ваши предсказания</h1>
+    <h1 class="title is-3 is-size-5-mobile has-text-centered">Ваши предсказания</h1>
     <div class="tabs is-large is-centered">
       <ul>
-        <li class="{{ if .CreateChallengeForm }}is-active{{end}}"><a live-click="create-new">Создать</a></li>
-        <li class="{{ if .FilterArgs.Finished }}is-active{{end}}"><a live-click="select-finished">Завершённые</a></li>
-        <li class="{{ if .FilterArgs.Ongoing }}is-active{{end}}"><a live-click="select-ongoing">Открытые</a></li>
-        <li class="{{ if .ShowMine }}is-active{{end}}"><a live-click="select-mine">Мои</a></li>
+        <li class="{{ if .CreateChallengeForm }}is-active{{end}}">
+          <a live-click="create-new" title="create-challenge">
+            <i class="bi bi-file-earmark-plus"></i>
+            <span class="is-hidden-mobile ml-1">Создать</span>
+          </a></li>
+        <li class="{{ if .FilterArgs.Finished }}is-active{{end}}">
+          <a live-click="select-finished" title="finished-challenges">
+            <i class="bi bi-file-check"></i>
+            <span class="is-hidden-mobile ml-1">Завершенные</span>
+          </a></li>
+        <li class="{{ if .FilterArgs.Ongoing }}is-active{{end}}">
+          <a live-click="select-ongoing" title="ongoing-challenges">
+            <i class="bi bi-file-earmark-medical"></i>
+            <span class="is-hidden-mobile ml-1">Открытые</span>
+          </a></li>
+        <li class="{{ if .ShowMine }}is-active{{end}}">
+          <a live-click="select-mine" title="my-challenges">
+            <i class="bi bi-file-earmark-person"></i>
+            <span class="is-hidden-mobile ml-1">Мои</span>
+          </a></li>
       </ul>
     </div>
     {{ if .CreateChallengeForm }}
@@ -94,13 +110,6 @@
       </div>
       {{ else }}
       <form id="create-challenge-form" live-submit="create-new-submit" live-change="create-new-validate">
-        {{ if .FormError }}
-        <div class="block">
-          <p class="title is-5 has-text-danger">
-            {{ .FormError.Error }}
-          </p>
-        </div>
-        {{ end }}
         <div class="field">
           <div class="box notification has-background-white">
             <div class="content">
@@ -122,6 +131,13 @@
               </p>
             </div>
           </div>
+          {{ if .FormError }}
+          <div class="block">
+            <p class="title is-5 is-size-6-mobile has-text-danger">
+              {{ .FormError.Error }}
+            </p>
+          </div>
+          {{ end }}
           <label class="label">Содержание</label>
           <p class="heading">
             Основное содержание предсказания - должно быть сформулировано в виде утвердительного высказывания.
@@ -171,8 +187,15 @@
             </div>
           </div>
         </div>
+        {{ if .FormError }}
+        <div class="block">
+          <p class="title is-5 is-size-6-mobile has-text-danger">
+            {{ .FormError.Error }}
+          </p>
+        </div>
+        {{ end }}
         <hr>
-        <div class="field is-grouped is-grouped-right">
+        <div class="field is-grouped is-grouped-centered">
           <div class="control">
             <button class="button is-link is-large is-rounded" {{ if .FormError }}disabled{{ end }}>
               Создать
@@ -185,15 +208,15 @@
     {{ else }}
     <!-- else if create challenge -->
     <div class="level">
-      <h4 class="title is-4">Найдено предсказаний: {{ .ChallengeCount }}</h4>
-      <h4 class="subtitle is-5">Страница <b>{{ .Page }}</b> из <b>{{ .MaxPage }}</b></h4>
+      <h4 class="title is-4 is-size-5-mobile">Найдено предсказаний: {{ .ChallengeCount }}</h4>
+      <h4 class="subtitle is-5 is-size-6-mobile">Страница <b>{{ .Page }}</b> из <b>{{ .MaxPage }}</b></h4>
     </div>
     <div class="block">
       {{ template "challenge-list-pagination" . }}
     </div>
     <div class="block">
       {{ if eq .ChallengeCount 0 }}
-      <h5 class="title is-5">Пока нет предсказания по критериям</h5>
+      <h5 class="title is-5 is-size-6-mobile">Пока нет предсказания по критериям</h5>
       {{ else }}
       {{ range $i, $challenge := .Challenges }}
       <div class="columns">
@@ -203,7 +226,7 @@
         {{ if $challenge.UserPrediction }}
         <div class="column is-align-self-center">
           <div class="columns is-mobile">
-            <div class="column is-narrow is-size-1 is-align-self-center has-text-centered-tablet">
+            <div class="column is-narrow is-size-1 is-size-3-mobile is-align-self-center has-text-centered-tablet">
               <p class="is-family-monospace">
                 {{ if $challenge.HasOutcome }}
                 {{ if eq $challenge.UserPrediction.Prognosis $challenge.HasOutcomeAndTrue }}
@@ -219,7 +242,7 @@
             <div class="column is-narrow is-align-self-center has-text-centered-tablet">
               {{ template "prognosis-tag" $challenge.UserPrediction.Prognosis }}
             </div>
-            <div class="column is-narrow is-align-self-center has-text-right is-size-1">
+            <div class="column is-narrow is-align-self-center has-text-right is-size-1 is-size-3-mobile">
               {{ if $challenge.HasOutcome }}
               {{ if eq $challenge.UserPrediction.Prognosis $challenge.HasOutcomeAndTrue }}
               🤩
@@ -251,12 +274,20 @@
 {{ end }}
 
 {{ define "prognosis-tag" }}
-<span class="tag px-5 py-6 {{ if . }}prognosis-tag-true{{ else }}prognosis-tag-false{{ end }} is-large">
-  Прогноз:&nbsp;
+<span class="tag px-5 py-6 {{ if . }}prognosis-tag-true{{ else }}prognosis-tag-false{{ end }} is-hidden-mobile">
+  <span class="is-size-4 is-size-6-mobile">Прогноз:&nbsp;</span>
   {{ if . }}
-  <i class="bi-check-circle-fill" style="font-size: 2rem;"></i>
+  <i class="bi-check-circle-fill is-size-2 is-size-4-mobile"></i>
   {{ else }}
-  <i class="bi-x-circle-fill" style="font-size: 2rem;"></i>
+  <i class="bi-x-circle-fill is-size-2 is-size-4-mobile"></i>
+  {{ end }}
+</span>
+<span class="tag px-4 py-5 {{ if . }}prognosis-tag-true{{ else }}prognosis-tag-false{{ end }} is-hidden-tablet">
+  <span class="is-size-4 is-size-6-mobile">Прогноз:&nbsp;</span>
+  {{ if . }}
+  <i class="bi-check-circle-fill is-size-2 is-size-4-mobile"></i>
+  {{ else }}
+  <i class="bi-x-circle-fill is-size-2 is-size-4-mobile"></i>
   {{ end }}
 </span>
 {{ end }}

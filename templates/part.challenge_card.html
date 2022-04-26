@@ -6,17 +6,17 @@
 </style>
 
 <div class='notification {{ template "challenge-card-style" . }}'>
-    <div class="level">
+    <div class="level is-mobile">
         <div class="level-left">
             <div class="level-item">
-                <p class="heading has-text-centered is-size-6">
+                <p class="heading has-text-centered is-size-6-tablet">
                     с <b>{{ .StartStr }}</b>
                 </p>
             </div>
         </div>
         <div class="level-right has-text-right">
             <div class="level-item">
-                <p class="heading has-text-centered is-size-6">
+                <p class="heading has-text-centered is-size-6-tablet">
                     по <b>{{ .EndStr }}</b>
                 </p>
             </div>
@@ -26,28 +26,28 @@
         <div class="column">
             <div class="block">
                 <a class="challenge-link" href="/challenge/{{ .ID }}">
-                    <h5 class="title is-4">{{ .Content }} <i class="bi-link-45deg"></i></h5>
+                    <h5 class="title is-4 is-size-5-mobile">{{ .Content }} <i class="bi-link-45deg"></i></h5>
                 </a>
             </div>
         </div>
-        <div class="column is-narrow">
+        <div class="column is-narrow has-text-centered-mobile is-size-2-tablet is-size-4-mobile">
             {{ if .HasOutcome }}
             {{ if .HasOutcomeAndTrue }}
-            <i class="bi-check-circle-fill" style="font-size: 2.5rem;"></i>
+            <i class="bi-check-circle-fill"></i>
             {{ else }}
-            <i class="bi-x-circle-fill" style="font-size: 2.5rem;"></i>
+            <i class="bi-x-circle-fill"></i>
             {{ end }}
             {{ else }}
-            <i class="bi-question-circle-fill" style="font-size: 2.5rem;"></i>
+            <i class="bi-question-circle-fill"></i>
             {{ end }}
         </div>
     </div>
 
     {{ if .Finished }}
     <progress class="progress is-large" value="{{ .VotesTrue }}" max="{{ .Votes }}">80%</progress>
-    <div class="level is-mobile">
+    <div class="level is-mobile is-size-4-tablet">
         <!-- Left side -->
-        <div class="level-left">
+        <div class="level-left is-hidden-mobile has-text-weight-bold">
             <div class="level-item">
                 <i class="bi-check-lg" style="font-size: 1.5rem;"></i>
             </div>
@@ -57,7 +57,7 @@
         </div>
 
         <!-- center -->
-        <div class="level-item has-text-centered">
+        <div class="level-item has-text-centered has-text-weight-bold">
             <div>
                 <p class="heading">Голосов</p>
                 <p class="title is-4">{{ .Votes }}</p>
@@ -65,7 +65,7 @@
         </div>
 
         <!-- Right side -->
-        <div class="level-right">
+        <div class="level-right is-hidden-mobile has-text-weight-bold">
             <div class="level-item">
                 <p class="title is-4">{{ .PercFalse }}%</p>
             </div>
@@ -79,7 +79,7 @@
         <!-- Left side -->
 
         <!-- center -->
-        <div class="level-item has-text-centered">
+        <div class="level-item has-text-centered has-text-weight-bold">
             <div>
                 <p class="heading">Голосов</p>
                 <p class="title is-4">{{ .Votes }}</p>

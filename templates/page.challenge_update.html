@@ -3,17 +3,17 @@
 {{ template "back-to-home" }}
 <div class="section">
   <div class='notification {{ template "challenge-card-style" .Challenge }}'>
-    <p class="title is-3">{{ .Challenge.Content }}</p>
-    <p class="subtitle is-5">{{ .Challenge.Description }}</p>
+    <p class="title is-3 is-size-5-mobile">{{ .Challenge.Content }}</p>
+    <p class="subtitle is-5 is-size-6-mobile">{{ .Challenge.Description }}</p>
   </div>
   <div class="block">
-    <p class="title is-3 has-text-centered">Edit challenge details</p>
+    <p class="title is-3 is-size-5-mobile has-text-centered">Edit challenge details</p>
     {{ if .Challenge.AllowDetailsEdit }}
     <!-- live-change="edit-validate" -->
     <form id="edit-challenge-form" live-submit="edit-submit">
       {{ if .FormError }}
       <div class="block">
-        <p class="title is-5 has-text-danger">
+        <p class="title is-5 is-size-6-mobile has-text-danger">
           {{ .FormError.Error }}
         </p>
       </div>
@@ -79,7 +79,7 @@
           </label>
         </div>
       </div>
-      <div class="field is-grouped is-grouped-right">
+      <div class="field is-grouped is-grouped-centered">
         <div class="control">
           <button class="button is-link is-large is-rounded">
             Update challenge
@@ -88,17 +88,17 @@
       </div>
     </form>
     {{ else }}
-    <p class="title is-5 has-text-centered">Not allowed for this challenge</p>
+    <p class="title is-5 is-size-6-mobile has-text-centered">Not allowed for this challenge</p>
     {{ end }}
   </div>
   <hr>
   <div class="block">
-    <p class="title is-3 has-text-centered">Edit outcome</p>
+    <p class="title is-3 is-size-5-mobile has-text-centered">Edit outcome</p>
     {{ if .Challenge.AllowOutcomeEdit }}
     <form id="outcome-form" live-submit="outcome-submit" live-change="outcome-validate">
       {{ if .OutcomeError }}
       <div class="block">
-        <p class="title is-5 has-text-danger">
+        <p class="title is-5 is-size-6-mobile has-text-danger">
           {{ .OutcomeError.Error }}
         </p>
       </div>
@@ -155,7 +155,7 @@
           </div>
         </div>
       </div>
-      <div class="field is-grouped is-grouped-right">
+      <div class="field is-grouped is-grouped-centered">
         <div class="control">
           <button class="button is-link is-large is-rounded" {{ if .OutcomeError }}disabled{{ end }}>
             Update outcome
@@ -164,7 +164,7 @@
       </div>
     </form>
     {{ else }}
-    <p class="title is-5 has-text-centered">Not allowed for this challenge</p>
+    <p class="title is-5 is-size-6-mobile has-text-centered">Not allowed for this challenge</p>
     {{ end }}
   </div>
 </div>

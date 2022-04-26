@@ -10,8 +10,9 @@
     <div class="level-left">
         <div class="level-item">
             <div>
-                <p class="heading">Считают что это верно</p>
-                <p class="title is-1">
+                <p class="heading is-hidden-mobile">Считают что это верно</p>
+                <p class="heading is-hidden-tablet">Да</p>
+                <p class="title is-1 is-size-5-mobile">
                     {{ if .Challenge.AllowShowVotes }}
                     {{ .Challenge.PercTrue }}%
                     {{ else }}
@@ -25,8 +26,9 @@
     <!-- center -->
     <div class="level-item has-text-centered">
         <div>
-            <p class="heading">Всего голосов</p>
-            <p class="title is-1">{{ .Challenge.Votes }}</p>
+            <p class="heading is-hidden-mobile">Всего голосов</p>
+            <p class="heading is-hidden-tablet">Всего</p>
+            <p class="title is-1 is-size-5-mobile">{{ .Challenge.Votes }}</p>
         </div>
     </div>
 
@@ -34,8 +36,9 @@
     <div class="level-right has-text-right">
         <div class="level-item">
             <div>
-                <p class="heading">Считают что это неверно</p>
-                <p class="title is-1">
+                <p class="heading is-hidden-mobile">Считают что это неверно</p>
+                <p class="heading is-hidden-tablet">Нет</p>
+                <p class="title is-1 is-size-5-mobile">
                     {{ if .Challenge.AllowShowVotes }}
                     {{ .Challenge.PercFalse }}%
                     {{ else }}

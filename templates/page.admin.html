@@ -6,11 +6,24 @@
   <div class="section">
     <div class="tabs is-large is-centered">
       <ul>
-        <li class="{{ if .FilterArgs.Pending }}is-active{{end}}"><a live-click="select-pending">Ожидают результата</a>
+        <li class="{{ if .FilterArgs.Pending }}is-active{{end}}">
+          <a live-click="select-pending" title="pending-challenges">
+            <i class="bi bi-file-earmark-medical"></i>
+            <span class="is-hidden-mobile ml-1">Ожидают результата</span>
+          </a>
         </li>
-        <li class="{{ if .FilterArgs.Unpublished }}is-active{{end}}"><a live-click="select-unpublished">Модерация</a>
+        <li class="{{ if .FilterArgs.Unpublished }}is-active{{end}}">
+          <a live-click="select-unpublished" title="moderation">
+            <i class="bi bi-file-earmark-diff"></i>
+            <span class="is-hidden-mobile ml-1">Модерация</span>
+          </a>
         </li>
-        <li class="{{ if .CreateChallengeForm }}is-active{{end}}"><a live-click="create-new">Создать</a></li>
+        <li class="{{ if .CreateChallengeForm }}is-active{{end}}">
+          <a live-click="create-new" title="create-challenge">
+            <i class="bi bi-file-earmark-plus"></i>
+            <span class="is-hidden-mobile ml-1">Создать</span>
+          </a>
+        </li>
       </ul>
     </div>
     {{ if .CreateChallengeForm }}
@@ -18,14 +31,14 @@
     <div class="block">
       {{ if .CreatedChallenge }}
       <div class="block">
-        <p class="title is-4 has-text-centered">Created challenge</p>
+        <p class="title is-4 is-size-5-mobile has-text-centered">Created challenge</p>
         {{ template "challenge-list-item" .CreatedChallenge }}
       </div>
       {{ else }}
       <form id="create-challenge-form" live-submit="create-new-submit" live-change="create-new-validate">
         {{ if .FormError }}
         <div class="block">
-          <p class="title is-5 has-text-danger">
+          <p class="title is-5 is-size-6-mobile has-text-danger">
             {{ .FormError.Error }}
           </p>
         </div>
@@ -69,7 +82,7 @@
           </div>
         </div>
         <hr>
-        <div class="field is-grouped is-grouped-right">
+        <div class="field is-grouped is-grouped-centered">
           <div class="control">
             <button class="button is-link is-large is-rounded" {{ if .FormError }}disabled{{ end }}>
               Create challenge
@@ -82,15 +95,15 @@
     {{ else }}
     <!-- else if create challenge -->
     <div class="level">
-      <h4 class="title is-4">Найдено предсказаний: {{ .ChallengeCount }}</h4>
-      <h4 class="subtitle is-5">Страница <b>{{ .Page }}</b> из <b>{{ .MaxPage }}</b></h4>
+      <h4 class="title is-4 is-size-5-mobile">Найдено предсказаний: {{ .ChallengeCount }}</h4>
+      <h4 class="subtitle is-5 is-size-6-mobile">Страница <b>{{ .Page }}</b> из <b>{{ .MaxPage }}</b></h4>
     </div>
     <div class="block">
       {{ template "challenge-list-pagination" . }}
     </div>
     <div class="block">
       {{ if eq .ChallengeCount 0 }}
-      <h5 class="title is-5">Пока нет предсказания по критериям</h5>
+      <h5 class="title is-5 is-size-6-mobile">Пока нет предсказания по критериям</h5>
       {{ else }}
       {{ range $i, $challenge := .Challenges }}
       <div class="columns">
@@ -98,7 +111,7 @@
           {{ template "challenge-list-item" $challenge }}
         </div>
         <div class="column is-narrow is-align-self-center">
-          <p class="is-size-1">
+          <p class="is-size-1 is-size-4-mobile has-text-centered-mobile">
             <a href={{ $challenge.EditURL }} target="_blank">
               <i class="bi bi-pencil-fill"></i>
             </a>

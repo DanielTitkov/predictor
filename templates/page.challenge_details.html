@@ -5,22 +5,22 @@
   <div class='notification {{ template "challenge-card-style" .Challenge }}'>
     <div class="level">
       <!-- Left side -->
-      <div class="level-left">
+      <div class="level-left has-text-centered-mobile">
         <div class="level-item">
           <div>
             <p class="heading">Начало голосования</p>
-            <p class="title is-4">
+            <p class="title is-4 is-size-4-tablet is-size-5-mobile">
               {{ .Challenge.StartStr }}
             </p>
           </div>
         </div>
       </div>
       <!-- Right side -->
-      <div class="level-right has-text-right">
+      <div class="level-right has-text-right-tablet has-text-centered-mobile">
         <div class="level-item">
           <div>
             <p class="heading">Конец голосования</p>
-            <p class="title is-4">
+            <p class="title is-4 is-size-4-tablet is-size-5-mobile">
               {{ .Challenge.EndStr }}
             </p>
           </div>
@@ -28,19 +28,23 @@
       </div>
     </div>
     <div class="block mb-5 mt-6">
-      <h1 class="title is-1">{{ .Challenge.Content }}</h1>
-      <h3 class="subtitle is-3">{{ .Challenge.Description }}</h3>
+      <h1 class="title is-1 is-size-1-tablet is-size-4-mobile">{{ .Challenge.Content }}</h1>
+      <h3 class="subtitle is-3 is-size-3-tablet is-size-6-mobile">{{ .Challenge.Description }}</h3>
     </div>
 
     {{ template "challenge-details-scale" . }}
     {{ if .User }}
     {{ if .Challenge.UserPrediction }}
-    <h3 class="title is-3 has-text-centered">
+    <h3 class="title is-3 is-size-5-mobile has-text-centered">
       Вы уже проголосовали:
       {{ if .Challenge.UserPrediction.Prognosis }}
-      это сбудется
+      <span class="has-text-success">
+        это сбудется
+      </span>
       {{else}}
-      это не сбудется
+      <span class="has-text-danger">
+        это не сбудется
+      </span>
       {{end}}
     </h3>
     {{ else }}
@@ -68,8 +72,8 @@
     {{ end }}
     <!-- end user -->
 
-    <div class="section">
-      <h3 class="title is-3 has-text-centered">Фактический исход:
+    <div class="block">
+      <h3 class="title is-3 is-size-5-mobile has-text-centered">Фактический исход:
         {{ if .Challenge.HasOutcome }}
         {{ if .Challenge.HasOutcomeAndTrue }}
         <span class="has-text-success">
@@ -83,7 +87,7 @@
         </span>
         {{ end }}
         <div class="block">
-          <p class="is-clickable subtitle is-4 mt-3 has-text-grey" live-click="toggle-proofs">Доказательства
+          <p class="is-clickable subtitle is-4 is-size-6-mobile mt-3 has-text-grey" live-click="toggle-proofs">Доказательства
             {{ if .ShowProofs }}
             <i class="bi bi-caret-up-fill"></i>
             {{ else }}
@@ -99,7 +103,7 @@
         {{ end }}
       </h3>
       {{ if .ShowProofs }}
-      <div class="section">
+      <div class="block">
         {{ range $i, $proof := .Challenge.Proofs }}
         {{ template "challenge-details-proof" $proof }}
         {{ end }}
@@ -132,8 +136,8 @@
 
 {{ define "challenge-details-proof" }}
 <div class="notification has-background-white">
-  <p class="title is-5">{{ .Content }}</p>
-  <p class="subtitle is-6">
+  <p class="title is-5 is-size-6-mobile">{{ .Content }}</p>
+  <p class="subtitle is-6 is-size-7-mobile">
     <a href=" {{ .Link }}" target="_blank">{{ .Link }}</a>
   </p>
 </div>

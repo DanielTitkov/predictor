@@ -4,9 +4,14 @@
 <main>
   <div class="section">
     <div class="has-text-centered">
-      <h1 class="title is-1">Predictor</h1>
-      <h3 class="subtitle is-3">Социальная футурология</h3>
-      <a {{if .User}}href="/profile" {{else}}disabled{{end}} class="button is-large is-link is-rounded">
+      <h1 class="title is-1 is-size-2-mobile">Predictor</h1>
+      <h3 class="subtitle is-3 is-size-4-mobile">Социальная футурология</h3>
+      <a {{if .User}}href="/profile" {{else}}disabled{{end}}
+        class="button is-large is-link is-rounded is-responsive is-hidden-mobile">
+        Создать предсказание
+      </a>
+      <a {{if .User}}href="/profile" {{else}}disabled{{end}}
+        class="button is-link is-rounded is-responsive is-hidden-tablet">
         Создать предсказание
       </a>
       {{ if .User }}
@@ -21,10 +26,10 @@
   <div class="block">
     <div class="columns is-4">
       <div class="column">
-        <div class="box p-6">
-          <h4 class="title is-4 has-text-centered">Близки к завершению</h4>
+        <div class="box py-6">
+          <h4 class="title is-4 is-size-5-mobile has-text-centered">Близки к завершению</h4>
           {{ if eq .ClosingChallengesCount 0 }}
-          <h5 class="subtitle is-5 has-text-centered mt-5">Сейчас нет незавершенных предсказаний</h5>
+          <h5 class="subtitle is-5 is-size-6-mobile has-text-centered mt-5">Сейчас нет незавершенных предсказаний</h5>
           {{ else }}
           {{ range $i, $challenge := .ClosingChallenges }}
           {{ template "challenge-card" $challenge }}
@@ -32,9 +37,9 @@
           {{ end }}
 
           <hr>
-          <h4 class="title is-4 has-text-centered">Открытые предсказания</h4>
+          <h4 class="title is-4 is-size-5-mobile has-text-centered">Открытые предсказания</h4>
           {{ if eq .RandomOngoingChallengesCount 0 }}
-          <h5 class="subtitle is-5 has-text-centered mt-5">Пока нет вопросов на которые вы ещё не ответили</h5>
+          <h5 class="subtitle is-5 is-size-6-mobile has-text-centered mt-5">Пока нет вопросов на которые вы ещё не ответили</h5>
           {{ else }}
           {{ range $i, $challenge := .RandomOngoingChallenges }}
           {{ template "challenge-card" $challenge }}
@@ -44,16 +49,16 @@
 
       </div>
       <div class="column">
-        <div class="box p-6">
-          <h4 class="title is-4 has-text-centered">Завершенные предсказания</h4>
+        <div class="box py-6">
+          <h4 class="title is-4 is-size-5-mobile has-text-centered">Завершенные предсказания</h4>
           {{ range $i, $challenge := .RandomFinishedChallenges }}
           {{ template "challenge-card" $challenge }}
           {{ end }}
 
           <hr>
-          <h4 class="title is-4 has-text-centered">Ожидают результата</h4>
+          <h4 class="title is-4 is-size-5-mobile has-text-centered">Ожидают результата</h4>
           {{ if eq .RandomPendingChallengesCount 0 }}
-          <h5 class="subtitle is-5 has-text-centered mt-5">Сейчас нет предсказаний без результата</h5>
+          <h5 class="subtitle is-5 is-size-6-mobile has-text-centered mt-5">Сейчас нет предсказаний без результата</h5>
           {{ else }}
           {{ range $i, $challenge := .RandomPendingChallenges }}
           {{ template "challenge-card" $challenge }}
