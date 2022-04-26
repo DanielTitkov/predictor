@@ -18,10 +18,10 @@ import (
 
 const (
 	// events
-	eventEditChallengeValidate = "edit-validate"
-	eventEditChallengeSubmit   = "edit-submit"
-	eventEditOutcomeValidate   = "outcome-validate"
-	eventEditOutcomeSubmit     = "outcome-submit"
+	// eventEditChallengeValidate = "edit-validate"
+	eventEditChallengeSubmit = "edit-submit"
+	eventEditOutcomeValidate = "outcome-validate"
+	eventEditOutcomeSubmit   = "outcome-submit"
 	// params
 	paramEditChallengeContent      = "content"
 	paramEditChallengeDescription  = "description"

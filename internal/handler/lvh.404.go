@@ -14,11 +14,6 @@ type (
 	}
 )
 
-func (ins *NotFoundInstance) withError(err error) *NotFoundInstance {
-	ins.Error = err
-	return ins
-}
-
 func (h *Handler) NewNotFoundInstance(s live.Socket) *NotFoundInstance {
 	m, ok := s.Assigns().(*NotFoundInstance)
 	if !ok {

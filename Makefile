@@ -40,7 +40,7 @@ build:
 
 .PHONY: lint
 lint:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.29.0
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.45.2
 	./bin/golangci-lint run -v
 
 .PHONY: entgen

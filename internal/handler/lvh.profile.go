@@ -24,8 +24,6 @@ const (
 	eventProfileCreateNewValidate = "create-new-validate"
 	// params
 	paramUserProfilePage             = "page"
-	paramUserProfileOngoing          = "ongoing"
-	paramUserProfileFinished         = "finished"
 	paramProfileCreateNewContent     = "content"
 	paramProfileCreateNewDescription = "description"
 	paramProfileCreateNewStartTime   = "start-time"
