@@ -82,22 +82,26 @@
           <a live-click="create-new" title="create-challenge">
             <i class="bi bi-file-earmark-plus"></i>
             <span class="is-hidden-mobile ml-1">Создать</span>
-          </a></li>
+          </a>
+        </li>
         <li class="{{ if .FilterArgs.Finished }}is-active{{end}}">
           <a live-click="select-finished" title="finished-challenges">
             <i class="bi bi-file-check"></i>
             <span class="is-hidden-mobile ml-1">Завершенные</span>
-          </a></li>
+          </a>
+        </li>
         <li class="{{ if .FilterArgs.Ongoing }}is-active{{end}}">
           <a live-click="select-ongoing" title="ongoing-challenges">
             <i class="bi bi-file-earmark-medical"></i>
             <span class="is-hidden-mobile ml-1">Открытые</span>
-          </a></li>
+          </a>
+        </li>
         <li class="{{ if .ShowMine }}is-active{{end}}">
           <a live-click="select-mine" title="my-challenges">
             <i class="bi bi-file-earmark-person"></i>
             <span class="is-hidden-mobile ml-1">Мои</span>
-          </a></li>
+          </a>
+        </li>
       </ul>
     </div>
     {{ if .CreateChallengeForm }}
@@ -110,6 +114,9 @@
       </div>
       {{ else }}
       <form id="create-challenge-form" live-submit="create-new-submit" live-change="create-new-validate">
+        <h4 class="title is-4 is-size-5-mobile">
+          Создать <span class="is-hidden-mobile">предсказание</span>
+        </h4>
         <div class="field">
           <div class="box notification has-background-white">
             <div class="content">
@@ -208,7 +215,18 @@
     {{ else }}
     <!-- else if create challenge -->
     <div class="level">
-      <h4 class="title is-4 is-size-5-mobile">Найдено предсказаний: {{ .ChallengeCount }}</h4>
+      <h4 class="title is-4 is-size-5-mobile">
+        {{ if .FilterArgs.Finished }}
+        Завершенные<span class="is-hidden-mobile"> предсказания</span>:
+        {{ end }}
+        {{ if .FilterArgs.Ongoing }}
+        Открытые<span class="is-hidden-mobile"> предсказания</span>:
+        {{end}}
+        {{ if .ShowMine }}
+        Мои<span class="is-hidden-mobile"> предсказания</span>:
+        {{end}}
+        {{ .ChallengeCount }}
+      </h4>
       <h4 class="subtitle is-5 is-size-6-mobile">Страница <b>{{ .Page }}</b> из <b>{{ .MaxPage }}</b></h4>
     </div>
     <div class="block">
