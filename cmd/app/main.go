@@ -15,6 +15,7 @@ import (
 	"github.com/DanielTitkov/predictor/logger"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
+	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"
 
 	_ "github.com/lib/pq"
@@ -74,6 +75,12 @@ func main() {
 			cfg.Auth.Google.Secret,   // secret
 			cfg.Auth.Google.Callback, // callback url
 			"email", "profile",       // scopes
+		),
+		github.New(
+			cfg.Auth.Github.Client,
+			cfg.Auth.Github.Secret,
+			cfg.Auth.Github.Callback,
+			"email", "profile",
 		),
 	)
 

@@ -73,5 +73,8 @@ substitute_config_vars:
 		s|{{google_auth_client}}|${GOOGLE_AUTH_CLIENT}|g;   \
 		s|{{google_auth_secret}}|${GOOGLE_AUTH_SECRET}|g;   \
 		s|{{google_auth_callback}}|${GOOGLE_AUTH_CALLBACK}|g;   \
+		s|{{github_auth_client}}|${GITHUB_AUTH_CLIENT}|g;   \
+		s|{{github_auth_secret}}|${GITHUB_AUTH_SECRET}|g;   \
+		s|{{github_auth_callback}}|${GITHUB_AUTH_CALLBACK}|g;   \
 		" ${CONFIG_TEMPLATE_PATH})
 	cat ${CONFIG_PATH}

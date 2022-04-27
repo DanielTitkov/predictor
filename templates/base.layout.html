@@ -52,7 +52,6 @@
   {{ if .ShowLogoutModal }}
   {{ template "logout-modal" . }}
   {{ end }}
-  {{ template "backgound-figure" }}
 </body>
 
 <script>
@@ -96,18 +95,18 @@
 {{ define "login-block" }}
 <div class="block has-text-centered">
   <p class="heading">Вход или регистрация</p>
-  <a href="/auth/google" class="button is-hidden-tablet is-danger">
-    <span class="icon is-medium">
+  <div class="buttons are-medium are-rounded is-centered">
+    <!-- Google -->
+    <a href="/auth/google" class="button is-danger">
       <i class="bi bi-google"></i>
-    </span>
-    <span>SignIn with Google</span>
-  </a>
-  <a href="/auth/google" class="button is-large is-hidden-mobile is-danger">
-    <span class="icon is-medium">
-      <i class="bi bi-google"></i>
-    </span>
-    <span>SignIn with Google</span>
-  </a>
+      <span class="is-hidden-mobile">&nbsp;Google</span>
+    </a>
+    <!-- Github -->
+    <a href="/auth/github" class="button is-dark">
+      <i class="bi bi-github"></i>
+      <span class="is-hidden-mobile">&nbsp;GitHub</span>
+    </a>
+  </div>
 </div>
 {{ end }}
 

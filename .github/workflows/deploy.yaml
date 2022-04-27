@@ -87,6 +87,9 @@ jobs:
       GOOGLE_AUTH_CLIENT: ${{ secrets.GOOGLE_AUTH_CLIENT }}
       GOOGLE_AUTH_SECRET: ${{ secrets.GOOGLE_AUTH_SECRET }}
       GOOGLE_AUTH_CALLBACK: ${{ secrets.GOOGLE_AUTH_CALLBACK }}
+      GITHUB_AUTH_CLIENT: ${{ secrets.GGITHUB_AUTH_CLIENT }}
+      GITHUB_AUTH_SECRET: ${{ secrets.GGITHUB_AUTH_SECRET }}
+      GITHUB_AUTH_CALLBACK: ${{ secrets.GGITHUB_AUTH_CALLBACK }}
       CONFIG_PATH: ./configs/deploy_config_111.yml
     steps:
       - name: Check out code

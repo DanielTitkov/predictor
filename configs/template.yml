@@ -22,6 +22,10 @@ auth:
     client: {{google_auth_client}}
     secret: {{google_auth_secret}}
     callback: {{google_auth_callback}}
+  github:
+    client: {{github_auth_client}}
+    secret: {{github_auth_secret}}
+    callback: {{github_auth_callback}}
 data:
   presets:
     challengePresetsPaths: 
