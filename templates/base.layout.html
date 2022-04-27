@@ -85,8 +85,10 @@
 </html>
 
 {{ define "footer" }}
-<footer class="footer is-size-5">
-  {{ template "navigation-text" . }}
+<footer class="footer">
+  <div class="is-size-5 is-hidden-mobile">
+    {{ template "navigation-text" . }}
+  </div>
 </footer>
 {{ end }}
 
