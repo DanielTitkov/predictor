@@ -42,7 +42,7 @@ func (h *Handler) NewChallengeDetailsInstance(s live.Socket) *ChallengeDetailsIn
 	m, ok := s.Assigns().(*ChallengeDetailsInstance)
 	if !ok {
 		return &ChallengeDetailsInstance{
-			CommonInstance: h.NewCommon(s),
+			CommonInstance: h.NewCommon(s, viewChallengeDetails),
 			ShowModal:      false,
 			ShowProofs:     false,
 		}

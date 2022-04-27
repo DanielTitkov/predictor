@@ -67,7 +67,7 @@ func (h *Handler) NewChallengeUpdateInstance(s live.Socket) *ChallengeUpdateInst
 	m, ok := s.Assigns().(*ChallengeUpdateInstance)
 	if !ok {
 		return &ChallengeUpdateInstance{
-			CommonInstance: h.NewCommon(s),
+			CommonInstance: h.NewCommon(s, viewChallengeUpdate),
 			FormError:      nil,
 			OutcomeError:   errors.New("provide outcome and proofs"),
 			TimeLayout:     h.app.Cfg.App.DefaultTimeLayout,

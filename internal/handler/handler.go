@@ -16,6 +16,15 @@ import (
 )
 
 const (
+	// views
+	view404              = "404"
+	viewAbout            = "about"
+	viewAdmin            = "admin"
+	viewChallengeDetails = "challenge-details"
+	viewChallengeList    = "challenge-list"
+	viewChallengeUpdate  = "challenge-update"
+	viewHome             = "home"
+	viewProfile          = "profile"
 	// events (common)
 	eventCloseAuthModals = "close-auth-modals"
 	eventOpenLogoutModal = "open-logout-modal"
@@ -42,6 +51,7 @@ type (
 		UserID          uuid.UUID
 		ShowLoginModal  bool
 		ShowLogoutModal bool
+		CurrentView     string
 	}
 
 	contextKey struct {
@@ -63,7 +73,7 @@ func NewHandler(
 	}
 }
 
-func (h *Handler) NewCommon(s live.Socket) *CommonInstance {
+func (h *Handler) NewCommon(s live.Socket, currentView string) *CommonInstance {
 	return &CommonInstance{
 		Env:             h.app.Cfg.Env,
 		Session:         fmt.Sprint(s.Session()),
@@ -71,6 +81,7 @@ func (h *Handler) NewCommon(s live.Socket) *CommonInstance {
 		Message:         nil,
 		ShowLoginModal:  false,
 		ShowLogoutModal: false,
+		CurrentView:     currentView,
 	}
 }
 

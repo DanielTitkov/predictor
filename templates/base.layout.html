@@ -159,25 +159,25 @@
 <nav class="level is-mobile is-centered p-5 is-size-3-mobile is-size-2-tablet is-hidden-mobile">
   <div class="level-item">
     <div class="mx-5">
-      <a href="/" title="Home">
+      <a href="/" class='{{ if eq .CurrentView "home"}}has-text-dark{{ end }}' title="Home">
         <i class="bi bi-house-fill"></i>
       </a>
     </div>
-    <div class="mx-5" title="Challenge List">
-      <a href="/challenges">
+    <div class="mx-5">
+      <a href="/challenges" class='{{ if eq .CurrentView "challenge-list"}}has-text-dark{{ end }}'
+        title="Challenge List">
         <i class="bi bi-list-ul"></i>
       </a>
     </div>
     <div class="mx-5" title="About">
-      <a href="/about">
+      <a href="/about" class='{{ if eq .CurrentView "about"}}has-text-dark{{ end }}'>
         <i class="bi bi-question"></i>
       </a>
     </div>
 
     {{ if .User }}
     <div class="mx-5">
-      <!-- user profile -->
-      <a href="/profile" title="Profile">
+      <a class='{{ if eq .CurrentView "profile"}}has-text-dark{{ end }}' href="/profile" title="Profile">
         <i class="bi bi-person-fill"></i>
       </a>
     </div>
@@ -186,8 +186,7 @@
     {{ if .User }}
     {{ if .User.Admin }}
     <div class="mx-5">
-      <!-- Admin panel -->
-      <a href="/admin" title="Admin panel">
+      <a href="/admin" class='{{ if eq .CurrentView "admin"}}has-text-dark{{ end }}' title="Admin panel">
         <i class="bi bi-radioactive"></i>
       </a>
     </div>
@@ -212,28 +211,30 @@
 
 
 {{ define "navigation-mobile" }}
-<nav class="navbar  is-mobile is-centered p-4 is-size-3-mobile is-size-2-tablet is-hidden-tablet is-fixed-bottom">
-  <div class="level-item">
-    <div class="mx-3">
-      <a href="/" title="Home">
+<nav class="navbar is-mobile is-centered px-2 py-4 is-size-3-mobile is-size-2-tablet is-hidden-tablet is-fixed-bottom">
+  <div class="level is-mobile">
+    <div class="level-item">
+      <a class='{{ if eq .CurrentView "home"}}has-text-dark{{ end }}' href="/" title="Home">
         <i class="bi bi-house-fill"></i>
       </a>
     </div>
-    <div class="mx-3" title="Challenge List">
-      <a href="/challenges">
+
+    <div class="level-item">
+      <a class='{{ if eq .CurrentView "challenge-list"}}has-text-dark{{ end }}' title="Challenge List"
+        href="/challenges">
         <i class="bi bi-list-ul"></i>
       </a>
     </div>
-    <div class="mx-3" title="About">
-      <a href="/about">
+
+    <div class="level-item">
+      <a class='{{ if eq .CurrentView "about"}}has-text-dark{{ end }}' title="About" href="/about">
         <i class="bi bi-question"></i>
       </a>
     </div>
 
     {{ if .User }}
-    <div class="mx-3">
-      <!-- user profile -->
-      <a href="/profile" title="Profile">
+    <div class="level-item">
+      <a class='{{ if eq .CurrentView "profile"}}has-text-dark{{ end }}' title="Profile" href="/profile">
         <i class="bi bi-person-fill"></i>
       </a>
     </div>
@@ -241,16 +242,15 @@
 
     {{ if .User }}
     {{ if .User.Admin }}
-    <div class="mx-3">
-      <!-- Admin panel -->
-      <a href="/admin" title="Admin panel">
+    <div class="level-item">
+      <a class='{{ if eq .CurrentView "admin"}}has-text-dark{{ end }}' title="Admin panel" href="/admin">
         <i class="bi bi-radioactive"></i>
       </a>
     </div>
     {{ end }}
     {{ end }}
 
-    <div class="mx-3">
+    <div class="level-item">
       <!-- enter or exit -->
       {{ if .User }}
       <a live-click="open-logout-modal" title="Logout">
@@ -270,21 +270,21 @@
 <nav class="level is-centered">
   <div class="level-item">
     <div class="mx-3">
-      <a href="/" title="Home">
+      <a href="/" class='{{ if eq .CurrentView "home"}}has-text-dark{{ end }}' title="Home">
         Главная
       </a>
     </div>
   </div>
   <div class="level-item">
     <div class="mx-3" title="Challenge List">
-      <a href="/challenges">
+      <a class='{{ if eq .CurrentView "challenge-list"}}has-text-dark{{ end }}' href="/challenges">
         Предсказания
       </a>
     </div>
   </div>
   <div class="level-item">
     <div class="mx-3" title="About">
-      <a href="/about">
+      <a class='{{ if eq .CurrentView "about"}}has-text-dark{{ end }}' href="/about">
         О проекте
       </a>
     </div>
@@ -293,8 +293,7 @@
   {{ if .User }}
   <div class="level-item">
     <div class="mx-3">
-      <!-- user profile -->
-      <a href="/profile" title="Profile">
+      <a class='{{ if eq .CurrentView "profile"}}has-text-dark{{ end }}' href="/profile" title="Profile">
         Профиль
       </a>
     </div>
@@ -306,7 +305,7 @@
   <div class="level-item">
     <div class="mx-3">
       <!-- Admin panel -->
-      <a href="/admin" title="Admin panel">
+      <a href="/admin" class='{{ if eq .CurrentView "admin"}}has-text-dark{{ end }}' title="Admin panel">
         Управление
       </a>
     </div>

@@ -30,7 +30,7 @@ func (h *Handler) NewAboutInstance(s live.Socket) *AboutInstance {
 	m, ok := s.Assigns().(*AboutInstance)
 	if !ok {
 		return &AboutInstance{
-			CommonInstance: h.NewCommon(s),
+			CommonInstance: h.NewCommon(s, viewAbout),
 		}
 	}
 

@@ -106,7 +106,7 @@ func (h *Handler) NewProfileInstance(s live.Socket) *ProfileInstance {
 	m, ok := s.Assigns().(*ProfileInstance)
 	if !ok {
 		return &ProfileInstance{
-			CommonInstance: h.NewCommon(s),
+			CommonInstance: h.NewCommon(s, viewProfile),
 			Page:           1,
 			FilterArgs: domain.FilterChallengesArgs{
 				Ongoing:  false,

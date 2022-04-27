@@ -29,7 +29,7 @@ func (h *Handler) NewHomeInstance(s live.Socket) *HomeInstance {
 	m, ok := s.Assigns().(*HomeInstance)
 	if !ok {
 		return &HomeInstance{
-			CommonInstance: h.NewCommon(s),
+			CommonInstance: h.NewCommon(s, viewHome),
 		}
 	}
 

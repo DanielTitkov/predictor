@@ -77,7 +77,7 @@ func (h *Handler) NewChallengeListInstance(s live.Socket) *ChallengeListInstance
 	m, ok := s.Assigns().(*ChallengeListInstance)
 	if !ok {
 		return &ChallengeListInstance{
-			CommonInstance: h.NewCommon(s),
+			CommonInstance: h.NewCommon(s, viewChallengeList),
 			Page:           1,
 		}
 	}

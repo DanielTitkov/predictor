@@ -18,7 +18,7 @@ func (h *Handler) NewNotFoundInstance(s live.Socket) *NotFoundInstance {
 	m, ok := s.Assigns().(*NotFoundInstance)
 	if !ok {
 		return &NotFoundInstance{
-			CommonInstance: h.NewCommon(s),
+			CommonInstance: h.NewCommon(s, view404),
 		}
 	}
 

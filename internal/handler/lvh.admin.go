@@ -89,7 +89,7 @@ func (h *Handler) NewAdminInstance(s live.Socket) *AdminInstance {
 	m, ok := s.Assigns().(*AdminInstance)
 	if !ok {
 		return &AdminInstance{
-			CommonInstance: h.NewCommon(s),
+			CommonInstance: h.NewCommon(s, viewAdmin),
 			Page:           1,
 			FilterArgs: domain.FilterChallengesArgs{
 				Pending:     true,
