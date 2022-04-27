@@ -117,14 +117,16 @@
       <button live-click="close-auth-modals" class="delete" aria-label="close"></button>
     </header>
     <section class="modal-card-body has-text-centered">
-      <p class="title is-4">Выход:</p>
-      <p class="title is-3">Действительно хотите выйти?</p>
+      <p class="title is-4 is-size-5-mobile">Выход:</p>
+      <p class="title is-3 is-size-4-mobile">Действительно хотите выйти?</p>
       <div class="columns">
         <div class="column">
-          <a href="/auth/logout" class="button is-large is-danger is-fullwidth">Выйти</a>
+          <a href="/auth/logout" class="button is-large is-danger is-fullwidth is-hidden-mobile">Выйти</a>
+          <a href="/auth/logout" class="button is-danger is-fullwidth is-hidden-tablet">Выйти</a>
         </div>
         <div class="column">
-          <button live-click="close-auth-modals" class="button is-large is-fullwidth">Отмена</button>
+          <button live-click="close-auth-modals" class="button is-large is-fullwidth is-hidden-mobile">Отмена</button>
+          <button live-click="close-auth-modals" class="button is-fullwidth is-hidden-tablet">Отмена</button>
         </div>
       </div>
     </section>

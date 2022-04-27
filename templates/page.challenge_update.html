@@ -81,7 +81,10 @@
       </div>
       <div class="field is-grouped is-grouped-centered">
         <div class="control">
-          <button class="button is-link is-large is-rounded">
+          <button class="button is-link is-rounded is-hidden-tablet">
+            Update challenge
+          </button>
+          <button class="button is-link is-large is-rounded is-hidden-mobile">
             Update challenge
           </button>
         </div>
@@ -157,7 +160,10 @@
       </div>
       <div class="field is-grouped is-grouped-centered">
         <div class="control">
-          <button class="button is-link is-large is-rounded" {{ if .OutcomeError }}disabled{{ end }}>
+          <button class="button is-link is-rounded is-hidden-tablet" {{ if .OutcomeError }}disabled{{ end }}>
+            Update outcome
+          </button>
+          <button class="button is-link is-large is-rounded is-hidden-mobile" {{ if .OutcomeError }}disabled{{ end }}>
             Update outcome
           </button>
         </div>
