@@ -57,7 +57,7 @@ $tag-radius: $radius-large;
 $hr-background-color: #ededed;
 // section
 $section-padding: 1.5rem 1rem; // for mobile
-// footer 
+// footer
 $footer-padding: 1.5rem 1.5rem 3rem;
 
 @import "~bulma/bulma";
@@ -319,4 +319,28 @@ $badgeStarterColor: $azur-darker;
 		}
 	}
 	@include animate(movi, 1s, linear, infinite);
+}
+
+#main-view-content {
+	@include keyframes(fadein) {
+		0% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+	@include animate(fadein, 0.12s, linear, 1);
+}
+
+.modal {
+	@include keyframes(fadein) {
+		0% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+	@include animate(fadein, 0.1s, linear, 1);
 }

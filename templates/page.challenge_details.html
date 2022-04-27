@@ -53,11 +53,15 @@
     <div class="columns">
       <div class="column">
         <button live-click="add-prediction-modal" live-value-addprediction="true"
-          class="button is-large is-fullwidth is-light is-rounded"><b>Да</b></button>
+          class="button is-fullwidth is-light is-rounded is-hidden-tablet"><b>Да</b></button>
+        <button live-click="add-prediction-modal" live-value-addprediction="true"
+          class="button is-large is-fullwidth is-light is-rounded is-hidden-mobile"><b>Да</b></button>
       </div>
       <div class="column">
         <button live-click="add-prediction-modal" live-value-addprediction="false"
-          class="button is-large is-fullwidth is-dark is-rounded"><b>Нет</b></button>
+          class="button is-hidden-tablet is-fullwidth is-dark is-rounded"><b>Нет</b></button>
+        <button live-click="add-prediction-modal" live-value-addprediction="false"
+          class="button is-large is-fullwidth is-dark is-rounded is-hidden-mobile"><b>Нет</b></button>
       </div>
       {{ if .ShowModal }}
       {{ template "challenge-details-modal" . }}
@@ -87,7 +91,8 @@
         </span>
         {{ end }}
         <div class="block">
-          <p class="is-clickable subtitle is-4 is-size-6-mobile mt-3 has-text-grey" live-click="toggle-proofs">Доказательства
+          <p class="is-clickable subtitle is-4 is-size-6-mobile mt-3 has-text-grey" live-click="toggle-proofs">
+            Доказательства
             {{ if .ShowProofs }}
             <i class="bi bi-caret-up-fill"></i>
             {{ else }}
@@ -124,7 +129,7 @@
   {{ if .User }}
   {{ if .User.Admin }}
   <div class="block">
-    <p class="title is-4 has-text-centered">
+    <p class="title is-4 is-size-5-mobile has-text-centered">
       <a href="./{{ .Challenge.ID }}/edit">Edit</a>
     </p>
   </div>
@@ -148,14 +153,14 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">Подтверждение</p>
+      <p class="modal-card-title has-text-centered">Подтверждение</p>
       <button live-click="close-modal" class="delete" aria-label="close"></button>
     </header>
     <section class="modal-card-body has-text-centered">
-      <p class="title is-4">Предсказание:</p>
-      <p class="title is-3">{{ .Challenge.Content }}</p>
-      <p class="title is-4">Ваш прогноз:</p>
-      <p class="title is-2 {{ if .ModalPrediction }}is-success{{else}}is-danger{{end}}">
+      <p class="title is-4 is-size-6-mobile">Предсказание:</p>
+      <p class="title is-3 is-size-5-mobile">{{ .Challenge.Content }}</p>
+      <p class="title is-4 is-size-6-mobile">Ваш прогноз:</p>
+      <p class="title is-2 is-size-5-mobile {{ if .ModalPrediction }}is-success{{else}}is-danger{{end}}">
         {{ if .ModalPrediction }}
         это случится
         {{ else }}
@@ -165,13 +170,19 @@
       <div class="columns">
         <div class="column">
           <button live-click="add-prediction" live-value-addprediction="{{ .ModalPrediction }}"
-            class="button is-large is-success is-fullwidth">Подтвердить</button>
+            class="button is-large is-success is-fullwidth is-hidden-mobile">Подтвердить</button>
+          <button live-click="add-prediction" live-value-addprediction="{{ .ModalPrediction }}"
+            class="button is-hidden-tablet is-success is-fullwidth">Подтвердить</button>
         </div>
         <div class="column">
-          <button live-click="close-modal" class="button is-large is-danger is-fullwidth">Отмена</button>
+          <button live-click="close-modal" class="button is-hidden-tablet is-danger is-fullwidth">Отмена</button>
+          <button live-click="close-modal"
+            class="button is-large is-danger is-fullwidth is-hidden-mobile">Отмена</button>
         </div>
       </div>
     </section>
+    <footer class="modal-card-foot">
+    </footer>
   </div>
 </div>
 {{end}}

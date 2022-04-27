@@ -34,7 +34,7 @@
     {{ if .Message }}
     {{ template "alert-success" .Message }}
     {{ end }}
-    <div class="container">
+    <div id="main-view-content" class="container">
       {{ template "view" . }}
       <script type="text/javascript" src="/live.js"></script>
     </div>
@@ -115,7 +115,7 @@
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <p class="modal-card-title">Подтверждение</p>
+      <p class="modal-card-title has-text-centered">Подтверждение</p>
       <button live-click="close-auth-modals" class="delete" aria-label="close"></button>
     </header>
     <section class="modal-card-body has-text-centered">
