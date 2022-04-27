@@ -76,5 +76,8 @@ substitute_config_vars:
 		s|{{github_auth_client}}|${GITHUB_AUTH_CLIENT}|g;   \
 		s|{{github_auth_secret}}|${GITHUB_AUTH_SECRET}|g;   \
 		s|{{github_auth_callback}}|${GITHUB_AUTH_CALLBACK}|g;   \
+		s|{{twitter_auth_client}}|${TWITTER_AUTH_CLIENT}|g;   \
+		s|{{twitter_auth_secret}}|${TWITTER_AUTH_SECRET}|g;   \
+		s|{{twitter_auth_callback}}|${TWITTER_AUTH_CALLBACK}|g;   \
 		" ${CONFIG_TEMPLATE_PATH})
 	cat ${CONFIG_PATH}

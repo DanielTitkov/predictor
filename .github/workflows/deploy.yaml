@@ -90,6 +90,9 @@ jobs:
       GITHUB_AUTH_CLIENT: ${{ secrets.GGITHUB_AUTH_CLIENT }}
       GITHUB_AUTH_SECRET: ${{ secrets.GGITHUB_AUTH_SECRET }}
       GITHUB_AUTH_CALLBACK: ${{ secrets.GGITHUB_AUTH_CALLBACK }}
+      TWITTER_AUTH_CLIENT: ${{ secrets.TWITTER_AUTH_CLIENT }}
+      TWITTER_AUTH_SECRET: ${{ secrets.TWITTER_AUTH_SECRET }}
+      TWITTER_AUTH_CALLBACK: ${{ secrets.TWITTER_AUTH_CALLBACK }}
       CONFIG_PATH: ./configs/deploy_config_111.yml
     steps:
       - name: Check out code

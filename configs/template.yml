@@ -26,6 +26,10 @@ auth:
     client: {{github_auth_client}}
     secret: {{github_auth_secret}}
     callback: {{github_auth_callback}}
+  twitter:
+    client: {{twitter_auth_client}}
+    secret: {{twitter_auth_secret}}
+    callback: {{twitter_auth_callback}}
 data:
   presets:
     challengePresetsPaths: 
