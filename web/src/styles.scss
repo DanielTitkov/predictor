@@ -63,6 +63,11 @@ $footer-padding: 1.5rem 1.5rem 3rem;
 @import "~bulma/bulma";
 
 // custom classes
+:root {
+	--main-bg-color: #287aff;
+	--second-bg-color: #9bf6ff;
+}
+
 .challenge-card-true {
 	/* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/$green+0,4df297+99 */
 	background: $green;
@@ -343,4 +348,27 @@ $badgeStarterColor: $azur-darker;
 		}
 	}
 	@include animate(fadein, 0.1s, linear, 1);
+}
+
+
+
+.bg-decoration {
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.bg-decoration__svg {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 134%;
+	min-width: 1280px;
+	max-width: 1920px;
+	height: auto;
 }
