@@ -25,6 +25,8 @@ const (
 	viewChallengeUpdate  = "challenge-update"
 	viewHome             = "home"
 	viewProfile          = "profile"
+	viewPrivacy          = "privacy"
+	viewTerms            = "terms"
 	// events (common)
 	eventCloseAuthModals = "close-auth-modals"
 	eventOpenLogoutModal = "open-logout-modal"

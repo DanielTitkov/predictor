@@ -20,6 +20,8 @@ func Mux(cfg configs.Config, store live.HttpSessionStore, h *handler.Handler) *m
 	r.Handle("/challenges", live.NewHttpHandler(store, h.ChallengeList()))
 	r.Handle("/about", live.NewHttpHandler(store, h.About()))
 	r.Handle("/profile", live.NewHttpHandler(store, h.Profile()))
+	r.Handle("/privacy", live.NewHttpHandler(store, h.Privacy()))
+	r.Handle("/terms", live.NewHttpHandler(store, h.Terms()))
 	r.Handle("/admin", live.NewHttpHandler(store, h.Admin()))
 	r.Handle("/404", live.NewHttpHandler(store, h.NotFound()))
 	r.Handle("/", live.NewHttpHandler(store, h.Home()))
