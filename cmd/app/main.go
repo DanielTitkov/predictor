@@ -17,6 +17,7 @@ import (
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/google"
+	"github.com/markbates/goth/providers/twitter"
 
 	_ "github.com/lib/pq"
 )
@@ -81,6 +82,11 @@ func main() {
 			cfg.Auth.Github.Secret,
 			cfg.Auth.Github.Callback,
 			"email", "profile",
+		),
+		twitter.NewAuthenticate(
+			cfg.Auth.Twitter.Client,
+			cfg.Auth.Twitter.Secret,
+			cfg.Auth.Twitter.Callback,
 		),
 	)
 
