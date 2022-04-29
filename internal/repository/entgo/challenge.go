@@ -26,7 +26,7 @@ func (r *EntgoRepository) GetOngoingChallengeCount(ctx context.Context) (int, er
 		Query().
 		Where(
 			challenge.And(
-				challenge.CreateTimeLT(time.Now()),
+				challenge.StartTimeLT(time.Now()),
 				challenge.EndTimeGT(time.Now()),
 				challenge.PublishedEQ(true),
 			),
@@ -39,7 +39,7 @@ func (r *EntgoRepository) GetFinishedChallengeCount(ctx context.Context) (int, e
 		Query().
 		Where(
 			challenge.And(
-				challenge.CreateTimeLT(time.Now()),
+				challenge.StartTimeLT(time.Now()),
 				challenge.EndTimeLT(time.Now()),
 				challenge.PublishedEQ(true),
 			),
@@ -104,7 +104,7 @@ func (r *EntgoRepository) GetRandomFinishedChallenges(ctx context.Context, limit
 		Query().
 		Where(
 			challenge.And(
-				challenge.CreateTimeLT(time.Now()),
+				challenge.StartTimeLT(time.Now()),
 				challenge.EndTimeLT(time.Now()),
 				challenge.PublishedEQ(true),
 			),
@@ -141,7 +141,7 @@ func (r *EntgoRepository) GetRandomFalseChallenges(ctx context.Context, limit in
 		Query().
 		Where(
 			challenge.And(
-				challenge.CreateTimeLT(time.Now()),
+				challenge.StartTimeLT(time.Now()),
 				challenge.EndTimeLT(time.Now()),
 				challenge.Outcome(false),
 				challenge.PublishedEQ(true),
@@ -179,7 +179,7 @@ func (r *EntgoRepository) GetRandomTrueChallenges(ctx context.Context, limit int
 		Query().
 		Where(
 			challenge.And(
-				challenge.CreateTimeLT(time.Now()),
+				challenge.StartTimeLT(time.Now()),
 				challenge.EndTimeLT(time.Now()),
 				challenge.Outcome(true),
 				challenge.PublishedEQ(true),
@@ -218,7 +218,7 @@ func (r *EntgoRepository) GetClosingChallenges(ctx context.Context, limit int) (
 		Query().
 		Where(
 			challenge.And(
-				challenge.CreateTimeLT(time.Now()),
+				challenge.StartTimeLT(time.Now()),
 				challenge.EndTimeGT(time.Now()),
 				challenge.OutcomeIsNil(),
 				challenge.PublishedEQ(true),
@@ -245,7 +245,7 @@ func (r *EntgoRepository) GetRandomPendingChallenges(ctx context.Context, limit 
 		Query().
 		Where(
 			challenge.And(
-				challenge.CreateTimeLT(time.Now()),
+				challenge.StartTimeLT(time.Now()),
 				challenge.EndTimeLT(time.Now()),
 				challenge.OutcomeIsNil(),
 				challenge.PublishedEQ(true),
@@ -282,7 +282,7 @@ func (r *EntgoRepository) GetRandomOngoingChallenges(ctx context.Context, limit 
 		Query().
 		Where(
 			challenge.And(
-				challenge.CreateTimeLT(time.Now()),
+				challenge.StartTimeLT(time.Now()),
 				challenge.EndTimeGT(time.Now()),
 				challenge.PublishedEQ(true),
 				challenge.Not(
@@ -452,14 +452,14 @@ func (r *EntgoRepository) FilterChallenges(ctx context.Context, args *domain.Fil
 
 	if args.Finished {
 		query.Where(challenge.And(
-			challenge.CreateTimeLT(time.Now()),
+			challenge.StartTimeLT(time.Now()),
 			challenge.EndTimeLT(time.Now()),
 		))
 	}
 
 	if args.Pending {
 		query.Where(challenge.And(
-			challenge.CreateTimeLT(time.Now()),
+			challenge.StartTimeLT(time.Now()),
 			challenge.EndTimeLT(time.Now()),
 			challenge.OutcomeIsNil(),
 		))
@@ -474,7 +474,7 @@ func (r *EntgoRepository) FilterChallenges(ctx context.Context, args *domain.Fil
 
 	if args.Ongoing {
 		query.Where(challenge.And(
-			challenge.CreateTimeLT(time.Now()),
+			challenge.StartTimeLT(time.Now()),
 			challenge.EndTimeGT(time.Now()),
 		))
 	}
@@ -528,14 +528,14 @@ func (r *EntgoRepository) FilterUserChallenges(ctx context.Context, args *domain
 	if args.Finished {
 		query.Where(challenge.And(
 			challenge.OutcomeNotNil(),
-			challenge.CreateTimeLT(time.Now()),
+			challenge.StartTimeLT(time.Now()),
 			challenge.EndTimeLT(time.Now()),
 		))
 	}
 
 	if args.Pending {
 		query.Where(challenge.And(
-			challenge.CreateTimeLT(time.Now()),
+			challenge.StartTimeLT(time.Now()),
 			challenge.EndTimeLT(time.Now()),
 			challenge.OutcomeIsNil(),
 		))
