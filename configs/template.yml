@@ -13,6 +13,7 @@ app:
   systemSummaryTimeout: 1500 # milliseconds
   defaultTimeLayout: "2006-01-02"
   minProofCount: 3
+  version: {{version}}
 debug:
   logDBQueries: false
 auth:

@@ -7,6 +7,7 @@ CONFIG_TEMPLATE_PATH := ./configs/template.yml
 # Docker
 DOCKER_APP_FILENAME ?= deployments/docker/Dockerfile
 DOCKER_COMPOSE_FILE ?= deployments/docker-compose/docker-compose.yml
+VERSION ?= v0.1.2
 
 # sed
 SECRET_KEY ?= "very-secret-key"
