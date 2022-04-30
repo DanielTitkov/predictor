@@ -9,4 +9,5 @@ type AppConfig struct {
 	SystemSummaryTimeout      int    `yaml:"systemSummaryTimeout"`
 	DefaultTimeLayout         string `yaml:"defaultTimeLayout"`
 	MinProofCount             int    `yaml:"minProofCount"`
+	Version                   string `yaml:"version"`
 }

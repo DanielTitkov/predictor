@@ -79,5 +79,6 @@ substitute_config_vars:
 		s|{{twitter_auth_client}}|${TWITTER_AUTH_CLIENT}|g;   \
 		s|{{twitter_auth_secret}}|${TWITTER_AUTH_SECRET}|g;   \
 		s|{{twitter_auth_callback}}|${TWITTER_AUTH_CALLBACK}|g;   \
+		s|{{version}}|${VERSION}|g;   \
 		" ${CONFIG_TEMPLATE_PATH})
 	cat ${CONFIG_PATH}

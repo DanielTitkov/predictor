@@ -54,6 +54,7 @@ type (
 		ShowLoginModal  bool
 		ShowLogoutModal bool
 		CurrentView     string
+		Version         string
 	}
 
 	contextKey struct {
@@ -84,6 +85,7 @@ func (h *Handler) NewCommon(s live.Socket, currentView string) *CommonInstance {
 		ShowLoginModal:  false,
 		ShowLogoutModal: false,
 		CurrentView:     currentView,
+		Version:         h.app.Cfg.App.Version,
 	}
 }
 

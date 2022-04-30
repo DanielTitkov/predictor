@@ -90,13 +90,12 @@
     {{ template "navigation-text" . }}
     <hr>
     <div class="has-text-centered is-size-6">
-        <p>
-          <span class="has-text-grey mx-3">Predictor</span>
-          <a class="has-text-grey-light is-underlined mx-3" href="/terms" target="_blank">Terms and conditions</a>
-          <a class="has-text-grey-light is-underlined mx-3" href="/privacy" target="_blank">Privacy policy</a>
-        </p>
-        <p>
-        </p>
+      <p>
+        <span class="has-text-grey mx-3">Predictor</span>
+        <a class="has-text-grey-light is-underlined mx-3" href="/terms" target="_blank">Terms and conditions</a>
+        <a class="has-text-grey-light is-underlined mx-3" href="/privacy" target="_blank">Privacy policy</a>
+        <span class="has-text-grey mx-3">{{ .Version }}</span>
+      </p>
     </div>
   </div>
   </div>
