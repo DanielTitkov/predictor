@@ -6,6 +6,10 @@
     <div class="has-text-centered">
       <h1 class="title is-1 is-size-2-mobile">Predictor</h1>
       <h3 class="subtitle is-3 is-size-4-mobile">Социальная футурология</h3>
+      <p class="title is-4 is-size-6-mobile mt-3">
+        Здесь можно голосовать за исход предсказаний,<br>
+        создавать свои предсказания и следить за их результатами.
+      </p>
       <a {{if .User}}href="/profile" {{else}}disabled{{end}}
         class="button is-large is-link is-rounded is-responsive is-hidden-mobile">
         Создать предсказание
@@ -39,7 +43,8 @@
           <hr>
           <h4 class="title is-4 is-size-5-mobile has-text-centered">Открытые предсказания</h4>
           {{ if eq .RandomOngoingChallengesCount 0 }}
-          <h5 class="subtitle is-5 is-size-6-mobile has-text-centered mt-5">Пока нет вопросов на которые вы ещё не ответили</h5>
+          <h5 class="subtitle is-5 is-size-6-mobile has-text-centered mt-5">Пока нет вопросов на которые вы ещё не
+            ответили</h5>
           {{ else }}
           {{ range $i, $challenge := .RandomOngoingChallenges }}
           {{ template "challenge-card" $challenge }}
