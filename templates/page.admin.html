@@ -98,7 +98,15 @@
     {{ else }}
     <!-- else if create challenge -->
     <div class="level">
-      <h4 class="title is-4 is-size-5-mobile">Найдено предсказаний: {{ .ChallengeCount }}</h4>
+      <h4 class="title is-4 is-size-5-mobile">
+        {{ if .FilterArgs.Pending }}
+        Ожидают результата:
+        {{ end }}
+        {{ if .FilterArgs.Unpublished }}
+        Модерация:
+        {{end}}
+        {{ .ChallengeCount }}
+      </h4>
       <h4 class="subtitle is-5 is-size-6-mobile">Страница <b>{{ .Page }}</b> из <b>{{ .MaxPage }}</b></h4>
     </div>
     <div class="block">
