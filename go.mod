@@ -10,6 +10,7 @@ require (
 	github.com/jfyne/live v0.14.1
 	github.com/lib/pq v1.10.4
 	github.com/markbates/goth v1.69.0
+	github.com/sendinblue/APIv3-go-library v2.0.0+incompatible // indirect
 	github.com/sethvargo/go-password v0.2.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
